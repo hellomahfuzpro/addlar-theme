@@ -1,0 +1,124 @@
+<?php
+/**
+ * Fallback navigation.
+ *
+ * A fresh install has no menus assigned, which would leave the header with a
+ * logo and a button and nothing else. These fallbacks render the navigation
+ * from the approved design so the site is complete the moment it is seeded;
+ * assigning a real menu to a location overrides them entirely.
+ *
+ * @package Addlar
+ */
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
+/**
+ * Header navigation as designed.
+ *
+ * @return array Each item: label, url, and optional children (label/url/desc).
+ */
+function addlar_default_primary_links() {
+	return apply_filters( 'addlar_default_primary_links', array(
+		array( 'label' => __( 'Home', 'addlar' ), 'url' => '#top' ),
+		array( 'label' => __( 'About Us', 'addlar' ), 'url' => '#about' ),
+		array(
+			'label'    => __( 'Products', 'addlar' ),
+			'url'      => '#products',
+			'children' => array(
+				array( 'label' => __( 'Engine Oil Additives', 'addlar' ), 'url' => '#products', 'desc' => __( 'Heavy Duty · Passenger Car · Motorcycle', 'addlar' ) ),
+				array( 'label' => __( 'Driveline Additives', 'addlar' ), 'url' => '#products', 'desc' => __( 'Gear · ATF · Manual · Off-Road', 'addlar' ) ),
+				array( 'label' => __( 'Marine Additives', 'addlar' ), 'url' => '#products', 'desc' => __( 'Trunk Piston · System · Cylinder', 'addlar' ) ),
+				array( 'label' => __( 'Industrial Additives', 'addlar' ), 'url' => '#products', 'desc' => __( 'Gear · Grease · Hydraulic · Slideway', 'addlar' ) ),
+				array( 'label' => __( 'Metalworking Fluids', 'addlar' ), 'url' => '#products', 'desc' => __( 'Neat Cutting · Soluble Oil', 'addlar' ) ),
+				array( 'label' => __( 'Lubricant Components', 'addlar' ), 'url' => '#packages', 'desc' => __( 'Detergents · Dispersants · VII · more', 'addlar' ) ),
+			),
+		),
+		array( 'label' => __( 'Applications', 'addlar' ), 'url' => '#applications' ),
+		array( 'label' => __( 'Finder', 'addlar' ), 'url' => '#finder' ),
+		array( 'label' => __( 'Contact Us', 'addlar' ), 'url' => '#contact' ),
+	) );
+}
+
+/** Footer column links as designed, keyed by menu location. */
+function addlar_default_footer_links( $location ) {
+	$sets = apply_filters( 'addlar_default_footer_links', array(
+		'footer-1' => array(
+			array( 'label' => __( 'About Us', 'addlar' ), 'url' => '#about' ),
+			array( 'label' => __( 'Products info', 'addlar' ), 'url' => '#products' ),
+			array( 'label' => __( 'Applications', 'addlar' ), 'url' => '#applications' ),
+			array( 'label' => __( 'Contact', 'addlar' ), 'url' => '#contact' ),
+		),
+		'footer-2' => array(
+			array( 'label' => __( 'Ask the Experts', 'addlar' ), 'url' => '#finder' ),
+			array( 'label' => __( "ADDLAR's Presence", 'addlar' ), 'url' => '#numbers' ),
+			array( 'label' => __( "ADDLAR's Values", 'addlar' ), 'url' => '#why' ),
+			array( 'label' => __( "ADDLAR's Portfolio", 'addlar' ), 'url' => '#packages' ),
+		),
+		'footer-3' => array(
+			array( 'label' => __( 'Distribution', 'addlar' ), 'url' => '#products' ),
+			array( 'label' => __( 'Manufacturing', 'addlar' ), 'url' => '#about' ),
+			array( 'label' => __( 'Technical Support', 'addlar' ), 'url' => '#applications' ),
+			array( 'label' => __( 'Consultancy', 'addlar' ), 'url' => '#contact' ),
+		),
+		'legal'    => array(
+			array( 'label' => __( 'Privacy Policy', 'addlar' ), 'url' => '#' ),
+			array( 'label' => __( 'Terms of Use', 'addlar' ), 'url' => '#' ),
+			array( 'label' => __( 'FAQs', 'addlar' ), 'url' => '#' ),
+		),
+	) );
+
+	return isset( $sets[ $location ] ) ? $sets[ $location ] : array();
+}
+
+/** Header markup for the fallback menu (mirrors Addlar_Nav_Walker output). */
+function addlar_render_default_primary() {
+	echo '<nav class="navlinks">';
+	foreach ( addlar_default_primary_links() as $item ) {
+		if ( ! empty( $item['children'] ) ) {
+			echo '<div class="navdrop">';
+			printf( '<a href="%s">%s</a>', esc_url( $item['url'] ), esc_html( $item['label'] ) );
+			echo '<div class="dropwrap">';
+			foreach ( $item['children'] as $child ) {
+				printf(
+					'<a href="%s">%s<span>%s</span></a>',
+					esc_url( $child['url'] ),
+					esc_html( $child['label'] ),
+					esc_html( $child['desc'] )
+				);
+			}
+			echo '</div></div>';
+		} else {
+			printf( '<a href="%s">%s</a>', esc_url( $item['url'] ), esc_html( $item['label'] ) );
+		}
+	}
+	echo '</nav>';
+}
+
+/** Flat anchor list for the mobile panel. */
+function addlar_render_default_mobile() {
+	foreach ( addlar_default_primary_links() as $item ) {
+		printf( '<a href="%s">%s</a>', esc_url( $item['url'] ), esc_html( $item['label'] ) );
+	}
+}
+
+/** Footer column list. */
+function addlar_render_default_footer_column( $location ) {
+	$links = addlar_default_footer_links( $location );
+	if ( ! $links ) {
+		return;
+	}
+	echo '<ul>';
+	foreach ( $links as $link ) {
+		printf( '<li><a href="%s">%s</a></li>', esc_url( $link['url'] ), esc_html( $link['label'] ) );
+	}
+	echo '</ul>';
+}
+
+/** Bottom-bar links (no <ul>, matches the .legal flex row). */
+function addlar_render_default_legal() {
+	foreach ( addlar_default_footer_links( 'legal' ) as $link ) {
+		printf( '<a href="%s">%s</a>', esc_url( $link['url'] ), esc_html( $link['label'] ) );
+	}
+}

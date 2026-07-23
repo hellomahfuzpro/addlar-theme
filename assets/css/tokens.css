@@ -1,0 +1,106 @@
+/*!
+ * ADDLAR — design tokens, base & chrome
+ * Ported from the approved static mockup (addlar-site/index.html).
+ * Tokens are namespaced --adl-* and every selector is scoped under .adl
+ * so nothing collides with Elementor container vars or plugin CSS.
+ */
+
+:root{
+ --adl-red:#E2231A; --adl-red-dark:#A81810; --adl-ink:#141412; --adl-ink-2:#3a3a37;
+ --adl-grey:#6d6a65; --adl-grey-2:#9a968f; --adl-line:#e7e4df; --adl-bg:#ffffff;
+ --adl-soft:#f6f5f3; --adl-soft-2:#efede9; --adl-gold:#D8A54A;
+ --adl-sans:'Helvetica Neue',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Arial,sans-serif;
+ --adl-maxw:1200px;
+}
+.adl *{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+.adl{font-family:var(--adl-sans);color:var(--adl-ink);background:var(--adl-bg);line-height:1.6;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+.adl img{max-width:100%;display:block}
+.adl a{color:inherit;text-decoration:none}
+.adl .wrap{max-width:var(--adl-maxw);margin:0 auto;padding:0 32px}
+.adl .eyebrow{font-size:13px;font-weight:800;letter-spacing:.18em;text-transform:uppercase;color:var(--adl-red);display:inline-flex;align-items:center;gap:12px}
+.adl .eyebrow::before{content:'';width:28px;height:2px;background:var(--adl-red);display:inline-block}
+.adl h1,.adl h2,.adl h3{line-height:1.05;letter-spacing:-.02em;font-weight:800}
+.adl h2.title{font-size:clamp(30px,4.4vw,52px);color:var(--adl-ink);margin:18px 0 14px}
+.adl .lead{font-size:18px;color:var(--adl-grey);max-width:620px}
+.adl .section{padding:104px 0}
+.adl .section.soft{background:var(--adl-soft)}
+.adl .center{text-align:center}
+.adl .center .eyebrow{justify-content:center}
+.adl .center .lead{margin-left:auto;margin-right:auto}
+/* buttons are the ONLY rounded elements */
+.adl .btn{display:inline-flex;align-items:center;gap:9px;font-weight:700;font-size:15px;padding:15px 26px;border-radius:999px;transition:.2s;cursor:pointer;border:1.5px solid transparent}
+.adl .btn-red{background:var(--adl-red);color:#fff}
+.adl .btn-red:hover{background:var(--adl-red-dark)}
+.adl .btn-ghost{background:transparent;color:var(--adl-ink);border-color:var(--adl-line)}
+.adl .btn-ghost:hover{border-color:var(--adl-ink);background:var(--adl-ink);color:#fff}
+.adl .btn-white{background:#fff;color:var(--adl-red)}
+.adl .btn-white:hover{background:var(--adl-ink);color:#fff}
+
+.js .adl .reveal{opacity:0;transform:translateY(26px);transition:opacity .7s ease,transform .7s ease}
+.js .adl .reveal.in{opacity:1;transform:none;}
+.adl #packages  .reveal.in{
+    border-top: 3px solid #E2231A!important;
+}
+@media(prefers-reduced-motion:reduce){.js .adl .reveal{opacity:1!important;transform:none!important}}
+
+/* brand mark overlay for images */
+.adl .cmark{position:absolute;bottom:12px;right:12px;width:34px;height:auto;z-index:4;filter:drop-shadow(0 2px 7px rgba(0,0,0,.45))}
+
+/* ===== HEADER ===== */
+.adl header{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(255,255,255,.94);backdrop-filter:blur(12px);border-bottom:1px solid transparent;transition:.3s}
+.adl header.scrolled{border-bottom-color:var(--adl-line);box-shadow:0 6px 24px rgba(0,0,0,.05)}
+.adl .nav{display:flex;align-items:center;justify-content:space-between;height:78px}
+.adl .brand img{height:34px;width:auto}
+.adl .navlinks{display:flex;align-items:center;gap:30px}
+.adl .navlinks a{font-size:15px;font-weight:600;color:var(--adl-ink-2);position:relative;transition:.2s}
+.adl .navlinks a:hover{color:var(--adl-red)}
+.adl .navdrop{position:relative}
+.adl .navdrop>a::after{content:'\25be';font-size:10px;margin-left:5px;color:var(--adl-grey-2)}
+.adl .dropwrap{position:absolute;top:130%;left:50%;transform:translateX(-50%) translateY(8px);background:#fff;border:1px solid var(--adl-line);box-shadow:0 20px 44px rgba(0,0,0,.12);padding:10px;min-width:250px;opacity:0;visibility:hidden;transition:.22s}
+.adl .navdrop:hover .dropwrap{opacity:1;visibility:visible;transform:translateX(-50%) translateY(0)}
+.adl .dropwrap a{display:block;padding:10px 14px;font-size:14px;font-weight:600;color:var(--adl-ink-2)}
+.adl .dropwrap a span{display:block;font-size:12px;font-weight:500;color:var(--adl-grey-2);margin-top:1px}
+.adl .dropwrap a:hover{background:var(--adl-soft);color:var(--adl-red)}
+.adl .navcta{display:flex;align-items:center;gap:14px}
+.adl .ln{width:38px;height:38px;background:var(--adl-soft-2);display:flex;align-items:center;justify-content:center;color:var(--adl-ink);transition:.2s}
+.adl .ln svg{width:17px;height:17px;fill:currentColor}
+.adl .ln:hover{background:var(--adl-red);color:#fff}
+.adl .burger{display:none;flex-direction:column;gap:5px;background:none;border:0;cursor:pointer;padding:8px}
+.adl .burger span{width:24px;height:2px;background:var(--adl-ink);transition:.3s}
+
+/* ===== FOOTER ===== */
+.adl footer{background:#000;color:#c9c6c0;border-top:3px solid var(--adl-red);padding:66px 0 0}
+.adl .foot-mark{display:flex;justify-content:center;margin-bottom:44px}
+.adl .foot-mark img{height:34px;width:auto}
+.adl .foot-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:40px;justify-items:center;text-align:left}
+.adl .foot-col h5{font-size:17px;font-weight:800;letter-spacing:.02em;text-transform:uppercase;color:#fff;margin-bottom:6px;padding-bottom:9px;border-bottom:2px solid var(--adl-red);display:inline-block}
+.adl .foot-col ul{list-style:none;margin-top:12px}
+.adl .foot-col a{display:block;font-size:14.5px;font-weight:700;color:#e8e5e0;padding:7px 0;transition:.2s}
+.adl .foot-col a:hover{color:var(--adl-red)}
+.adl .socials{display:flex;gap:12px;margin-top:18px}
+.adl .soc{width:42px;height:42px;flex:none;border:1.5px solid #fff;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;background:transparent;transition:background .22s,border-color .22s}
+.adl .soc svg{width:18px;height:18px;fill:#fff;display:block}
+.adl .soc:hover{background:var(--adl-red);border-color:var(--adl-red)}
+.adl .soc:hover svg{fill:#fff}
+.adl .foot-bottom{margin-top:52px;border-top:2px solid var(--adl-red);padding:22px 0}
+.adl .foot-bottom .wrap{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:18px}
+.adl .foot-bottom .copy{grid-column:2;font-size:13.5px;color:#d7d4cf}
+.adl .foot-bottom .copy b{color:#fff;font-weight:800}
+.adl .foot-bottom .legal{grid-column:3;justify-self:end;display:flex;gap:22px;flex-wrap:wrap}
+.adl .foot-bottom .legal a{font-size:12.5px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:#d7d4cf}
+.adl .foot-bottom .legal a:hover{color:var(--adl-red)}
+
+/* ===== MOBILE NAV =====
+   Base rules must precede the media query: they share specificity with the
+   `.mobnav{display:block}` override inside it, so source order decides. */
+.adl .mobnav{display:none;position:fixed;inset:78px 0 auto 0;z-index:99;background:#fff;border-bottom:1px solid var(--adl-line);padding:14px 32px 26px;box-shadow:0 20px 40px rgba(0,0,0,.08);transform:translateY(-140%);transition:.34s;visibility:hidden}
+.adl .mobnav.open{transform:translateY(0);visibility:visible}
+.adl .mobnav a{display:block;padding:13px 0;font-size:16px;font-weight:600;border-bottom:1px solid var(--adl-soft-2);color:var(--adl-ink-2)}
+/* outrank `.mobnav a`, which would otherwise strip the button's colour and padding */
+.adl .mobnav .btn{margin-top:18px;width:100%;display:inline-flex;justify-content:center;padding:15px 26px;color:#fff;border-bottom:0}
+/* burger morphs to a close icon while the panel is open */
+.adl .burger.on span:nth-child(1){transform:translateY(7px) rotate(45deg)}
+.adl .burger.on span:nth-child(2){opacity:0}
+.adl .burger.on span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
+

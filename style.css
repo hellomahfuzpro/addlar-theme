@@ -1,0 +1,44 @@
+/*
+Theme Name: ADDLAR
+Theme URI: https://www.rchemie.com
+Author: Rchemie International
+Author URI: https://www.rchemie.com
+Description: Bespoke Elementor-powered theme for ADDLAR by Rchemie International — advanced lubricant additive technology. Each homepage section is a custom Elementor widget; header and footer are Customizer-driven.
+Version: 1.0.1
+Requires at least: 6.0
+Requires PHP: 7.4
+License: GNU General Public License v2 or later
+License URI: http://www.gnu.org/licenses/gpl-2.0.html
+Text Domain: addlar
+Tags: elementor, one-page, business, custom-logo, custom-menu
+*/
+
+/*
+ * Layout and section styling live in assets/css/tokens.css and
+ * assets/css/widgets.css (ported from the approved static mockup).
+ * This file carries only the brand type enforcement below.
+ */
+
+/* ---------------------------------------------------------------------------
+ * Elementor's active kit applies typography as `.elementor-kit-{id} h1` etc.
+ * (specificity 0,1,1), which ties or beats our scoped rules and silently
+ * swaps the brand font. Enforce it here. See skill gotcha #5.
+ * ------------------------------------------------------------------------ */
+.adl,
+.adl h1, .adl h2, .adl h3, .adl h4, .adl h5, .adl h6,
+.adl p, .adl a, .adl li, .adl span, .adl div,
+.adl button, .adl input, .adl select, .adl textarea {
+	font-family: var(--adl-sans) !important;
+}
+
+/* Elementor's kit also sets heading colours/weights; the mockup owns those. */
+.adl h1, .adl h2, .adl h3 {
+	font-weight: 800;
+	letter-spacing: -.02em;
+}
+
+/* Elementor containers add their own padding; our widgets are full-bleed and
+ * manage their own rhythm via .section / .wrap. */
+.elementor-widget-container > .adl {
+	margin: 0;
+}

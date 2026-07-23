@@ -1,0 +1,38 @@
+/*!
+ * ADDLAR — theme-only additions.
+ *
+ * tokens.css and widgets.css are GENERATED from the static mockup and get
+ * overwritten whenever the design is re-ported. Anything hand-written for the
+ * WordPress build belongs here instead, so it survives regeneration.
+ */
+
+/* The mockup's reset was `*{margin:0}`, which also caught <body>. Scoped to
+ * `.adl *` it no longer can, so the browser's default 8px body margin would
+ * inset every full-bleed section. Reset it here — this is a theme-level
+ * concern, not a section one. */
+body { margin: 0; }
+
+/* Hero: optional scrim, toggled per-widget in Elementor. */
+.adl .hero-visual[data-noscrim]::after { display: none; }
+
+/* Elementor wraps each widget; make sure nothing clips our full-bleed sections. */
+.elementor-widget-container { overflow: visible; }
+
+/* The seeder gives every container zero padding, but guard against a stray
+ * theme/kit padding reintroducing a horizontal gap on full-bleed sections. */
+.elementor-section-full_width > .elementor-container,
+.e-con.e-con--full > .e-con-inner { max-width: none; }
+
+/* Editor affordance: an empty repeater would otherwise render an invisible
+ * section that is impossible to select on the canvas. */
+.elementor-editor-active .adl section:empty::after {
+	content: attr(data-empty-label);
+	display: block;
+	padding: 48px 32px;
+	text-align: center;
+	font-size: 13px;
+	letter-spacing: .12em;
+	text-transform: uppercase;
+	color: var(--adl-grey-2);
+	border: 1px dashed var(--adl-line);
+}
