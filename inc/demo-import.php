@@ -646,94 +646,64 @@ function addlar_seed_products() {
 }
 
 /**
- * Build one `[elementor-tag ...]` dynamic-value string — the format
- * Elementor stores in a control's `__dynamic__` settings when that control
- * is bound to a Dynamic Tag instead of a static value.
+ * The single-product Theme Builder template's widget list.
  *
- * @param string $tag_name     Dynamic tag name, e.g. "post-custom-field".
- * @param array  $tag_settings The tag's own settings, e.g. array( 'key' => '_addlar_code' ).
- * @return string
- */
-function addlar_dynamic_tag_value( $tag_name, $tag_settings = array() ) {
-	return sprintf(
-		'[elementor-tag id="%s" name="%s" settings="%s"]',
-		addlar_uid(),
-		$tag_name,
-		$tag_settings ? rawurlencode( wp_json_encode( $tag_settings ) ) : ''
-	);
-}
-
-/**
- * A `__dynamic__` settings fragment binding one control to a Dynamic Tag —
- * merge this into a widget's `settings` array alongside a static fallback
- * for the same control key.
- *
- * @param string $control      Control name, e.g. "html" for the HTML widget.
- * @param string $tag_name     Dynamic tag name.
- * @param array  $tag_settings Tag settings.
- * @return array
- */
-function addlar_dynamic_control( $control, $tag_name, $tag_settings = array() ) {
-	return array(
-		'__dynamic__' => array(
-			$control => addlar_dynamic_tag_value( $tag_name, $tag_settings ),
-		),
-	);
-}
-
-/**
- * The single-product Theme Builder template's widget list — native Post
- * Title / Featured Image, text-editor widgets bound to the spec string /
- * description / viscosity note, HTML widgets bound to each pre-rendered
- * fragment (applications, performance table, approvals, formulation,
- * properties table — see addlar_render_all_product_fragments()), a native
- * Posts widget for related products in the same category, and the existing
- * closing CTA.
- *
- * Every dynamic binding uses Elementor's native "Post Custom Field" Dynamic
- * Tag (or, for related products, "Post Terms") — no ACF Pro, per the
- * architecture decision in the Phase 2 plan.
+ * First cut of this used Elementor's native Post Title / Featured Image /
+ * Text Editor / HTML / Posts widgets, bound via Dynamic Tags. Live testing
+ * showed the real problem with that approach: none of those native widgets
+ * get this theme's `.adl` scope wrapper (only Addlar_Base_Widget subclasses
+ * do, via open_section()/close_section() — see header.php's comment on why
+ * `.adl` is deliberately NOT opened around page content generally), so they
+ * rendered with zero theme CSS, and the native Posts widget's default skin
+ * doesn't match the design at all. Rebuilt entirely on custom widgets
+ * (widgets/class-product-spec-header.php, class-product-fragment.php,
+ * class-related-products.php) that read the current product's post meta
+ * directly via PHP at render time — simpler than Dynamic Tags and
+ * self-styling by construction.
  *
  * @return array
  */
 function addlar_product_template_widgets() {
-	$editor_control = function ( $meta_key ) {
-		return array_merge(
-			array( 'editor' => '' ),
-			addlar_dynamic_control( 'editor', 'post-custom-field', array( 'key' => $meta_key ) )
-		);
-	};
-	$html_control = function ( $meta_key ) {
-		return array_merge(
-			array( 'html' => '' ),
-			addlar_dynamic_control( 'html', 'post-custom-field', array( 'key' => $meta_key ) )
-		);
+	$fragment = function ( $key ) {
+		return array( 'type' => 'addlar_product_fragment', 'settings' => array( 'fragment' => $key ) );
 	};
 
 	return array(
-		array( 'type' => 'theme-post-featured-image', 'settings' => array() ),
-		array( 'type' => 'theme-post-title', 'settings' => array() ),
-		array( 'type' => 'text-editor', 'settings' => $editor_control( '_addlar_spec_string' ) ),
-		array( 'type' => 'text-editor', 'settings' => $editor_control( '_addlar_description' ) ),
-		array( 'type' => 'html', 'settings' => $html_control( '_addlar_applications_html' ) ),
-		array( 'type' => 'html', 'settings' => $html_control( '_addlar_performance_table_html' ) ),
-		array( 'type' => 'html', 'settings' => $html_control( '_addlar_approvals_html' ) ),
-		array( 'type' => 'html', 'settings' => $html_control( '_addlar_formulation_html' ) ),
-		array( 'type' => 'html', 'settings' => $html_control( '_addlar_properties_table_html' ) ),
-		array( 'type' => 'text-editor', 'settings' => $editor_control( '_addlar_viscosity_note' ) ),
+		array( 'type' => 'addlar_product_spec_header', 'settings' => array() ),
+		$fragment( 'description' ),
+		$fragment( 'applications' ),
+		$fragment( 'performance' ),
+		$fragment( 'approvals' ),
+		$fragment( 'formulation' ),
+		$fragment( 'properties' ),
+		$fragment( 'viscosity' ),
 		array(
-			'type'     => 'posts',
-			'settings' => array_merge(
-				array(
-					'posts_post_type' => 'addlar_product',
-					'posts_per_page'  => 3,
-				),
-				addlar_dynamic_control( 'posts_include_term', 'post-terms', array( 'taxonomy' => 'addlar_product_category' ) )
-			),
+			'type'     => 'addlar_related_products',
+			'settings' => array( 'mode' => 'current', 'heading' => __( 'Related Products', 'addlar' ) ),
 		),
 		array(
 			'type'     => 'addlar_closing_cta',
 			'settings' => array( 'bg' => addlar_seed_image( 'cta' ) ),
+		),
+	);
+}
+
+/**
+ * The category archive Theme Builder template's widget list: a term-aware
+ * intro (name + description, pulled at render time) and the same related-
+ * products grid widget in "archive" mode.
+ *
+ * @return array
+ */
+function addlar_category_archive_template_widgets() {
+	return array(
+		array(
+			'type'     => 'addlar_page_intro',
+			'settings' => array( 'use_archive_term' => 'yes', 'eyebrow' => __( 'Product Category', 'addlar' ) ),
+		),
+		array(
+			'type'     => 'addlar_related_products',
+			'settings' => array( 'mode' => 'archive', 'heading' => '', 'count' => 24 ),
 		),
 	);
 }
@@ -752,22 +722,47 @@ function addlar_save_template( $template_id, array $tree ) {
 }
 
 /**
- * Seed the single-product Elementor Theme Builder template, conditioned to
- * the addlar_product post type — reproducible the same way the homepage is
- * (Tools → ADDLAR setup → Seed), instead of the client having to build it
- * by hand in the Elementor UI.
+ * Find a post by its exact title, scoped to one post type — a small
+ * WP_Query wrapper used instead of `get_page_by_title()`, which core
+ * deprecated in WP 6.2.
  *
- * The Posts widget's "related products" query and the exact Dynamic Tag
- * control names used here (`editor`, `html`, `posts_include_term`) match
- * Elementor Pro's controls as of this theme's target version, but — like
- * the rest of Theme Builder — genuinely can't be confirmed from this
- * environment. Open the template once in Elementor after seeding and check
- * each bound field resolves; the plan's own verification section flags this
- * same limitation for the homepage build.
+ * @param string $title     Exact post title.
+ * @param string $post_type Post type.
+ * @return WP_Post|null
+ */
+function addlar_find_post_by_title( $title, $post_type ) {
+	$found = get_posts( array(
+		'post_type'      => $post_type,
+		'post_status'    => 'any',
+		'posts_per_page' => 1,
+		'title'          => $title,
+		'no_found_rows'  => true,
+	) );
+	return $found ? $found[0] : null;
+}
+
+/**
+ * Create/update one elementor_library Theme Builder template and set its
+ * type/condition meta. Shared by the single-product and category-archive
+ * seeders below — same post-type, same taxonomy assignment, same meta keys,
+ * only the title/template-type/condition/widget-tree differ.
  *
+ * The exact `_elementor_conditions` format used here
+ * (`"include/{location}[/{sub_id}]"`) matches Elementor Pro's own Theme
+ * Builder condition storage, but — like the rest of Theme Builder — can't be
+ * confirmed from this environment. Open Theme Builder → the template's
+ * "Edit Conditions" once after seeding and check it shows the condition
+ * seeded here; if it doesn't, set it manually there (one-time, and it'll
+ * stick) or use the JSON export on the Tools page to hand this template's
+ * content to a fresh template you build the condition for yourself.
+ *
+ * @param string $title      Template title, also used to find it on re-seed.
+ * @param string $type       '_elementor_template_type' value, e.g. 'single'.
+ * @param array  $conditions '_elementor_conditions' value.
+ * @param array  $widgets    Widget list for addlar_build_tree().
  * @return array template_id + message
  */
-function addlar_seed_product_theme_builder_template() {
+function addlar_seed_theme_builder_template( $title, $type, array $conditions, array $widgets ) {
 	if ( ! did_action( 'elementor/loaded' ) ) {
 		return array(
 			'template_id' => 0,
@@ -775,8 +770,7 @@ function addlar_seed_product_theme_builder_template() {
 		);
 	}
 
-	$title    = 'ADDLAR Product — Single';
-	$existing = get_page_by_title( $title, OBJECT, 'elementor_library' );
+	$existing    = addlar_find_post_by_title( $title, 'elementor_library' );
 	$template_id = $existing ? $existing->ID : 0;
 
 	if ( ! $template_id ) {
@@ -794,18 +788,53 @@ function addlar_seed_product_theme_builder_template() {
 	}
 
 	if ( taxonomy_exists( 'elementor_library_type' ) ) {
-		wp_set_object_terms( $template_id, 'single', 'elementor_library_type' );
+		wp_set_object_terms( $template_id, $type, 'elementor_library_type' );
 	}
 
-	update_post_meta( $template_id, '_elementor_template_type', 'single' );
-	update_post_meta( $template_id, '_elementor_conditions', array( 'include/post_type/addlar_product' ) );
+	update_post_meta( $template_id, '_elementor_template_type', $type );
+	update_post_meta( $template_id, '_elementor_conditions', $conditions );
 
-	$tree = addlar_build_tree( addlar_product_template_widgets() );
+	$tree = addlar_build_tree( $widgets );
 	addlar_save_template( $template_id, $tree );
 
 	return array(
 		'template_id' => $template_id,
-		'message'     => __( 'Product single template seeded — open it in Elementor once to confirm every Dynamic Tag binding and the related-products query resolve.', 'addlar' ),
+		/* translators: %s: template title */
+		'message'     => sprintf( __( '%s template seeded.', 'addlar' ), $title ),
+	);
+}
+
+/**
+ * Seed the single-product Elementor Theme Builder template, conditioned to
+ * the addlar_product post type.
+ *
+ * @return array template_id + message
+ */
+function addlar_seed_product_theme_builder_template() {
+	return addlar_seed_theme_builder_template(
+		'ADDLAR Product — Single',
+		'single',
+		array( 'include/post_type/addlar_product' ),
+		addlar_product_template_widgets()
+	);
+}
+
+/**
+ * Seed the category archive Elementor Theme Builder template, conditioned
+ * to the addlar_product_category taxonomy. This is what fixes "category
+ * page shows not exist" together with the flush_rewrite_rules() call in
+ * addlar_seed_products_and_pages() — the archive URL 404s until WordPress's
+ * rewrite rules are regenerated after a new taxonomy is registered, quite
+ * apart from whether a template exists for it.
+ *
+ * @return array template_id + message
+ */
+function addlar_seed_category_archive_theme_builder_template() {
+	return addlar_seed_theme_builder_template(
+		'ADDLAR Product — Category Archive',
+		'archive',
+		array( 'include/taxonomy/addlar_product_category' ),
+		addlar_category_archive_template_widgets()
 	);
 }
 
@@ -877,12 +906,8 @@ function addlar_seed_stub_page( $slug, $title, $lede ) {
 
 	$tree = addlar_build_tree( array(
 		array(
-			'type'     => 'heading',
-			'settings' => array( 'title' => $title, 'header_size' => 'h1', 'align' => 'center' ),
-		),
-		array(
-			'type'     => 'text-editor',
-			'settings' => array( 'editor' => '<p style="text-align:center;max-width:640px;margin:0 auto;">' . esc_html( $lede ) . '</p>' ),
+			'type'     => 'addlar_page_intro',
+			'settings' => array( 'title' => $title, 'lede' => $lede ),
 		),
 		array(
 			'type'     => 'addlar_closing_cta',
@@ -953,16 +978,23 @@ function addlar_seed_products_and_pages() {
 		return array( 'message' => __( 'Elementor is not active — activate it first, then seed.', 'addlar' ) );
 	}
 
-	$product_count = addlar_seed_products();
-	$template      = addlar_seed_product_theme_builder_template();
-	$overview      = addlar_seed_products_overview_page();
-	$stubs         = addlar_seed_stub_pages();
+	$product_count   = addlar_seed_products();
+	$single_template = addlar_seed_product_theme_builder_template();
+	$archive_template = addlar_seed_category_archive_theme_builder_template();
+	$overview        = addlar_seed_products_overview_page();
+	$stubs           = addlar_seed_stub_pages();
+
+	// New CPT + taxonomy rewrite rules (and the category archive URLs they
+	// enable) only take effect once WordPress's rewrite rules are
+	// regenerated — this is what fixes a fresh category archive 404ing even
+	// though the term and template both exist.
+	flush_rewrite_rules();
 
 	$message = sprintf(
 		/* translators: %d: number of products seeded */
 		__( '%d products seeded.', 'addlar' ),
 		$product_count
-	) . ' ' . $template['message'];
+	) . ' ' . $single_template['message'] . ' ' . $archive_template['message'];
 
 	if ( $overview['page_id'] ) {
 		$message .= ' <a href="' . esc_url( get_permalink( $overview['page_id'] ) ) . '">' . esc_html__( 'View Products page', 'addlar' ) . '</a>';
@@ -1004,6 +1036,12 @@ function addlar_tools_page_render() {
 		$products_notice  = $result['message'];
 	}
 
+	$flush_notice = '';
+	if ( isset( $_POST['addlar_flush'] ) && check_admin_referer( 'addlar_flush_action' ) ) {
+		flush_rewrite_rules();
+		$flush_notice = __( 'Permalinks flushed.', 'addlar' );
+	}
+
 	echo '<div class="wrap"><h1>' . esc_html__( 'ADDLAR setup', 'addlar' ) . '</h1>';
 
 	if ( $notice ) {
@@ -1024,14 +1062,123 @@ function addlar_tools_page_render() {
 		echo '<div class="notice notice-success"><p>' . wp_kses_post( $products_notice ) . '</p></div>';
 	}
 
-	echo '<p>' . esc_html__( 'Builds the 22 real product pages (from the client’s Product Data Sheets), the product single Theme Builder template, the Products landing page, and the About Us / Contact Us / Ask the Expert / Blog stub pages.', 'addlar' ) . '</p>';
-	echo '<p><strong>' . esc_html__( 'Safe to re-run', 'addlar' ) . '</strong> — ' . esc_html__( 'products and pages are matched by slug and updated in place, not duplicated. The Theme Builder template’s Dynamic Tag bindings should be spot-checked in Elementor after the first run.', 'addlar' ) . '</p>';
+	echo '<p>' . esc_html__( 'Builds the 22 real product pages (from the client’s Product Data Sheets), the product single and category archive Theme Builder templates, the Products landing page, and the About Us / Contact Us / Ask the Expert / Blog stub pages. Also flushes permalinks, so a new category archive URL works immediately instead of 404ing until Settings → Permalinks is re-saved by hand.', 'addlar' ) . '</p>';
+	echo '<p><strong>' . esc_html__( 'Safe to re-run', 'addlar' ) . '</strong> — ' . esc_html__( 'products and pages are matched by slug and updated in place, not duplicated.', 'addlar' ) . '</p>';
 
 	echo '<form method="post">';
 	wp_nonce_field( 'addlar_seed_products_action' );
 	submit_button( __( 'Seed products + pages', 'addlar' ), 'primary', 'addlar_seed_products' );
-	echo '</form></div>';
+	echo '</form>';
+
+	echo '<hr>';
+
+	if ( $flush_notice ) {
+		echo '<div class="notice notice-success"><p>' . esc_html( $flush_notice ) . '</p></div>';
+	}
+	echo '<p>' . esc_html__( 'If a category archive URL 404s on its own (a new taxonomy\'s rewrite rules not yet regenerated), flush permalinks without re-seeding anything else.', 'addlar' ) . '</p>';
+	echo '<form method="post">';
+	wp_nonce_field( 'addlar_flush_action' );
+	submit_button( __( 'Flush permalinks', 'addlar' ), 'secondary', 'addlar_flush' );
+	echo '</form>';
+
+	echo '<hr>';
+
+	echo '<h2>' . esc_html__( 'Export Theme Builder templates', 'addlar' ) . '</h2>';
+	echo '<p>' . esc_html__( 'Download either seeded template as an Elementor-importable .json file. Use Elementor\'s own Templates → Saved Templates → Import to bring it in as a fresh template, then set its display condition by hand there — that\'s the reliable way to fix a condition if the one seeded here isn\'t right, or to hand a starting point to someone editing this in the Elementor UI directly.', 'addlar' ) . '</p>';
+
+	$single_id  = addlar_find_template_id_by_title( 'ADDLAR Product — Single' );
+	$archive_id = addlar_find_template_id_by_title( 'ADDLAR Product — Category Archive' );
+
+	echo '<p>';
+	if ( $single_id ) {
+		$url = wp_nonce_url( admin_url( 'admin-post.php?action=addlar_export_template&template_id=' . $single_id ), 'addlar_export_template' );
+		echo '<a class="button" href="' . esc_url( $url ) . '">' . esc_html__( 'Export product single template', 'addlar' ) . '</a> ';
+	} else {
+		esc_html_e( 'Product single template not seeded yet.', 'addlar' );
+	}
+	echo '</p><p>';
+	if ( $archive_id ) {
+		$url = wp_nonce_url( admin_url( 'admin-post.php?action=addlar_export_template&template_id=' . $archive_id ), 'addlar_export_template' );
+		echo '<a class="button" href="' . esc_url( $url ) . '">' . esc_html__( 'Export category archive template', 'addlar' ) . '</a>';
+	} else {
+		esc_html_e( 'Category archive template not seeded yet.', 'addlar' );
+	}
+	echo '</p>';
+
+	echo '</div>';
 }
+
+/**
+ * Find a seeded elementor_library template's post ID by its title — used to
+ * build the export links above without hardcoding a post ID that changes
+ * per install.
+ *
+ * @param string $title Template title.
+ * @return int
+ */
+function addlar_find_template_id_by_title( $title ) {
+	$post = addlar_find_post_by_title( $title, 'elementor_library' );
+	return $post ? $post->ID : 0;
+}
+
+/**
+ * Build an Elementor Template Library-importable array from a stored
+ * elementor_library template — the same shape Elementor's own template
+ * export produces, so the downloaded file can be re-imported via
+ * Elementor's own "Import Templates" screen.
+ *
+ * Reads `_elementor_data` with get_post_meta(), which already unslashes it
+ * correctly, and re-encodes it fresh for the download. That's the right
+ * side of the fence per the JSON-corruption bug written up in
+ * WORDPRESS-ELEMENTOR-JSON-BUG.md: the value only needs `wp_slash()`ing
+ * again if it were going back into another `update_post_meta()` call — a
+ * one-way export to a downloaded file never does that, so no extra
+ * (un)slashing belongs here.
+ *
+ * @param int $template_id elementor_library post ID.
+ * @return array|null
+ */
+function addlar_export_template_array( $template_id ) {
+	$post = get_post( $template_id );
+	if ( ! $post || 'elementor_library' !== $post->post_type ) {
+		return null;
+	}
+
+	$raw  = get_post_meta( $template_id, '_elementor_data', true );
+	$tree = $raw ? json_decode( $raw, true ) : array();
+	$type = get_post_meta( $template_id, '_elementor_template_type', true );
+
+	return array(
+		'content'       => $tree ? $tree : array(),
+		'page_settings' => array(),
+		'version'       => defined( 'ELEMENTOR_VERSION' ) ? ELEMENTOR_VERSION : '0.4',
+		'title'         => $post->post_title,
+		'type'          => $type ? $type : 'page',
+	);
+}
+
+/** Stream a seeded template as a downloadable Elementor-import .json file. */
+function addlar_handle_export_template() {
+	if ( ! current_user_can( 'manage_options' ) ) {
+		wp_die( esc_html__( 'Not allowed.', 'addlar' ) );
+	}
+	check_admin_referer( 'addlar_export_template' );
+
+	$template_id = isset( $_GET['template_id'] ) ? (int) $_GET['template_id'] : 0;
+	$export      = addlar_export_template_array( $template_id );
+	if ( ! $export ) {
+		wp_die( esc_html__( 'Template not found.', 'addlar' ) );
+	}
+
+	$filename = sanitize_title( $export['title'] ) . '.json';
+
+	nocache_headers();
+	header( 'Content-Type: application/json; charset=utf-8' );
+	header( 'Content-Disposition: attachment; filename="' . $filename . '"' );
+	echo wp_json_encode( $export, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE ); // phpcs:ignore WordPress.Security.EscapeOutput -- raw JSON file download, not HTML output.
+	exit;
+}
+add_action( 'admin_post_addlar_export_template', 'addlar_handle_export_template' );
 
 /* ---------------------------------------------------------------- WP-CLI */
 

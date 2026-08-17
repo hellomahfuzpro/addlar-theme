@@ -45,6 +45,12 @@ body { margin: 0; }
  * this whole block is hand-written, matching the same visual language:
  * red accent rule, soft-grey surfaces, no rounded corners except buttons. */
 
+/* tokens.css only styles h2.title (every homepage section heading is an h2
+ * by design); a single product's own page correctly uses h1 for its one
+ * page title, so that variant is added here rather than touching the
+ * generated file. */
+.adl h1.title { font-size: clamp(30px, 4.4vw, 52px); color: var(--adl-ink); margin: 18px 0 14px; line-height: 1.05; letter-spacing: -.02em; font-weight: 800; }
+
 .adl .spec-description { color: var(--adl-grey); margin: 0 0 24px; }
 .adl .spec-description p + p { margin-top: 12px; }
 
