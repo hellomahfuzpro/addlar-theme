@@ -3,6 +3,53 @@
 All notable changes to the ADDLAR theme. Keep the top version in sync with
 `Version:` in `style.css` — the updater reads it from there.
 
+## [1.1.1] — 2026-08-17
+
+### Fixed
+- **Product Theme Builder template rendered unstyled; category archive
+  404'd.** Only `Addlar_Base_Widget` subclasses get this theme's `.adl` CSS
+  scope (each one opens/closes it itself); the first cut of the product
+  single template used Elementor's native Post Title / Text Editor / HTML /
+  Posts widgets, which never get that wrapper — so the tables rendered with
+  zero theme CSS and "related products" showed Elementor's default blog-post
+  skin instead of the card grid. Rebuilt on four new custom widgets
+  (`ProductSpecHeader`, `ProductFragment`, `RelatedProducts`, `PageIntro`)
+  that read post meta directly via PHP instead of Dynamic Tags. Also seeds a
+  category-archive Theme Builder template and flushes rewrite rules on seed
+  — the real cause of a brand-new taxonomy's archive URL 404ing.
+- Two `get_page_by_title()` calls (deprecated in WP 6.2) replaced with a
+  small `WP_Query`-based lookup.
+
+### Added
+- Tools page: export either seeded Theme Builder template as an
+  Elementor-importable `.json`, and a standalone "Flush permalinks" action.
+
+## [1.1.0] — 2026-08-17
+
+### Added
+- `addlar_product` CPT + `addlar_product_category` taxonomy backing the 22
+  real, PDS-documented ADDLAR products, with an Elementor Theme Builder
+  single-product template and coded fallback templates
+  (`single-addlar_product.php`, `taxonomy-addlar_product_category.php`).
+- Tabular PDS data (performance levels, typical properties, applications,
+  approvals, formulation examples) pre-rendered to HTML at save time and
+  bound into Theme Builder — no ACF Pro dependency.
+- Seeded `/products/` overview page and About Us / Contact Us / Ask the
+  Expert / Blog stub pages, reachable from `Tools → ADDLAR setup → Seed
+  products + pages` (also `wp addlar seed-products`).
+- `tests/test-products.php` (177 assertions): catalogue-fix regression
+  checks plus a transcription-error tripwire across all 22 products'
+  table data.
+
+### Fixed
+- **Product Finder / catalogue data mismatch.** `KC420`, `Z 2612`, `7155`
+  and `KC321` (confirmed Hydraulic, not just "Industrial") are folded into
+  the Finder's default catalogue; two more documented products (`7375`,
+  `7376`) were found missing from it during the PDS read pass and added too.
+  The Finder's catalogue now derives from the CPT (`addlar_finder_catalogue_merged()`)
+  instead of a hand-maintained parallel list, and a Finder pill with a real
+  product page renders as a link to it.
+
 ## [1.0.1] — 2026-07-23
 
 ### Fixed
