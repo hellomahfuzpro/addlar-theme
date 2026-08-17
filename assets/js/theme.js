@@ -148,9 +148,14 @@
 
 			function renderPills(codes) {
 				pillsEl.innerHTML = '';
-				codes.forEach(function (code) {
-					var s = document.createElement('span');
+				codes.forEach(function (entry) {
+					// A plain string is an undocumented code (Finder-only); an
+					// {code, url} object has a real product page — render as a link.
+					var code = (entry && typeof entry === 'object') ? entry.code : entry;
+					var url = (entry && typeof entry === 'object') ? entry.url : null;
+					var s = document.createElement(url ? 'a' : 'span');
 					s.className = 'pill';
+					if (url) { s.href = url; }
 					// Numeric codes are ADDLAR packages; lettered ones (KC…) stand alone.
 					if (/^\d+$/.test(code)) {
 						s.innerHTML = 'ADDLAR <b></b>';

@@ -36,3 +36,79 @@ body { margin: 0; }
 	color: var(--adl-grey-2);
 	border: 1px dashed var(--adl-line);
 }
+
+/* ===== PRODUCT DATA SHEET FRAGMENTS =====
+ * Phase 2: the tabular PDS data (inc/products-render.php) is pre-rendered to
+ * plain HTML and bound into Elementor via a Dynamic Tag + HTML widget — see
+ * the Phase 2 plan's "avoiding a new paid dependency" section. Ported design
+ * tokens have no data-table component (the mockup never needed one), so
+ * this whole block is hand-written, matching the same visual language:
+ * red accent rule, soft-grey surfaces, no rounded corners except buttons. */
+
+.adl .spec-description { color: var(--adl-grey); margin: 0 0 24px; }
+.adl .spec-description p + p { margin-top: 12px; }
+
+.adl .spec-table-note {
+	font-size: 13px;
+	font-weight: 800;
+	letter-spacing: .1em;
+	text-transform: uppercase;
+	color: var(--adl-red);
+	margin: 28px 0 10px;
+}
+
+.adl .spec-table {
+	width: 100%;
+	border-collapse: collapse;
+	margin: 12px 0 28px;
+	font-size: 14.5px;
+}
+.adl .spec-table th,
+.adl .spec-table td {
+	text-align: left;
+	padding: 12px 16px;
+	border-bottom: 1px solid var(--adl-line);
+}
+.adl .spec-table thead th {
+	background: var(--adl-soft);
+	font-size: 12.5px;
+	font-weight: 800;
+	letter-spacing: .06em;
+	text-transform: uppercase;
+	color: var(--adl-ink-2);
+	border-bottom: 2px solid var(--adl-red);
+}
+.adl .spec-table tbody tr:hover { background: var(--adl-soft); }
+.adl .spec-table tbody td:first-child { font-weight: 700; color: var(--adl-ink); }
+
+.adl .chip-list {
+	list-style: none;
+	display: flex;
+	flex-wrap: wrap;
+	gap: 8px;
+	margin: 12px 0 28px;
+}
+.adl .chip {
+	background: var(--adl-soft-2);
+	color: var(--adl-ink-2);
+	font-size: 13.5px;
+	font-weight: 700;
+	padding: 8px 16px;
+	border-radius: 999px;
+}
+.adl .chips-approvals .chip {
+	background: #fff;
+	border: 1.5px solid var(--adl-line);
+}
+
+.adl .formulation-list { margin: 12px 0 28px; }
+.adl .formulation-row {
+	display: flex;
+	justify-content: space-between;
+	gap: 16px;
+	padding: 10px 0;
+	border-bottom: 1px solid var(--adl-line);
+	font-size: 14.5px;
+}
+.adl .formulation-row dt { color: var(--adl-grey); }
+.adl .formulation-row dd { font-weight: 700; color: var(--adl-ink); }

@@ -15,29 +15,49 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 /**
+ * A stub/real page's URL by slug, or a homepage-anchor fallback if that
+ * page hasn't been seeded yet (Tools → ADDLAR setup → Seed products + pages)
+ * — so the nav never links to a 404 on a fresh install.
+ *
+ * @param string $slug     Page slug, e.g. "about-us".
+ * @param string $fallback Anchor to use if the page doesn't exist yet.
+ * @return string
+ */
+function addlar_nav_page_url( $slug, $fallback ) {
+	$page = get_page_by_path( $slug, OBJECT, 'page' );
+	return ( $page && 'publish' === $page->post_status ) ? get_permalink( $page ) : $fallback;
+}
+
+/**
  * Header navigation as designed.
+ *
+ * The Products dropdown children and the top-level About Us/Contact Us
+ * items point at the real Phase 2 pages once seeded (addlar_nav_page_url() /
+ * addlar_product_category_link() fall back to the original homepage anchors
+ * otherwise). Applications and Finder stay as homepage anchors — those
+ * sections live only on the homepage.
  *
  * @return array Each item: label, url, and optional children (label/url/desc).
  */
 function addlar_default_primary_links() {
 	return apply_filters( 'addlar_default_primary_links', array(
 		array( 'label' => __( 'Home', 'addlar' ), 'url' => '#top' ),
-		array( 'label' => __( 'About Us', 'addlar' ), 'url' => '#about' ),
+		array( 'label' => __( 'About Us', 'addlar' ), 'url' => addlar_nav_page_url( 'about-us', '#about' ) ),
 		array(
 			'label'    => __( 'Products', 'addlar' ),
-			'url'      => '#products',
+			'url'      => addlar_nav_page_url( 'products', '#products' ),
 			'children' => array(
-				array( 'label' => __( 'Engine Oil Additives', 'addlar' ), 'url' => '#products', 'desc' => __( 'Heavy Duty · Passenger Car · Motorcycle', 'addlar' ) ),
-				array( 'label' => __( 'Driveline Additives', 'addlar' ), 'url' => '#products', 'desc' => __( 'Gear · ATF · Manual · Off-Road', 'addlar' ) ),
-				array( 'label' => __( 'Marine Additives', 'addlar' ), 'url' => '#products', 'desc' => __( 'Trunk Piston · System · Cylinder', 'addlar' ) ),
-				array( 'label' => __( 'Industrial Additives', 'addlar' ), 'url' => '#products', 'desc' => __( 'Gear · Grease · Hydraulic · Slideway', 'addlar' ) ),
-				array( 'label' => __( 'Metalworking Fluids', 'addlar' ), 'url' => '#products', 'desc' => __( 'Neat Cutting · Soluble Oil', 'addlar' ) ),
-				array( 'label' => __( 'Lubricant Components', 'addlar' ), 'url' => '#packages', 'desc' => __( 'Detergents · Dispersants · VII · more', 'addlar' ) ),
+				array( 'label' => __( 'Engine Oil Additives', 'addlar' ), 'url' => addlar_product_category_link( 'Engine Oil Additive', '#products' ), 'desc' => __( 'Heavy Duty · Passenger Car · Motorcycle', 'addlar' ) ),
+				array( 'label' => __( 'Driveline Additives', 'addlar' ), 'url' => addlar_product_category_link( 'Driveline', '#products' ), 'desc' => __( 'Gear · ATF · Manual · Off-Road', 'addlar' ) ),
+				array( 'label' => __( 'Marine Additives', 'addlar' ), 'url' => addlar_product_category_link( 'Marine', '#products' ), 'desc' => __( 'Trunk Piston · System · Cylinder', 'addlar' ) ),
+				array( 'label' => __( 'Industrial Additives', 'addlar' ), 'url' => addlar_product_category_link( 'Industrial', '#products' ), 'desc' => __( 'Gear · Grease · Hydraulic · Slideway', 'addlar' ) ),
+				array( 'label' => __( 'Metalworking Fluids', 'addlar' ), 'url' => addlar_product_category_link( 'Metal Working Fluid', '#products' ), 'desc' => __( 'Neat Cutting · Soluble Oil', 'addlar' ) ),
+				array( 'label' => __( 'Lubricant Components', 'addlar' ), 'url' => addlar_product_category_link( 'Lubricant Component', '#packages' ), 'desc' => __( 'Detergents · Dispersants · VII · more', 'addlar' ) ),
 			),
 		),
 		array( 'label' => __( 'Applications', 'addlar' ), 'url' => '#applications' ),
 		array( 'label' => __( 'Finder', 'addlar' ), 'url' => '#finder' ),
-		array( 'label' => __( 'Contact Us', 'addlar' ), 'url' => '#contact' ),
+		array( 'label' => __( 'Contact Us', 'addlar' ), 'url' => addlar_nav_page_url( 'contact-us', '#contact' ) ),
 	) );
 }
 
@@ -45,22 +65,22 @@ function addlar_default_primary_links() {
 function addlar_default_footer_links( $location ) {
 	$sets = apply_filters( 'addlar_default_footer_links', array(
 		'footer-1' => array(
-			array( 'label' => __( 'About Us', 'addlar' ), 'url' => '#about' ),
-			array( 'label' => __( 'Products info', 'addlar' ), 'url' => '#products' ),
+			array( 'label' => __( 'About Us', 'addlar' ), 'url' => addlar_nav_page_url( 'about-us', '#about' ) ),
+			array( 'label' => __( 'Products info', 'addlar' ), 'url' => addlar_nav_page_url( 'products', '#products' ) ),
 			array( 'label' => __( 'Applications', 'addlar' ), 'url' => '#applications' ),
-			array( 'label' => __( 'Contact', 'addlar' ), 'url' => '#contact' ),
+			array( 'label' => __( 'Contact', 'addlar' ), 'url' => addlar_nav_page_url( 'contact-us', '#contact' ) ),
 		),
 		'footer-2' => array(
-			array( 'label' => __( 'Ask the Experts', 'addlar' ), 'url' => '#finder' ),
+			array( 'label' => __( 'Ask the Experts', 'addlar' ), 'url' => addlar_nav_page_url( 'ask-the-expert', '#finder' ) ),
 			array( 'label' => __( "ADDLAR's Presence", 'addlar' ), 'url' => '#numbers' ),
 			array( 'label' => __( "ADDLAR's Values", 'addlar' ), 'url' => '#why' ),
 			array( 'label' => __( "ADDLAR's Portfolio", 'addlar' ), 'url' => '#packages' ),
 		),
 		'footer-3' => array(
-			array( 'label' => __( 'Distribution', 'addlar' ), 'url' => '#products' ),
-			array( 'label' => __( 'Manufacturing', 'addlar' ), 'url' => '#about' ),
+			array( 'label' => __( 'Distribution', 'addlar' ), 'url' => addlar_nav_page_url( 'products', '#products' ) ),
+			array( 'label' => __( 'Manufacturing', 'addlar' ), 'url' => addlar_nav_page_url( 'about-us', '#about' ) ),
 			array( 'label' => __( 'Technical Support', 'addlar' ), 'url' => '#applications' ),
-			array( 'label' => __( 'Consultancy', 'addlar' ), 'url' => '#contact' ),
+			array( 'label' => __( 'Consultancy', 'addlar' ), 'url' => addlar_nav_page_url( 'contact-us', '#contact' ) ),
 		),
 		'legal'    => array(
 			array( 'label' => __( 'Privacy Policy', 'addlar' ), 'url' => '#' ),
