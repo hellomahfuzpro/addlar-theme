@@ -3,6 +3,36 @@
 All notable changes to the ADDLAR theme. Keep the top version in sync with
 `Version:` in `style.css` — the updater reads it from there.
 
+## [1.5.1] — 2026-08-19
+
+### Fixed
+- **The dashboard never offered theme updates, so every release had to be
+  uploaded by hand.** The updater was written as opt-in: `addlar_github_repo()`
+  defaulted to an empty string and `addlar_updates_enabled()` therefore
+  returned false, so the update checker never booted — silently, by design,
+  waiting for an `ADDLAR_GITHUB_REPO` constant in `wp-config.php` that was
+  never added on the live site. It now defaults to the theme's real
+  repository (`ADDLAR_GITHUB_REPO_DEFAULT`), still overridable per install
+  by the same constant/option/filter, and settable to an empty string to
+  turn updates off deliberately.
+  Verified separately that nothing else in the chain was at fault: the
+  update-checker library is committed and does ship inside the release zip
+  (128 files), the repo is public, and the latest release is a published
+  (non-draft) `v1.5.x` tag with `addlar.zip` attached.
+- The update slug is now derived from the theme's actual directory name
+  rather than the hardcoded string `addlar`, so an install whose folder was
+  named differently can still receive updates.
+
+### Added
+- **Tools → ADDLAR setup → Theme updates**: shows installed version, update
+  source, whether updates are enabled, and the theme folder name, plus a
+  "Check for updates now" button that bypasses the update checker's cache.
+  The previous failure was invisible from the admin; this makes it legible.
+
+> **One last manual upload.** The install currently running still has the old
+> opt-in updater, so it cannot discover this fix on its own. Upload v1.5.1
+> once by hand — after that, releases appear under Appearance → Themes.
+
 ## [1.5.0] — 2026-08-19
 
 Product pages rebuilt again, this time changing where content *lives*, not

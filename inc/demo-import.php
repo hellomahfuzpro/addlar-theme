@@ -1645,6 +1645,32 @@ function addlar_tools_page_render() {
 		$flush_notice = __( 'Permalinks flushed.', 'addlar' );
 	}
 
+	$update_notice = '';
+	if ( isset( $_POST['addlar_check_updates'] ) && check_admin_referer( 'addlar_check_updates_action' ) ) {
+		$checker = function_exists( 'addlar_updater' ) ? addlar_updater() : null;
+		if ( ! $checker ) {
+			$update_notice = __( 'Updates are switched off for this install (no repository configured).', 'addlar' );
+		} else {
+			// PUC caches results for hours; this forces a live request so the
+			// dashboard reflects a release published moments ago.
+			$checker->checkForUpdates();
+			$state  = $checker->getUpdateState();
+			$update = $state ? $state->getUpdate() : null;
+
+			if ( $update && ! empty( $update->version ) && version_compare( $update->version, ADDLAR_VERSION, '>' ) ) {
+				$update_notice = sprintf(
+					/* translators: 1: available version, 2: installed version */
+					__( 'Version %1$s is available (you have %2$s). Go to Appearance → Themes to install it.', 'addlar' ),
+					$update->version,
+					ADDLAR_VERSION
+				);
+			} else {
+				/* translators: %s: installed version */
+				$update_notice = sprintf( __( 'No update found — %s is the latest published release.', 'addlar' ), ADDLAR_VERSION );
+			}
+		}
+	}
+
 	$category_mode_notice = '';
 	if ( isset( $_POST['addlar_category_mode'] ) && check_admin_referer( 'addlar_category_mode_action' ) ) {
 		$mode = 'coded' === sanitize_key( wp_unslash( $_POST['addlar_category_mode'] ) ) ? 'coded' : 'elementor';
@@ -1691,6 +1717,48 @@ function addlar_tools_page_render() {
 	echo '<form method="post">';
 	wp_nonce_field( 'addlar_flush_action' );
 	submit_button( __( 'Flush permalinks', 'addlar' ), 'secondary', 'addlar_flush' );
+	echo '</form>';
+
+	echo '<hr>';
+
+	/* ------------------------------------------------------------ updates */
+	echo '<h2>' . esc_html__( 'Theme updates', 'addlar' ) . '</h2>';
+	if ( $update_notice ) {
+		echo '<div class="notice notice-success"><p>' . esc_html( $update_notice ) . '</p></div>';
+	}
+
+	$repo    = function_exists( 'addlar_github_repo' ) ? addlar_github_repo() : '';
+	$enabled = function_exists( 'addlar_updates_enabled' ) && addlar_updates_enabled();
+
+	echo '<table class="widefat striped" style="max-width:720px;margin-bottom:14px;"><tbody>';
+	printf(
+		'<tr><td style="width:220px;"><strong>%s</strong></td><td>%s</td></tr>',
+		esc_html__( 'Installed version', 'addlar' ),
+		esc_html( ADDLAR_VERSION )
+	);
+	printf(
+		'<tr><td><strong>%s</strong></td><td>%s</td></tr>',
+		esc_html__( 'Update source', 'addlar' ),
+		$repo ? esc_html( $repo ) : '<em>' . esc_html__( 'not configured', 'addlar' ) . '</em>'
+	);
+	printf(
+		'<tr><td><strong>%s</strong></td><td>%s</td></tr>',
+		esc_html__( 'Status', 'addlar' ),
+		$enabled
+			? '<span style="color:#007017;">' . esc_html__( 'Enabled — updates appear under Appearance → Themes', 'addlar' ) . '</span>'
+			: '<span style="color:#b32d2e;">' . esc_html__( 'Disabled — no updates will ever be offered', 'addlar' ) . '</span>'
+	);
+	printf(
+		'<tr><td><strong>%s</strong></td><td><code>%s</code></td></tr>',
+		esc_html__( 'Theme folder', 'addlar' ),
+		esc_html( basename( ADDLAR_DIR ) )
+	);
+	echo '</tbody></table>';
+
+	echo '<p>' . esc_html__( 'Updates come from GitHub Releases that have a .zip attached — pushing code alone never triggers one. WordPress only checks periodically, so use this button to check immediately after a release is published.', 'addlar' ) . '</p>';
+	echo '<form method="post">';
+	wp_nonce_field( 'addlar_check_updates_action' );
+	submit_button( __( 'Check for updates now', 'addlar' ), 'secondary', 'addlar_check_updates' );
 	echo '</form>';
 
 	echo '<hr>';
