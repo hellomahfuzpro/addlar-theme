@@ -1,11 +1,11 @@
 <?php
 /**
- * Coded fallback for a single product — only renders if Elementor Pro's
- * Theme Builder single-product template (seeded by
- * addlar_seed_product_theme_builder_template() in inc/demo-import.php)
- * isn't active. Mirrors the same content/order as that template, using the
- * same pre-rendered `_addlar_*_html` fragments (inc/products-render.php)
- * so the two never show materially different data.
+ * Coded fallback for a single product — only renders if the product's own
+ * standalone Elementor page (seeded per-post by addlar_seed_products() in
+ * inc/demo-import.php) has no `_elementor_data`, e.g. Elementor is
+ * deactivated. Mirrors the same content/order as that page, using the same
+ * pre-rendered `_addlar_*_html` fragments (inc/products-render.php) so the
+ * two never show materially different data.
  *
  * @package Addlar
  */

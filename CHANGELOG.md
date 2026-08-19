@@ -3,6 +3,51 @@
 All notable changes to the ADDLAR theme. Keep the top version in sync with
 `Version:` in `style.css` — the updater reads it from there.
 
+## [1.2.0] — 2026-08-19
+
+### Changed
+- **Product pages redesigned and re-architected.** Client feedback against
+  real competitor references (Afton Chemical, Lubimax) called for a visual,
+  photo-forward layout instead of a plain data page, and for each product
+  to be individually Elementor-editable rather than governed by one shared
+  Theme Builder template. Every one of the 22 products is now seeded as its
+  own standalone page (`addlar_seed_products()`), openable directly in
+  Elementor, with a two-column spec hero (real product photo + title/spec/
+  CTA) and a "Key Performance Benefits" checklist box above the existing
+  data tables.
+- Real product photography: 7 of the 22 products use their actual LinkedIn
+  campaign graphic (downloaded from the client's Drive), imported as the
+  post's featured image; the other 15 use their category's stock photo as a
+  documented fallback rather than a blank space.
+- The old shared "ADDLAR Product — Single" Theme Builder template is
+  trashed on re-seed (`addlar_remove_stale_product_template()`) — Theme
+  Builder's condition would otherwise silently keep overriding every
+  product's new standalone content.
+- About Us, Contact Us and Ask the Expert are fully designed pages, not
+  placeholders — About Us uses the client's own copy (Drive: `Content/About
+  Us Page.docx`); Contact Us and Ask the Expert have a real, working
+  contact form (`inc/contact-form.php`, plain HTML + `wp_mail()`, no form
+  plugin) using the exact field set proposed in the client's own
+  requirements survey.
+
+### Added
+- 5 new widgets: `ProductSpecHeader` (redesigned), `ProductBenefits`,
+  `RichText`, `ImageGrid`, `ContactInfo`, `ContactForm` — all
+  `.adl`-scoped, reading post meta directly rather than via Dynamic Tags.
+- `addlar_product_benefit_bullets()`: derives the benefits-box bullets from
+  data already transcribed for each product (a real application, the real
+  spec string, a real count of approvals/performance levels) — never an
+  invented performance claim.
+
+### Known gap
+- 2 of the 22 products (7750, 9300) have a real marketing graphic only as a
+  multi-slide PDF carousel, not a single image — not imported this pass;
+  they use their category's stock photo like the other 13 without one.
+- The client's About Us copy states the HQ is in Dubai; the theme's own
+  Phase 1 Customizer default (still live everywhere else on the site) says
+  Sharjah. Flagged, not silently resolved — see the page's own content vs.
+  `addlar_mod('addlar_address')`.
+
 ## [1.1.1] — 2026-08-17
 
 ### Fixed

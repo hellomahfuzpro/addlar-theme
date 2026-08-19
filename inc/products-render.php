@@ -246,6 +246,68 @@ function addlar_render_all_product_fragments( $post_id ) {
 }
 
 /**
+ * "Key Performance Benefits" bullets for the product page's checklist box
+ * (see widgets/class-product-benefits.php) — modelled on the reference
+ * competitor pages the client asked to match, which lead with a short,
+ * scannable benefits list above the technical tables.
+ *
+ * Every bullet here is a restatement of a fact already present in this
+ * product's own transcribed data (a real application line, the real spec
+ * string, a real count of approvals/performance levels) — never an invented
+ * performance claim. Products vary in which facts they have (a raw
+ * component like Z 2612 has applications but no performance table; 9342 has
+ * neither approvals nor applications), so this degrades gracefully rather
+ * than assuming every product has the same shape of content.
+ *
+ * @param int $post_id addlar_product post ID.
+ * @param int $limit   Maximum bullets to return.
+ * @return array
+ */
+function addlar_product_benefit_bullets( $post_id, $limit = 6 ) {
+	$bullets = array();
+
+	$applications = addlar_product_line_list( get_post_meta( $post_id, '_addlar_applications_text', true ) );
+	foreach ( array_slice( $applications, 0, 4 ) as $app ) {
+		$bullets[] = sprintf(
+			/* translators: %s: an application/use-case line from the product's own PDS */
+			__( 'Formulated for %s', 'addlar' ),
+			$app
+		);
+	}
+
+	$spec = trim( (string) get_post_meta( $post_id, '_addlar_spec_string', true ) );
+	if ( $spec ) {
+		/* translators: %s: the product's real specification string */
+		$bullets[] = sprintf( __( 'Meets %s', 'addlar' ), $spec );
+	}
+
+	$approvals = addlar_product_line_list( get_post_meta( $post_id, '_addlar_approvals_text', true ) );
+	if ( $approvals ) {
+		$bullets[] = sprintf(
+			/* translators: %d: number of real OEM/industry approvals listed in this product's PDS */
+			_n( 'Backed by %d OEM & industry approval', 'Backed by %d OEM & industry approvals', count( $approvals ), 'addlar' ),
+			count( $approvals )
+		);
+	}
+
+	$rows = addlar_product_table_rows( get_post_meta( $post_id, '_addlar_performance_rows_text', true ) );
+	if ( $rows ) {
+		$bullets[] = sprintf(
+			/* translators: %d: number of real graded performance levels in this product's PDS */
+			_n( 'Available across %d performance level', 'Available across %d performance levels', count( $rows ), 'addlar' ),
+			count( $rows )
+		);
+	}
+
+	$viscosity = trim( (string) get_post_meta( $post_id, '_addlar_viscosity_note', true ) );
+	if ( $viscosity ) {
+		$bullets[] = __( 'Formulated across multiple viscosity grades', 'addlar' );
+	}
+
+	return array_slice( $bullets, 0, $limit );
+}
+
+/**
  * code => permalink for every published addlar_product, keyed by the
  * product's bare code (`_addlar_code` meta, e.g. "7375", "KC420", "Z 2612" —
  * no "ADDLAR" prefix, matching how codes appear in the Finder's textarea

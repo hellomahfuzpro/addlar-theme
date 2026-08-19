@@ -119,6 +119,17 @@ function addlar_image_slots() {
 		'mark'         => 'addlar-mark.png',
 		'mark-white'   => 'addlar-mark-white.png',
 		'logo'         => 'logo.png',
+		// Real LinkedIn campaign graphics — 7 of the 22 real products have one
+		// (2 more exist as multi-slide PDF carousels, not single images, and
+		// aren't wired up yet). The other 15 products fall back to their
+		// category's stock photo — see addlar_product_hero_image().
+		'product-7375'  => 'products/7375.png',
+		'product-7395'  => 'products/7395.png',
+		'product-9100'  => 'products/9100.png',
+		'product-9200'  => 'products/9200.png',
+		'product-9312'  => 'products/9312.png',
+		'product-9342'  => 'products/9342.png',
+		'product-z2612' => 'products/z2612.png',
 	) );
 }
 
@@ -375,6 +386,58 @@ function addlar_product_category_link( $term_name, $fallback ) {
 	}
 	$link = get_term_link( $term );
 	return is_wp_error( $link ) ? $fallback : $link;
+}
+
+/** Bare product code => image slot, for the 7 products with a real campaign graphic. */
+function addlar_product_photo_slots() {
+	return array(
+		'7375'   => 'product-7375',
+		'7395'   => 'product-7395',
+		'9100'   => 'product-9100',
+		'9200'   => 'product-9200',
+		'9312'   => 'product-9312',
+		'9342'   => 'product-9342',
+		'Z 2612' => 'product-z2612',
+	);
+}
+
+/** Category name => the homepage's stock-photo slot for that family. */
+function addlar_category_image_slots() {
+	return array(
+		'Engine Oil Additive' => 'engine-oil',
+		'Driveline'           => 'driveline',
+		'Marine'              => 'marine',
+		'Industrial'          => 'industrial',
+		'Metal Working Fluid' => 'metalworking',
+		'Lubricant Component' => 'components',
+	);
+}
+
+/**
+ * Resolve one product's hero image: its own real campaign graphic if it has
+ * one (7 of the 22 do — see addlar_product_photo_slots()), otherwise its
+ * category's stock photo, so every product page gets a real, on-brand image
+ * rather than a blank space.
+ *
+ * @param string $code     Bare product code.
+ * @param string $category Category name.
+ * @return array Elementor media value, or empty array.
+ */
+function addlar_product_hero_image( $code, $category ) {
+	$photo_slots = addlar_product_photo_slots();
+	if ( isset( $photo_slots[ $code ] ) ) {
+		$img = addlar_seed_image( $photo_slots[ $code ] );
+		if ( ! empty( $img['id'] ) ) {
+			return $img;
+		}
+	}
+
+	$cat_slots = addlar_category_image_slots();
+	if ( isset( $cat_slots[ $category ] ) ) {
+		return addlar_seed_image( $cat_slots[ $category ] );
+	}
+
+	return array();
 }
 
 /** Product cards with their images. */
@@ -639,6 +702,20 @@ function addlar_seed_products() {
 
 		addlar_render_all_product_fragments( $post_id );
 
+		$hero = addlar_product_hero_image( $code, $p['category'] );
+		if ( ! empty( $hero['id'] ) ) {
+			set_post_thumbnail( $post_id, (int) $hero['id'] );
+		}
+
+		// Each product is its own standalone, individually Elementor-editable
+		// page (client's explicit request) — not one shared Theme Builder
+		// template. Re-seeding overwrites manual edits, same "safe to re-run,
+		// but re-running replaces the layout" contract as the homepage.
+		if ( did_action( 'elementor/loaded' ) ) {
+			$tree = addlar_build_tree( addlar_product_template_widgets() );
+			addlar_save_page( $post_id, $tree, false );
+		}
+
 		$count++;
 	}
 
@@ -646,20 +723,40 @@ function addlar_seed_products() {
 }
 
 /**
- * The single-product Theme Builder template's widget list.
+ * Elementor only offers "Edit with Elementor" on post types it's been told
+ * support it. Forced here (rather than left to Elementor Settings → Post
+ * Types, a manual step someone could forget) so every addlar_product post
+ * is individually editable the moment products are seeded.
+ */
+function addlar_enable_elementor_for_products() {
+	$supported = get_option( 'elementor_cpt_support', array( 'page', 'post' ) );
+	if ( ! in_array( 'addlar_product', (array) $supported, true ) ) {
+		$supported[] = 'addlar_product';
+		update_option( 'elementor_cpt_support', $supported );
+	}
+}
+add_action( 'init', 'addlar_enable_elementor_for_products', 20 );
+
+/**
+ * Each product's widget list — seeded onto every addlar_product post
+ * individually (addlar_seed_products() below), not one shared Theme
+ * Builder template. Two earlier iterations are worth recording:
  *
- * First cut of this used Elementor's native Post Title / Featured Image /
- * Text Editor / HTML / Posts widgets, bound via Dynamic Tags. Live testing
- * showed the real problem with that approach: none of those native widgets
- * get this theme's `.adl` scope wrapper (only Addlar_Base_Widget subclasses
- * do, via open_section()/close_section() — see header.php's comment on why
- * `.adl` is deliberately NOT opened around page content generally), so they
- * rendered with zero theme CSS, and the native Posts widget's default skin
- * doesn't match the design at all. Rebuilt entirely on custom widgets
- * (widgets/class-product-spec-header.php, class-product-fragment.php,
- * class-related-products.php) that read the current product's post meta
- * directly via PHP at render time — simpler than Dynamic Tags and
- * self-styling by construction.
+ * 1. Elementor's native Post Title / Featured Image / Text Editor / HTML /
+ *    Posts widgets, bound via Dynamic Tags, inside a single shared Theme
+ *    Builder template. None of those native widgets get this theme's `.adl`
+ *    scope wrapper (only Addlar_Base_Widget subclasses do), so they
+ *    rendered with zero theme CSS, and the native Posts widget's default
+ *    skin didn't match the design.
+ * 2. A shared Theme Builder template rebuilt on the custom widgets below —
+ *    correctly styled, but one fixed layout applied to all 22 products,
+ *    and not individually editable in Elementor per product.
+ *
+ * The client asked for each product to be a standalone, individually
+ * Elementor-editable page with a real product photo and a "Key Performance
+ * Benefits" box (matching the reference competitor pages), which needs
+ * per-post content, not a shared template — hence seeding this same widget
+ * list onto each post's own `_elementor_data` instead.
  *
  * @return array
  */
@@ -670,6 +767,7 @@ function addlar_product_template_widgets() {
 
 	return array(
 		array( 'type' => 'addlar_product_spec_header', 'settings' => array() ),
+		array( 'type' => 'addlar_product_benefits', 'settings' => array() ),
 		$fragment( 'description' ),
 		$fragment( 'applications' ),
 		$fragment( 'performance' ),
@@ -805,18 +903,26 @@ function addlar_seed_theme_builder_template( $title, $type, array $conditions, a
 }
 
 /**
- * Seed the single-product Elementor Theme Builder template, conditioned to
- * the addlar_product post type.
+ * Trash the "ADDLAR Product — Single" Theme Builder template from the
+ * previous iteration of this build, if it's still there.
  *
- * @return array template_id + message
+ * Theme Builder's "single" condition template takes precedence over a
+ * post's own individual `_elementor_data` — so if that old shared template
+ * (and its `include/post_type/addlar_product` condition) is left active,
+ * it silently overrides every product's new standalone page and nothing
+ * from addlar_seed_products()'s per-post seeding would ever actually show.
+ * Trashed rather than force-deleted, so it's recoverable if this is wrong
+ * for some install.
+ *
+ * @return bool True if a stale template was found and trashed.
  */
-function addlar_seed_product_theme_builder_template() {
-	return addlar_seed_theme_builder_template(
-		'ADDLAR Product — Single',
-		'single',
-		array( 'include/post_type/addlar_product' ),
-		addlar_product_template_widgets()
-	);
+function addlar_remove_stale_product_template() {
+	$post = addlar_find_post_by_title( 'ADDLAR Product — Single', 'elementor_library' );
+	if ( ! $post ) {
+		return false;
+	}
+	wp_trash_post( $post->ID );
+	return true;
 }
 
 /**
@@ -883,8 +989,17 @@ function addlar_seed_products_overview_page() {
 	return array( 'page_id' => $page_id, 'message' => __( 'Products overview page seeded.', 'addlar' ) );
 }
 
-/** One minimal placeholder page: heading, one line, the closing CTA. */
-function addlar_seed_stub_page( $slug, $title, $lede ) {
+/**
+ * Find-or-create a Page by slug, build its Elementor tree from a widget
+ * list, and save it — the shared boilerplate behind every non-homepage
+ * page seeder (Products overview, About Us, Contact Us, Ask the Expert).
+ *
+ * @param string $slug    Page slug.
+ * @param string $title   Page title.
+ * @param array  $widgets Widget list for addlar_build_tree().
+ * @return int Page ID, or 0 on failure.
+ */
+function addlar_seed_page( $slug, $title, array $widgets ) {
 	$existing = get_page_by_path( $slug, OBJECT, 'page' );
 	$page_id  = $existing ? $existing->ID : 0;
 
@@ -904,48 +1019,215 @@ function addlar_seed_stub_page( $slug, $title, $lede ) {
 		return 0;
 	}
 
-	$tree = addlar_build_tree( array(
-		array(
-			'type'     => 'addlar_page_intro',
-			'settings' => array( 'title' => $title, 'lede' => $lede ),
-		),
-		array(
-			'type'     => 'addlar_closing_cta',
-			'settings' => array( 'bg' => addlar_seed_image( 'cta' ) ),
-		),
-	) );
+	$tree = addlar_build_tree( $widgets );
 	addlar_save_page( $page_id, $tree, false );
 
 	return $page_id;
 }
 
 /**
- * About Us, Contact Us and Ask the Expert as minimal placeholder pages —
- * real URLs claimed now, full content a later pass (confirmed scope). Blog
- * is WP's native "Posts page" mechanism: a page assigned via
- * `page_for_posts`, no Elementor content and no posts to seed — the
- * existing index.php fallback already renders an empty state.
+ * About Us — built from the client's own copy (Drive:
+ * `Content/About Us Page.docx`), not placeholder text. Structure follows
+ * the client's Web Design blueprint for this page: intro, an image band of
+ * the industries ADDLAR serves, the "ADDLAR Advantage" section, three
+ * reasons to choose Rchemie (reusing the existing Why List widget), and a
+ * closing CTA into Contact Us.
+ *
+ * The source doc states the HQ is in Dubai; the theme's own Customizer
+ * default (set in Phase 1, still live) says Sharjah. That conflict is
+ * flagged, not silently resolved — see the Phase 2 chat notes — so this
+ * page's prose uses the doc's own wording verbatim rather than editing the
+ * client's copy, while every other page keeps reading the already-approved
+ * addlar_mod('addlar_address').
+ *
+ * @return int Page ID.
+ */
+function addlar_seed_about_page() {
+	$industries = array(
+		array( 'slot' => 'engine-oil',   'caption' => __( 'Automotive', 'addlar' ) ),
+		array( 'slot' => 'driveline',    'caption' => __( 'Driveline', 'addlar' ) ),
+		array( 'slot' => 'marine',       'caption' => __( 'Marine', 'addlar' ) ),
+		array( 'slot' => 'industrial',   'caption' => __( 'Industrial', 'addlar' ) ),
+		array( 'slot' => 'metalworking', 'caption' => __( 'Metalworking', 'addlar' ) ),
+		array( 'slot' => 'components',   'caption' => __( 'Lubricant Components', 'addlar' ) ),
+	);
+	$industry_items = array();
+	foreach ( $industries as $row ) {
+		$industry_items[] = array( 'image' => addlar_seed_image( $row['slot'] ), 'caption' => $row['caption'], 'link' => array( 'url' => '' ) );
+	}
+
+	$why_rows = array(
+		array(
+			'lbl'   => __( 'Quality', 'addlar' ),
+			'title' => __( 'Uncompromising Quality Assurance', 'addlar' ),
+			'text'  => __( 'Quality is not just a metric; it is our promise. Rchemie operates under rigorous quality control protocols. Every batch of ADDLAR additives undergoes exhaustive testing to guarantee absolute batch-to-batch consistency and peak operational safety.', 'addlar' ),
+			'image' => addlar_seed_image( 'about' ),
+		),
+		array(
+			'lbl'   => __( 'Expertise', 'addlar' ),
+			'title' => __( 'Elite Technical Expertise', 'addlar' ),
+			'text'  => __( "We don't just sell chemical components — we provide solutions. Our team of seasoned chemical professionals and engineers works closely with clients, offering expert technical guidance, custom formulation consultation, and ongoing application support.", 'addlar' ),
+			'image' => addlar_seed_image( 'industrial' ),
+		),
+		array(
+			'lbl'   => __( 'Service', 'addlar' ),
+			'title' => __( 'Reliable Customer Service & Agile Supply Chain', 'addlar' ),
+			'text'  => __( 'We understand that downtime is costly. Operating from a strategic global logistics hub, we prioritise long-term client relationships through highly personalised service, transparent communication, and dependable, on-time delivery.', 'addlar' ),
+			'image' => addlar_seed_image( 'driveline' ),
+		),
+	);
+
+	return addlar_seed_page( 'about-us', __( 'About Us', 'addlar' ), array(
+		array(
+			'type'     => 'addlar_page_intro',
+			'settings' => array(
+				'eyebrow' => __( 'About Us', 'addlar' ),
+				'title'   => __( 'About ADDLAR & Rchemie International', 'addlar' ),
+				'lede'    => __( 'For over two decades, Rchemie International has stood as a premier chemical powerhouse and a trusted global supply chain partner.', 'addlar' ),
+			),
+		),
+		array(
+			'type'     => 'addlar_rich_text',
+			'settings' => array(
+				'body' => '<p>' . esc_html__( 'For over two decades, Rchemie International has stood as a premier chemical powerhouse and a trusted supply chain partner globally. Headquartered in Dubai, United Arab Emirates, we have dedicated the last 20 years to supporting the growth, development, and operational efficiency of heavy industries across the UAE and beyond.', 'addlar' ) . '</p>'
+					. '<p>' . esc_html__( 'ADDLAR is Rchemie\'s flagship brand of high-performance lubricant additive packages. It represents the pinnacle of our chemical engineering capabilities — designed to meet the rapidly evolving, high-stress demands of modern automotive, industrial, and marine machinery.', 'addlar' ) . '</p>',
+			),
+		),
+		array(
+			'type'     => 'addlar_image_grid',
+			'settings' => array(
+				'soft'    => 'yes',
+				'eyebrow' => __( 'Industries We Serve', 'addlar' ),
+				'title'   => __( 'Wherever fluids do critical work', 'addlar' ),
+				'items'   => addlar_rep( $industry_items ),
+			),
+		),
+		array(
+			'type'     => 'addlar_rich_text',
+			'settings' => array(
+				'eyebrow' => __( 'The ADDLAR Advantage', 'addlar' ),
+				'title'   => __( 'Comprehensive Package. Complexity, Simplified.', 'addlar' ),
+				'body'    => '<p>' . esc_html__( 'In the world of fluid engineering, balancing individual components can be a logistical and technical challenge. ADDLAR eliminates this complexity. We formulate and manufacture complete, all-in-one additive packages that integrate multiple critical chemical components into a single, perfectly balanced formulation:', 'addlar' ) . '</p>'
+					. '<ul>'
+					. '<li><strong>' . esc_html__( 'Detergents & Dispersants:', 'addlar' ) . '</strong> ' . esc_html__( 'Engineered to prevent sludge buildup and maintain pristine engine cleanliness.', 'addlar' ) . '</li>'
+					. '<li><strong>' . esc_html__( 'Anti-Wear Agents & Friction Modifiers:', 'addlar' ) . '</strong> ' . esc_html__( 'Designed to form a resilient chemical barrier, minimizing mechanical drag and metal-on-metal wear.', 'addlar' ) . '</li>'
+					. '<li><strong>' . esc_html__( 'High-Tier Antioxidants:', 'addlar' ) . '</strong> ' . esc_html__( 'Formulated to resist thermal breakdown, extending oil life and protecting machinery under extreme temperatures.', 'addlar' ) . '</li>'
+					. '</ul>'
+					. '<h3>' . esc_html__( 'Global Compliance by Design', 'addlar' ) . '</h3>'
+					. '<p>' . esc_html__( 'Whether you require high-performance Passenger Car Motor Oils (PCMO), heavy-duty diesel formulations, or specialized marine solutions, ADDLAR is precision-engineered to deliver. Every package we manufacture is strictly tested to meet or exceed the world\'s most rigorous industry benchmarks, including API, ACEA, ILSAC, and JASO standards.', 'addlar' ) . '</p>',
+			),
+		),
+		array(
+			'type'     => 'addlar_why_list',
+			'settings' => array(
+				'anchor'  => 'why-rchemie',
+				'eyebrow' => __( 'Why Rchemie', 'addlar' ),
+				'title'   => __( 'Why Leading Industries Choose Rchemie', 'addlar' ),
+				'lede'    => __( 'Our reputation as a market leader is built upon three unwavering pillars of corporate excellence.', 'addlar' ),
+				'rows'    => addlar_rep( $why_rows ),
+			),
+		),
+		array(
+			'type'     => 'addlar_closing_cta',
+			'settings' => array(
+				'anchor'   => 'partner',
+				'bg'       => addlar_seed_image( 'cta' ),
+				'eyebrow'  => __( 'Partner With Us Today', 'addlar' ),
+				'title'    => __( 'Discover how ADDLAR can elevate your formulations', 'addlar' ),
+				'text'     => __( 'Looking for specific formulations, technical support, or ready to partner with our Dubai-based team? We\'d love to hear from you.', 'addlar' ),
+				'btn_text' => __( 'Get in touch →', 'addlar' ),
+				'btn_link' => array( 'url' => '/contact-us/' ),
+				'maps'     => array(),
+			),
+		),
+	) );
+}
+
+/**
+ * Contact Us — real channels only (addlar_mod('addlar_email') /
+ * ('addlar_address') / ('addlar_website'), already configured in Phase 1),
+ * plus a working contact form (Baskar Palani's proposed field set — see
+ * inc/contact-form.php). No manufacturing/sales street address is
+ * fabricated; the client's Drive content only confirms a city-level HQ.
+ *
+ * @return int Page ID.
+ */
+function addlar_seed_contact_page() {
+	return addlar_seed_page( 'contact-us', __( 'Contact Us', 'addlar' ), array(
+		array(
+			'type'     => 'addlar_page_intro',
+			'settings' => array(
+				'eyebrow' => __( 'Contact Us', 'addlar' ),
+				'title'   => __( 'Get in Touch', 'addlar' ),
+				'lede'    => __( "Have a question about ADDLAR's additive packages, need a data sheet, or want to discuss a formulation? Reach us directly below.", 'addlar' ),
+			),
+		),
+		array(
+			'type'     => 'addlar_contact_info',
+			'settings' => array(
+				'items' => addlar_rep( array(
+					array( 'icon' => 'mail', 'label' => __( 'Email', 'addlar' ), 'value' => addlar_mod( 'addlar_email' ), 'link' => array( 'url' => 'mailto:' . addlar_mod( 'addlar_email' ) ) ),
+					array( 'icon' => 'pin', 'label' => __( 'Headquarters', 'addlar' ), 'value' => addlar_mod( 'addlar_address' ), 'link' => array( 'url' => '' ) ),
+					array( 'icon' => 'globe', 'label' => __( 'Parent company', 'addlar' ), 'value' => addlar_mod( 'addlar_website' ), 'link' => array( 'url' => addlar_mod( 'addlar_website' ) ) ),
+				) ),
+			),
+		),
+		array(
+			'type'     => 'addlar_contact_form',
+			'settings' => array( 'preset' => 'contact', 'submit_label' => __( 'Send message →', 'addlar' ) ),
+		),
+	) );
+}
+
+/**
+ * Ask the Expert — an inquiry form (client blueprint: "Inquiry Form" +
+ * "Whitepaper discussion blog articles", the latter deferred to the Blog
+ * pass since there's no blog content yet) pointing readers to the real
+ * ADDLAR LinkedIn showcase in the meantime.
+ *
+ * @return int Page ID.
+ */
+function addlar_seed_ask_the_expert_page() {
+	return addlar_seed_page( 'ask-the-expert', __( 'Ask the Expert', 'addlar' ), array(
+		array(
+			'type'     => 'addlar_page_intro',
+			'settings' => array(
+				'eyebrow' => __( 'Ask the Expert', 'addlar' ),
+				'title'   => __( 'Ask Our Technical Team', 'addlar' ),
+				'lede'    => __( 'Have a formulation or application question? Send it directly to our chemical engineers below.', 'addlar' ),
+			),
+		),
+		array(
+			'type'     => 'addlar_contact_form',
+			'settings' => array( 'preset' => 'expert', 'submit_label' => __( 'Ask your question →', 'addlar' ) ),
+		),
+		array(
+			'type'     => 'addlar_rich_text',
+			'settings' => array(
+				'soft' => 'yes',
+				'body' => '<p>' . sprintf(
+					/* translators: %s: linked ADDLAR LinkedIn showcase URL */
+					esc_html__( 'Looking for more technical reading in the meantime? Our latest formulation insights and whitepaper discussions are shared on %s.', 'addlar' ),
+					'<a href="' . esc_url( addlar_mod( 'addlar_linkedin_url' ) ) . '" target="_blank" rel="noopener">' . esc_html__( 'LinkedIn', 'addlar' ) . '</a>'
+				) . '</p>', // phpcs:ignore WordPress.Security.EscapeOutput -- sprintf'd from esc_html()/esc_url()'d parts only.
+			),
+		),
+	) );
+}
+
+/**
+ * Blog only, now — About Us, Contact Us and Ask the Expert are fully
+ * designed pages (addlar_seed_about_page(), addlar_seed_contact_page(),
+ * addlar_seed_ask_the_expert_page() below), not placeholders. Blog is WP's
+ * native "Posts page" mechanism: a page assigned via `page_for_posts`, no
+ * Elementor content and no posts to seed — the existing index.php fallback
+ * already renders an empty state, and there's no client content for a blog
+ * yet (deferred scope, unchanged).
  *
  * @return array slug => page_id
  */
 function addlar_seed_stub_pages() {
 	$ids = array();
-
-	$ids['about-us'] = addlar_seed_stub_page(
-		'about-us',
-		__( 'About Us', 'addlar' ),
-		__( 'ADDLAR’s full story is coming to this page shortly. In the meantime, explore our product range or get in touch.', 'addlar' )
-	);
-	$ids['contact-us'] = addlar_seed_stub_page(
-		'contact-us',
-		__( 'Contact Us', 'addlar' ),
-		__( 'Full contact details are coming to this page shortly. In the meantime, reach us below.', 'addlar' )
-	);
-	$ids['ask-the-expert'] = addlar_seed_stub_page(
-		'ask-the-expert',
-		__( 'Ask the Expert', 'addlar' ),
-		__( 'Have a formulation question? This page will soon let you ask our technical team directly. In the meantime, get in touch below.', 'addlar' )
-	);
 
 	$blog = get_page_by_path( 'blog', OBJECT, 'page' );
 	$blog_id = $blog ? $blog->ID : 0;
@@ -978,11 +1260,15 @@ function addlar_seed_products_and_pages() {
 		return array( 'message' => __( 'Elementor is not active — activate it first, then seed.', 'addlar' ) );
 	}
 
-	$product_count   = addlar_seed_products();
-	$single_template = addlar_seed_product_theme_builder_template();
-	$archive_template = addlar_seed_category_archive_theme_builder_template();
-	$overview        = addlar_seed_products_overview_page();
-	$stubs           = addlar_seed_stub_pages();
+	addlar_remove_stale_product_template();
+
+	$product_count     = addlar_seed_products();
+	$archive_template   = addlar_seed_category_archive_theme_builder_template();
+	$overview          = addlar_seed_products_overview_page();
+	$stubs             = addlar_seed_stub_pages();
+	$about             = addlar_seed_about_page();
+	$contact           = addlar_seed_contact_page();
+	$expert            = addlar_seed_ask_the_expert_page();
 
 	// New CPT + taxonomy rewrite rules (and the category archive URLs they
 	// enable) only take effect once WordPress's rewrite rules are
@@ -991,16 +1277,23 @@ function addlar_seed_products_and_pages() {
 	flush_rewrite_rules();
 
 	$message = sprintf(
-		/* translators: %d: number of products seeded */
-		__( '%d products seeded.', 'addlar' ),
+		/* translators: %d: number of products seeded, each its own standalone Elementor page */
+		__( '%d standalone product pages seeded.', 'addlar' ),
 		$product_count
-	) . ' ' . $single_template['message'] . ' ' . $archive_template['message'];
+	) . ' ' . $archive_template['message'];
 
 	if ( $overview['page_id'] ) {
 		$message .= ' <a href="' . esc_url( get_permalink( $overview['page_id'] ) ) . '">' . esc_html__( 'View Products page', 'addlar' ) . '</a>';
 	}
 
-	return array( 'message' => $message, 'stub_ids' => $stubs, 'overview_id' => $overview['page_id'] );
+	return array(
+		'message'     => $message,
+		'stub_ids'    => $stubs,
+		'overview_id' => $overview['page_id'],
+		'about_id'    => $about,
+		'contact_id'  => $contact,
+		'expert_id'   => $expert,
+	);
 }
 
 /* ------------------------------------------------------------ admin action */
@@ -1062,8 +1355,8 @@ function addlar_tools_page_render() {
 		echo '<div class="notice notice-success"><p>' . wp_kses_post( $products_notice ) . '</p></div>';
 	}
 
-	echo '<p>' . esc_html__( 'Builds the 22 real product pages (from the client’s Product Data Sheets), the product single and category archive Theme Builder templates, the Products landing page, and the About Us / Contact Us / Ask the Expert / Blog stub pages. Also flushes permalinks, so a new category archive URL works immediately instead of 404ing until Settings → Permalinks is re-saved by hand.', 'addlar' ) . '</p>';
-	echo '<p><strong>' . esc_html__( 'Safe to re-run', 'addlar' ) . '</strong> — ' . esc_html__( 'products and pages are matched by slug and updated in place, not duplicated.', 'addlar' ) . '</p>';
+	echo '<p>' . esc_html__( 'Builds the 22 real product pages (from the client’s Product Data Sheets) as individually standalone, Elementor-editable pages — each with its own real product photo and a Key Performance Benefits box. Also seeds the category archive Theme Builder template, the Products landing page, and fully designed About Us / Contact Us / Ask the Expert pages (Blog stays a placeholder — no client content for it yet). Flushes permalinks too, so a new category archive URL works immediately instead of 404ing until Settings → Permalinks is re-saved by hand.', 'addlar' ) . '</p>';
+	echo '<p><strong>' . esc_html__( 'Safe to re-run', 'addlar' ) . '</strong> — ' . esc_html__( 'products and pages are matched by slug and updated in place, not duplicated. Re-running replaces each product page\'s layout, so manual edits made directly in Elementor will be lost.', 'addlar' ) . '</p>';
 
 	echo '<form method="post">';
 	wp_nonce_field( 'addlar_seed_products_action' );
@@ -1083,20 +1376,12 @@ function addlar_tools_page_render() {
 
 	echo '<hr>';
 
-	echo '<h2>' . esc_html__( 'Export Theme Builder templates', 'addlar' ) . '</h2>';
-	echo '<p>' . esc_html__( 'Download either seeded template as an Elementor-importable .json file. Use Elementor\'s own Templates → Saved Templates → Import to bring it in as a fresh template, then set its display condition by hand there — that\'s the reliable way to fix a condition if the one seeded here isn\'t right, or to hand a starting point to someone editing this in the Elementor UI directly.', 'addlar' ) . '</p>';
+	echo '<h2>' . esc_html__( 'Export the category archive template', 'addlar' ) . '</h2>';
+	echo '<p>' . esc_html__( 'Each product page is now its own standalone Elementor page (open its edit screen and click "Edit with Elementor" directly — no shared template involved). The category archive is still one shared Theme Builder template, though; download it as an Elementor-importable .json below if you want to fix its display condition by hand or hand a starting point to someone editing it directly.', 'addlar' ) . '</p>';
 
-	$single_id  = addlar_find_template_id_by_title( 'ADDLAR Product — Single' );
 	$archive_id = addlar_find_template_id_by_title( 'ADDLAR Product — Category Archive' );
 
 	echo '<p>';
-	if ( $single_id ) {
-		$url = wp_nonce_url( admin_url( 'admin-post.php?action=addlar_export_template&template_id=' . $single_id ), 'addlar_export_template' );
-		echo '<a class="button" href="' . esc_url( $url ) . '">' . esc_html__( 'Export product single template', 'addlar' ) . '</a> ';
-	} else {
-		esc_html_e( 'Product single template not seeded yet.', 'addlar' );
-	}
-	echo '</p><p>';
 	if ( $archive_id ) {
 		$url = wp_nonce_url( admin_url( 'admin-post.php?action=addlar_export_template&template_id=' . $archive_id ), 'addlar_export_template' );
 		echo '<a class="button" href="' . esc_url( $url ) . '">' . esc_html__( 'Export category archive template', 'addlar' ) . '</a>';

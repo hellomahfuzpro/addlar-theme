@@ -48,6 +48,8 @@ function addlar_icon_path( $key ) {
 		'corrosion'  => '<path d="M12 3l7 4v6c0 4-3 6.5-7 8-4-1.5-7-4-7-8V7z"/>',
 		'foam'       => '<circle cx="8" cy="15" r="3"/><circle cx="15" cy="10" r="4"/>',
 		'pourpoint'  => '<path d="M12 2v20M5 9l7-7 7 7M8 15l4 4 4-4"/>',
+		'mail'       => '<path d="M3 5h18v14H3z"/><path d="M3 6l9 7 9-7"/>',
+		'pin'        => '<path d="M12 21s7-6.4 7-12a7 7 0 0 0-14 0c0 5.6 7 12 7 12z"/><circle cx="12" cy="9" r="2.5"/>',
 	);
 	return isset( $icons[ $key ] ) ? $icons[ $key ] : $icons['droplet'];
 }
@@ -73,5 +75,7 @@ function addlar_icon_choices() {
 		'corrosion' => 'Corrosion',
 		'foam'      => 'Anti-foam',
 		'pourpoint' => 'Pour point',
+		'mail'      => 'Mail',
+		'pin'       => 'Pin',
 	);
 }

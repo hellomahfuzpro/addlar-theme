@@ -118,3 +118,174 @@ body { margin: 0; }
 }
 .adl .formulation-row dt { color: var(--adl-grey); }
 .adl .formulation-row dd { font-weight: 700; color: var(--adl-ink); }
+
+/* ===== PRODUCT PAGE REDESIGN =====
+ * Matches the reference competitor pages the client asked to match (Afton
+ * Chemical / Lubimax): a real product image alongside the spec text, and a
+ * bordered "Key Performance Benefits" checklist — adapted to ADDLAR's own
+ * red/black/white brand rather than their blue. */
+
+.adl .spec-hero-grid {
+	display: grid;
+	grid-template-columns: 1.1fr 0.9fr;
+	gap: 48px;
+	align-items: center;
+}
+.adl .spec-hero-text .btn { margin-top: 8px; }
+.adl .spec-doc-code { margin-top: 18px; color: var(--adl-grey-2) !important; }
+.adl .spec-hero-image img {
+	width: 100%;
+	height: auto;
+	display: block;
+	border: 1px solid var(--adl-line);
+}
+@media (max-width: 860px) {
+	.adl .spec-hero-grid { grid-template-columns: 1fr; }
+	.adl .spec-hero-image { order: -1; max-width: 360px; margin: 0 auto; }
+}
+
+.adl .benefits-box {
+	border: 2px solid var(--adl-red);
+	padding: 32px 36px;
+	background: #fff;
+}
+.adl .benefits-heading {
+	font-size: 20px;
+	font-weight: 800;
+	color: var(--adl-ink);
+	margin-bottom: 18px;
+}
+.adl .benefits-list {
+	list-style: none;
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: 14px 32px;
+}
+.adl .benefits-list li {
+	display: flex;
+	align-items: flex-start;
+	gap: 10px;
+	font-size: 15px;
+	color: var(--adl-ink-2);
+	line-height: 1.4;
+}
+.adl .benefits-list .check {
+	flex: none;
+	width: 20px;
+	height: 20px;
+	border-radius: 50%;
+	background: var(--adl-red);
+	color: #fff;
+	font-size: 12px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	margin-top: 1px;
+}
+@media (max-width: 640px) {
+	.adl .benefits-list { grid-template-columns: 1fr; }
+}
+
+/* ===== IMAGE GRID (About Us "industries we serve") ===== */
+.adl .image-grid {
+	display: grid;
+	grid-template-columns: repeat(6, 1fr);
+	gap: 16px;
+}
+.adl .image-grid-item {
+	position: relative;
+	display: block;
+	overflow: hidden;
+	aspect-ratio: 1;
+	background: var(--adl-soft);
+}
+.adl .image-grid-item img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.adl .image-grid-caption {
+	position: absolute;
+	left: 0; right: 0; bottom: 0;
+	padding: 10px 12px;
+	font-size: 12.5px;
+	font-weight: 700;
+	color: #fff;
+	background: linear-gradient(0deg, rgba(0,0,0,.65), transparent);
+}
+@media (max-width: 860px) {
+	.adl .image-grid { grid-template-columns: repeat(3, 1fr); }
+}
+@media (max-width: 520px) {
+	.adl .image-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+/* ===== CONTACT CARDS ===== (reuses .pkg / .pkg-grid from Package Grid) */
+.adl .contact-cards.pkg-grid { margin-top: 0; }
+.adl .contact-card .contact-value {
+	display: block;
+	margin-top: 4px;
+	font-size: 16px;
+	font-weight: 700;
+	color: var(--adl-ink);
+	word-break: break-word;
+}
+.adl a.contact-card .contact-value,
+.adl .contact-card a.contact-value:hover { color: var(--adl-red); }
+
+/* ===== CONTACT FORM ===== */
+.adl .contact-form { margin-top: 8px; }
+.adl .form-row { margin-bottom: 18px; }
+.adl .form-row label {
+	display: block;
+	font-size: 13px;
+	font-weight: 700;
+	letter-spacing: .02em;
+	color: var(--adl-ink-2);
+	margin-bottom: 6px;
+}
+.adl .form-row input,
+.adl .form-row textarea {
+	width: 100%;
+	border: 1.5px solid var(--adl-line);
+	padding: 13px 16px;
+	font-size: 15px;
+	font-family: var(--adl-sans);
+	color: var(--adl-ink);
+	background: #fff;
+	transition: .2s;
+}
+.adl .form-row input:focus,
+.adl .form-row textarea:focus {
+	outline: none;
+	border-color: var(--adl-red);
+}
+.adl .form-row textarea { resize: vertical; }
+.adl .contact-form .btn { border: 0; }
+/* Honeypot: kept in normal flow (not display:none) so spam bots that skip
+ * hidden fields still fill it, but positioned off-screen for real visitors. */
+.adl .form-hp { position: absolute; left: -9999px; top: -9999px; }
+.adl .form-success {
+	border: 2px solid var(--adl-red);
+	padding: 24px 28px;
+	font-size: 15px;
+	font-weight: 700;
+	color: var(--adl-ink);
+}
+.adl .form-error {
+	background: #fdeceb;
+	border: 1.5px solid var(--adl-red);
+	color: var(--adl-red-dark);
+	padding: 14px 18px;
+	font-size: 14px;
+	font-weight: 700;
+	margin-bottom: 18px;
+}
+
+/* ===== RICH TEXT (About Us body copy) ===== */
+.adl .rich-text { color: var(--adl-ink-2); font-size: 16px; line-height: 1.75; }
+.adl .rich-text p { margin-bottom: 18px; }
+.adl .rich-text h2 { font-size: 26px; margin: 34px 0 14px; color: var(--adl-ink); }
+.adl .rich-text h3 { font-size: 20px; margin: 26px 0 12px; color: var(--adl-ink); }
+.adl .rich-text ul { margin: 0 0 18px 22px; }
+.adl .rich-text li { margin-bottom: 8px; }
+.adl .rich-text strong { color: var(--adl-ink); }
+.adl .rich-text-image { margin: 24px 0; }
+.adl .rich-text-image img { width: 100%; height: auto; display: block; border: 1px solid var(--adl-line); }
+.adl .formulation-row dd { font-weight: 700; color: var(--adl-ink); }
