@@ -676,12 +676,46 @@ function addlar_seed_homepage() {
  * @return int Term id, or 0 on failure.
  */
 function addlar_ensure_product_category_term( $name ) {
+	$description = addlar_product_category_description( $name );
+
 	$existing = term_exists( $name, 'addlar_product_category' );
 	if ( $existing ) {
-		return (int) ( is_array( $existing ) ? $existing['term_id'] : $existing );
+		$term_id = (int) ( is_array( $existing ) ? $existing['term_id'] : $existing );
+		// Fill the description in on re-seed too — the archive hero uses it
+		// as its subtitle, and terms created by earlier versions have none.
+		if ( $description ) {
+			wp_update_term( $term_id, 'addlar_product_category', array( 'description' => $description ) );
+		}
+		return $term_id;
 	}
-	$created = wp_insert_term( $name, 'addlar_product_category' );
+
+	$created = wp_insert_term( $name, 'addlar_product_category', array( 'description' => $description ) );
 	return is_wp_error( $created ) ? 0 : (int) $created['term_id'];
+}
+
+/**
+ * One-line description per product family, used as the category archive
+ * hero's subtitle (the terms otherwise have no description, which left
+ * that hero with generic filler).
+ *
+ * These describe what each family *is* and which sub-types it covers —
+ * both facts already present in the Product Finder catalogue and the PDS
+ * set. Nothing here asserts a performance characteristic.
+ *
+ * @param string $name Category name.
+ * @return string
+ */
+function addlar_product_category_description( $name ) {
+	$map = array(
+		'Engine Oil Additive' => __( 'Ready-to-blend engine oil packages across heavy duty, passenger car and motorcycle service — graded to API, ACEA, ILSAC and JASO targets.', 'addlar' ),
+		'Driveline'           => __( 'Gear, ATF, manual transmission and off-road packages, including multi-purpose chemistries that cover automotive and industrial gear duty from one platform.', 'addlar' ),
+		'Marine'              => __( 'Trunk piston, system and cylinder oil packages, dosed by target base number for distillate and residual-fuelled marine engines.', 'addlar' ),
+		'Industrial'          => __( 'Gear, grease, hydraulic and slideway packages for industrial fluid duty, including ashless extreme-pressure and anti-wear chemistries.', 'addlar' ),
+		'Metal Working Fluid' => __( 'Neat cutting and soluble oil additive packages for severe metalworking operations — hobbing, broaching, tapping, drilling and forming.', 'addlar' ),
+		'Lubricant Component' => __( 'Individual building blocks — detergents, dispersants, anti-wear and friction modifiers, antioxidants, pour point depressants and viscosity index improvers.', 'addlar' ),
+	);
+
+	return isset( $map[ $name ] ) ? $map[ $name ] : '';
 }
 
 /**

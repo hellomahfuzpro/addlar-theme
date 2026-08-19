@@ -3,6 +3,43 @@
 All notable changes to the ADDLAR theme. Keep the top version in sync with
 `Version:` in `style.css` — the updater reads it from there.
 
+## [1.8.0] — 2026-08-19
+
+### Fixed
+- **Site header sat behind the WordPress admin bar when logged in.** WP
+  adds `html { margin-top: 32px }` and pins its toolbar to the viewport
+  top; our header is `position: fixed; top: 0`, which ignores that margin.
+  Logged out (and in incognito) there is no toolbar, which is why it only
+  affected admins. The header is now offset by the toolbar's height, at
+  the same breakpoints WordPress itself uses — 32px above 782px, 46px
+  below it, and back to 0 under 600px where the toolbar stops being fixed
+  and scrolls away. The mobile nav panel is offset to match.
+
+### Added
+- **Blog templates.** `home.php` (listing) and `single.php` (post), both
+  built on the site's existing components: the dark hero with breadcrumb,
+  the homepage Insights section's `.licard` grid for the post list, and
+  the red closing band. `.post-body` gets real element styling —
+  headings, lists, quotes, code, tables, images — because WordPress
+  content can contain any block, unlike the fixed section widgets used
+  everywhere else. Styled pagination included.
+- **Category descriptions.** Each product family now has a one-line
+  description, used as the category archive hero's subtitle (terms
+  previously had none, leaving that hero on generic filler). They
+  describe what each family is and which sub-types it covers — both facts
+  already in the Finder catalogue and PDS set; none asserts a performance
+  characteristic. Applied on re-seed to existing terms too.
+
+### Changed
+- **Menu and footer point at real destinations.** The primary nav gains
+  Insights; Applications and Finder are absolute links to the homepage
+  and Products page rather than bare `#anchors`, which did nothing when
+  clicked from a product page. Footer columns are now Company / Product
+  Range (the six real category archives) / Resources (Ask the Expert,
+  Finder, Applications, Insights), with columns 2 and 3 renamed to match.
+  The legal column is deliberately still `#` — those pages need writing
+  and approval before being linked anywhere.
+
 ## [1.7.0] — 2026-08-19
 
 ### Changed

@@ -32,8 +32,8 @@ function addlar_defaults() {
 		'addlar_linkedin_url' => 'https://www.linkedin.com/showcase/addlar-lubricant-additives/',
 		'addlar_youtube_url'  => '',
 		'addlar_foot_head_1'  => __( 'Our Information', 'addlar' ),
-		'addlar_foot_head_2'  => __( 'To Know More', 'addlar' ),
-		'addlar_foot_head_3'  => __( 'Services', 'addlar' ),
+		'addlar_foot_head_2'  => __( 'Product Range', 'addlar' ),
+		'addlar_foot_head_3'  => __( 'Resources', 'addlar' ),
 		'addlar_foot_head_4'  => __( 'Social Media', 'addlar' ),
 		'addlar_footer_mark'  => '',
 		'addlar_copyright'    => '',
@@ -124,8 +124,8 @@ function addlar_customize_register( $wp_customize ) {
 
 	$headings = array(
 		'addlar_foot_head_1' => array( __( 'Column 1 heading', 'addlar' ), __( 'Our Information', 'addlar' ) ),
-		'addlar_foot_head_2' => array( __( 'Column 2 heading', 'addlar' ), __( 'To Know More', 'addlar' ) ),
-		'addlar_foot_head_3' => array( __( 'Column 3 heading', 'addlar' ), __( 'Services', 'addlar' ) ),
+		'addlar_foot_head_2' => array( __( 'Column 2 heading', 'addlar' ), __( 'Product Range', 'addlar' ) ),
+		'addlar_foot_head_3' => array( __( 'Column 3 heading', 'addlar' ), __( 'Resources', 'addlar' ) ),
 		'addlar_foot_head_4' => array( __( 'Column 4 heading (social)', 'addlar' ), __( 'Social Media', 'addlar' ) ),
 	);
 	foreach ( $headings as $id => $cfg ) {

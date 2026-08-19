@@ -439,3 +439,94 @@ body { margin: 0; }
 @media (max-width: 860px) {
 	.adl .numgrid-staged { grid-template-columns: repeat(2, 1fr); }
 }
+
+/* ===== WORDPRESS ADMIN BAR =====
+ * WP adds `html { margin-top: 32px }` and pins its toolbar at viewport
+ * top. Our site header is `position: fixed; top: 0`, which ignores that
+ * html margin — so when logged in it sits *behind* the toolbar. (Logged
+ * out, and in incognito, there is no toolbar and nothing looks wrong,
+ * which is why this only showed up for admins.)
+ *
+ * The breakpoints mirror WordPress's own admin-bar.css: 32px tall above
+ * 782px, 46px below it, and below 600px the bar switches to
+ * `position: absolute` and scrolls away — so the header goes back to 0
+ * there rather than leaving a permanent 46px gap. */
+.admin-bar .adl header { top: 32px; }
+.admin-bar .adl .mobnav { top: 110px; }
+
+@media screen and (max-width: 782px) {
+	.admin-bar .adl header { top: 46px; }
+	.admin-bar .adl .mobnav { top: 124px; }
+}
+@media screen and (max-width: 600px) {
+	.admin-bar .adl header { top: 0; }
+	.admin-bar .adl .mobnav { top: 78px; }
+}
+
+/* ===== BLOG ===== */
+.adl .post-meta {
+	margin-top: 18px;
+	font-size: 13px;
+	font-weight: 700;
+	letter-spacing: .06em;
+	text-transform: uppercase;
+	color: rgba(255,255,255,.55);
+}
+.adl .post-meta .sep { margin: 0 8px; }
+
+/* WordPress content can contain any block, so the article body needs real
+ * element styling rather than the fixed section components used elsewhere. */
+.adl .post-body { font-size: 17px; line-height: 1.8; color: var(--adl-ink-2); }
+.adl .post-body > * + * { margin-top: 22px; }
+.adl .post-body h2 { font-size: 30px; margin-top: 44px; color: var(--adl-ink); }
+.adl .post-body h3 { font-size: 22px; margin-top: 34px; color: var(--adl-ink); }
+.adl .post-body a { color: var(--adl-red); text-decoration: underline; }
+.adl .post-body ul,
+.adl .post-body ol { margin-left: 22px; }
+.adl .post-body li + li { margin-top: 8px; }
+.adl .post-body img { height: auto; }
+.adl .post-body blockquote {
+	border-left: 3px solid var(--adl-red);
+	padding: 6px 0 6px 24px;
+	font-size: 19px;
+	color: var(--adl-ink);
+}
+.adl .post-body code {
+	background: var(--adl-soft);
+	padding: 2px 6px;
+	font-size: .92em;
+}
+.adl .post-body table { width: 100%; border-collapse: collapse; }
+.adl .post-body th,
+.adl .post-body td { text-align: left; padding: 10px 14px; border-bottom: 1px solid var(--adl-line); }
+
+.adl .post-nav {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: space-between;
+	gap: 16px;
+	margin-top: 48px;
+	padding-top: 24px;
+	border-top: 1px solid var(--adl-line);
+	font-size: 14px;
+	font-weight: 700;
+}
+.adl .post-nav a { color: var(--adl-ink-2); transition: .2s; }
+.adl .post-nav a:hover { color: var(--adl-red); }
+
+/* Pagination — WordPress markup, styled to the theme's squared language. */
+.adl .navigation.pagination { margin-top: 48px; }
+.adl .nav-links { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
+.adl .nav-links .page-numbers {
+	min-width: 44px;
+	padding: 11px 15px;
+	text-align: center;
+	border: 1px solid var(--adl-line);
+	font-size: 14px;
+	font-weight: 700;
+	color: var(--adl-ink-2);
+	transition: .2s;
+}
+.adl .nav-links a.page-numbers:hover { border-color: var(--adl-red); color: var(--adl-red); }
+.adl .nav-links .page-numbers.current { background: var(--adl-red); border-color: var(--adl-red); color: #fff; }
+.adl .screen-reader-text { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(1px,1px,1px,1px); white-space: nowrap; }
