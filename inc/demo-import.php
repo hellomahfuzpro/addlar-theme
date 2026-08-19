@@ -818,24 +818,15 @@ function addlar_product_template_widgets( $code, array $p ) {
 	$sub       = isset( $p['subcategory'] ) ? $p['subcategory'] : '';
 	$mark      = addlar_seed_image( 'mark-white' );
 	$secondary = addlar_product_secondary_image( $category );
-	$cat_link  = addlar_product_category_link( $category, '/products/' );
 	$eyebrow   = trim( $category . ( $sub ? ' · ' . $sub : '' ) );
 
 	$widgets = array();
 
-	/* ---------------------------------------------------------- breadcrumb */
-	$widgets[] = array(
-		'type'     => 'addlar_breadcrumb',
-		'settings' => array(
-			'home_label'     => __( 'Home', 'addlar' ),
-			'products_label' => __( 'Products', 'addlar' ),
-			'products_url'   => array( 'url' => '/products/' ),
-			'current_label'  => $p['title'],
-			'dark'           => '',
-		),
-	);
-
-	/* --------------------------------------------------------------- hero */
+	/* ---------------------------------------------------- hero (+ crumbs) *
+	 * The breadcrumb lives inside the hero rather than as a separate strip
+	 * above it: the site header is `position: fixed`, so a thin first
+	 * element renders underneath it and disappears. The hero carries the
+	 * header offset, so a breadcrumb inside it is always visible. */
 	$chips = array();
 	foreach ( addlar_product_hero_chips( $p ) as $chip ) {
 		$chips[] = array( 'text' => $chip );
@@ -844,18 +835,21 @@ function addlar_product_template_widgets( $code, array $p ) {
 	$widgets[] = array(
 		'type'     => 'addlar_product_hero',
 		'settings' => array(
-			'anchor'    => 'top',
-			'eyebrow'   => $eyebrow,
-			'title'     => $p['title'],
-			'subtitle'  => addlar_product_field( $p, 'description' ),
-			'doc_code'  => addlar_product_field( $p, 'doc_code' ),
-			'image'     => addlar_product_hero_image( $code, $category ),
-			'mark'      => $mark,
-			'chips'     => addlar_rep( $chips ),
-			'btn1_text' => __( 'Request data sheet →', 'addlar' ),
-			'btn1_link' => array( 'url' => '/contact-us/' ),
-			'btn2_text' => __( 'Talk to a formulator', 'addlar' ),
-			'btn2_link' => array( 'url' => '/ask-the-expert/' ),
+			'anchor'            => 'top',
+			'eyebrow'           => $eyebrow,
+			'title'             => $p['title'],
+			'subtitle'          => addlar_product_field( $p, 'description' ),
+			'doc_code'          => addlar_product_field( $p, 'doc_code' ),
+			'image'             => addlar_product_hero_image( $code, $category ),
+			'mark'              => $mark,
+			'chips'             => addlar_rep( $chips ),
+			'show_crumbs'       => 'yes',
+			'crumb_parent'      => __( 'Products', 'addlar' ),
+			'crumb_parent_link' => array( 'url' => '/products/' ),
+			'btn1_text'         => __( 'Request data sheet →', 'addlar' ),
+			'btn1_link'         => array( 'url' => '/contact-us/' ),
+			'btn2_text'         => __( 'Talk to a formulator', 'addlar' ),
+			'btn2_link'         => array( 'url' => '/ask-the-expert/' ),
 		),
 	);
 
@@ -872,24 +866,6 @@ function addlar_product_template_widgets( $code, array $p ) {
 				'title'   => __( 'Key performance benefits.', 'addlar' ),
 				'lede'    => '',
 				'cards'   => addlar_rep( $cards ),
-			),
-		);
-	}
-
-	/* ------------------------------------------------------ at a glance */
-	$glance = addlar_product_glance_stats( $p );
-	if ( count( $glance ) >= 2 ) {
-		$widgets[] = array(
-			'type'     => 'addlar_stat_band',
-			'settings' => array(
-				'anchor'  => '',
-				'eyebrow' => __( 'Product at a glance', 'addlar' ),
-				'title'   => sprintf( /* translators: %s: product name */ __( '%s by the numbers.', 'addlar' ), $p['title'] ),
-				'bg'      => $secondary,
-				'columns' => (string) count( $glance ),
-				'stats'   => addlar_rep( array_map( function ( $st ) {
-					return array( 'count' => $st['count'], 'prefix' => '', 'suffix' => '', 'comma' => '', 'label' => $st['label'] );
-				}, $glance ) ),
 			),
 		);
 	}
@@ -912,36 +888,48 @@ function addlar_product_template_widgets( $code, array $p ) {
 		);
 	}
 
-	/* --------------------------------------------------------- applications */
+	/* ------------------------------------------------------- applications *
+	 * Rendered with the homepage Applications section's dark icon list, not
+	 * a row of chips — matching how the same kind of content looks on the
+	 * homepage. Applications are short phrases, so each becomes a title
+	 * with no second line rather than inventing supporting copy. */
 	$applications = addlar_product_line_list( addlar_product_field( $p, 'applications_text' ) );
 	if ( $applications ) {
+		$app_items = array();
+		foreach ( $applications as $app ) {
+			$app_items[] = array( 'icon' => 'gear', 'title' => $app, 'text' => '' );
+		}
 		$widgets[] = array(
-			'type'     => 'addlar_chip_list',
+			'type'     => 'addlar_icon_list',
 			'settings' => array(
 				'anchor'  => '',
-				'soft'    => 'yes',
-				'eyebrow' => __( 'Where it works', 'addlar' ),
+				'columns' => count( $app_items ) > 4 ? '2' : '1',
+				'eyebrow' => __( "Where it works", 'addlar' ),
 				'title'   => __( 'Applications.', 'addlar' ),
-				'items'   => implode( "\n", $applications ),
-				'style'   => 'outline',
+				'lede'    => '',
+				'items'   => addlar_rep( $app_items ),
 			),
 		);
 	}
 
-	/* -------------------------------------------------------- photo band */
-	$widgets[] = array(
-		'type'     => 'addlar_image_banner',
-		'settings' => array(
-			'anchor'  => '',
-			'height'  => 'short',
-			'image'   => $secondary,
-			'mark'    => $mark,
-			'align'   => 'center',
-			'eyebrow' => $category,
-			'title'   => __( 'Engineered for real-world performance', 'addlar' ),
-			'lede'    => '',
-		),
-	);
+	/* ------------------------------------------------------ at a glance *
+	 * The homepage's big-number band, background photo and all. */
+	$glance = addlar_product_glance_stats( $p );
+	if ( count( $glance ) >= 2 ) {
+		$widgets[] = array(
+			'type'     => 'addlar_stat_band',
+			'settings' => array(
+				'anchor'  => '',
+				'eyebrow' => __( 'Product at a glance', 'addlar' ),
+				'title'   => sprintf( /* translators: %s: product name */ __( '%s by the numbers.', 'addlar' ), $p['title'] ),
+				'bg'      => $secondary,
+				'columns' => (string) count( $glance ),
+				'stats'   => addlar_rep( array_map( function ( $st ) {
+					return array( 'count' => $st['count'], 'prefix' => '', 'suffix' => '', 'comma' => '', 'label' => $st['label'] );
+				}, $glance ) ),
+			),
+		);
+	}
 
 	/* --------------------------------------------------------- approvals */
 	$approval_items = addlar_product_approval_strip_items( $p );
@@ -1002,46 +990,21 @@ function addlar_product_template_widgets( $code, array $p ) {
 		);
 	}
 
-	/* ----------------------------------------------------- photo tile row */
+	/* -------------------------------------------------------- closing CTA *
+	 * A compact black bar closes the page. The photo-tile pair and the
+	 * related-products grid that used to sit here were both removed on
+	 * request — the tiles repeated images already shown further up, and
+	 * related products duplicated the category archive. */
 	$widgets[] = array(
-		'type'     => 'addlar_image_grid',
+		'type'     => 'addlar_cta_bar',
 		'settings' => array(
-			'anchor'  => '',
-			'soft'    => '',
-			'style'   => 'tile',
-			'columns' => '2',
-			'mark'    => $mark,
-			'eyebrow' => '',
-			'title'   => '',
-			'lede'    => '',
-			'items'   => addlar_rep( array(
-				array(
-					'image'   => addlar_product_hero_image( $code, $category ),
-					'caption' => $p['title'],
-					'link'    => array( 'url' => '' ),
-				),
-				array(
-					'image'   => $secondary,
-					'caption' => sprintf( /* translators: %s: category name */ __( 'Explore %s →', 'addlar' ), $category ),
-					'link'    => array( 'url' => $cat_link ),
-				),
-			) ),
+			'anchor'   => '',
+			'icon'     => 'flask',
+			'title'    => sprintf( /* translators: %s: product name */ __( 'Formulating with %s?', 'addlar' ), $p['title'] ),
+			'text'     => __( 'Request the full data sheet, a sample, or formulation support from our technical team.', 'addlar' ),
+			'btn_text' => __( 'Talk to our team →', 'addlar' ),
+			'btn_link' => array( 'url' => '/contact-us/' ),
 		),
-	);
-
-	/* ------------------------------------------------- related + closing */
-	$widgets[] = array(
-		'type'     => 'addlar_related_products',
-		'settings' => array(
-			'mode'    => 'current',
-			'heading' => __( 'Related Products', 'addlar' ),
-			'count'   => 3,
-			'mark'    => $mark,
-		),
-	);
-	$widgets[] = array(
-		'type'     => 'addlar_closing_cta',
-		'settings' => array( 'bg' => addlar_seed_image( 'cta' ) ),
 	);
 
 	return $widgets;
@@ -1353,6 +1316,8 @@ function addlar_seed_page( $slug, $title, array $widgets ) {
  * @return int Page ID.
  */
 function addlar_seed_about_page() {
+	$mark = addlar_seed_image( 'mark-white' );
+
 	$industries = array(
 		array( 'slot' => 'engine-oil',   'caption' => __( 'Automotive', 'addlar' ) ),
 		array( 'slot' => 'driveline',    'caption' => __( 'Driveline', 'addlar' ) ),
@@ -1366,75 +1331,108 @@ function addlar_seed_about_page() {
 		$industry_items[] = array( 'image' => addlar_seed_image( $row['slot'] ), 'caption' => $row['caption'], 'link' => array( 'url' => '' ) );
 	}
 
-	$why_rows = array(
-		array(
-			'lbl'   => __( 'Quality', 'addlar' ),
-			'title' => __( 'Uncompromising Quality Assurance', 'addlar' ),
-			'text'  => __( 'Quality is not just a metric; it is our promise. Rchemie operates under rigorous quality control protocols. Every batch of ADDLAR additives undergoes exhaustive testing to guarantee absolute batch-to-batch consistency and peak operational safety.', 'addlar' ),
-			'image' => addlar_seed_image( 'about' ),
-		),
-		array(
-			'lbl'   => __( 'Expertise', 'addlar' ),
-			'title' => __( 'Elite Technical Expertise', 'addlar' ),
-			'text'  => __( "We don't just sell chemical components — we provide solutions. Our team of seasoned chemical professionals and engineers works closely with clients, offering expert technical guidance, custom formulation consultation, and ongoing application support.", 'addlar' ),
-			'image' => addlar_seed_image( 'industrial' ),
-		),
-		array(
-			'lbl'   => __( 'Service', 'addlar' ),
-			'title' => __( 'Reliable Customer Service & Agile Supply Chain', 'addlar' ),
-			'text'  => __( 'We understand that downtime is costly. Operating from a strategic global logistics hub, we prioritise long-term client relationships through highly personalised service, transparent communication, and dependable, on-time delivery.', 'addlar' ),
-			'image' => addlar_seed_image( 'driveline' ),
-		),
-	);
-
 	return addlar_seed_page( 'about-us', __( 'About Us', 'addlar' ), array(
 		array(
-			'type'     => 'addlar_page_intro',
+			'type'     => 'addlar_product_hero',
 			'settings' => array(
-				'eyebrow' => __( 'About Us', 'addlar' ),
-				'title'   => __( 'About ADDLAR & Rchemie International', 'addlar' ),
-				'lede'    => __( 'For over two decades, Rchemie International has stood as a premier chemical powerhouse and a trusted global supply chain partner.', 'addlar' ),
+				'anchor'            => 'top',
+				'eyebrow'           => __( '20 Years of Chemical Expertise', 'addlar' ),
+				'title'             => __( 'About ADDLAR', 'addlar' ),
+				'subtitle'          => __( 'Rchemie International has spent two decades as a chemical powerhouse and trusted global supply chain partner. ADDLAR is its flagship brand of high-performance lubricant additive packages.', 'addlar' ),
+				'doc_code'          => '',
+				'image'             => addlar_seed_image( 'about' ),
+				'mark'              => $mark,
+				'chips'             => addlar_rep( array(
+					array( 'text' => __( 'Founded 2006', 'addlar' ) ),
+					array( 'text' => __( 'API · ACEA · ILSAC · JASO', 'addlar' ) ),
+					array( 'text' => __( '25+ countries served', 'addlar' ) ),
+				) ),
+				'show_crumbs'       => 'yes',
+				'crumb_parent'      => '',
+				'crumb_parent_link' => array( 'url' => '' ),
+				'btn1_text'         => __( 'Explore the range →', 'addlar' ),
+				'btn1_link'         => array( 'url' => '/products/' ),
+				'btn2_text'         => __( 'Get in touch', 'addlar' ),
+				'btn2_link'         => array( 'url' => '/contact-us/' ),
 			),
 		),
 		array(
 			'type'     => 'addlar_rich_text',
 			'settings' => array(
-				'body' => '<p>' . esc_html__( 'For over two decades, Rchemie International has stood as a premier chemical powerhouse and a trusted supply chain partner globally. Headquartered in Dubai, United Arab Emirates, we have dedicated the last 20 years to supporting the growth, development, and operational efficiency of heavy industries across the UAE and beyond.', 'addlar' ) . '</p>'
+				'eyebrow' => __( 'Who we are', 'addlar' ),
+				'title'   => __( 'Now powering the world of lubricants.', 'addlar' ),
+				'body'    => '<p>' . esc_html__( 'For over two decades, Rchemie International has stood as a premier chemical powerhouse and a trusted supply chain partner globally. Headquartered in Dubai, United Arab Emirates, we have dedicated the last 20 years to supporting the growth, development, and operational efficiency of heavy industries across the UAE and beyond.', 'addlar' ) . '</p>'
 					. '<p>' . esc_html__( 'ADDLAR is Rchemie\'s flagship brand of high-performance lubricant additive packages. It represents the pinnacle of our chemical engineering capabilities — designed to meet the rapidly evolving, high-stress demands of modern automotive, industrial, and marine machinery.', 'addlar' ) . '</p>',
+			),
+		),
+		array(
+			'type'     => 'addlar_spec_cards',
+			'settings' => array(
+				'anchor'  => 'why-rchemie',
+				'soft'    => 'yes',
+				'columns' => '3',
+				'eyebrow' => __( 'Why Rchemie', 'addlar' ),
+				'title'   => __( 'Why leading industries choose us.', 'addlar' ),
+				'lede'    => __( 'Our reputation is built on three unwavering pillars of corporate excellence.', 'addlar' ),
+				'cards'   => addlar_rep( array(
+					array(
+						'icon'  => 'shield',
+						'lab'   => __( 'Quality', 'addlar' ),
+						'title' => __( 'Uncompromising quality assurance', 'addlar' ),
+						'text'  => __( 'Every batch undergoes exhaustive testing to guarantee absolute batch-to-batch consistency and peak operational safety.', 'addlar' ),
+					),
+					array(
+						'icon'  => 'people',
+						'lab'   => __( 'Expertise', 'addlar' ),
+						'title' => __( 'Elite technical expertise', 'addlar' ),
+						'text'  => __( 'Seasoned chemical professionals and engineers offering technical guidance, custom formulation consultation and application support.', 'addlar' ),
+					),
+					array(
+						'icon'  => 'globe',
+						'lab'   => __( 'Service', 'addlar' ),
+						'title' => __( 'Reliable service & agile supply', 'addlar' ),
+						'text'  => __( 'A strategic logistics hub, transparent communication and dependable, on-time global delivery.', 'addlar' ),
+					),
+				) ),
+			),
+		),
+		array(
+			'type'     => 'addlar_icon_list',
+			'settings' => array(
+				'anchor'  => '',
+				'columns' => '1',
+				'eyebrow' => __( 'The ADDLAR advantage', 'addlar' ),
+				'title'   => __( 'Comprehensive package. Complexity, simplified.', 'addlar' ),
+				'lede'    => __( 'All-in-one additive packages that integrate multiple critical chemical components into a single, perfectly balanced formulation.', 'addlar' ),
+				'items'   => addlar_rep( array(
+					array( 'icon' => 'detergent', 'title' => __( 'Detergents & Dispersants', 'addlar' ), 'text' => __( 'Engineered to prevent sludge buildup and maintain pristine engine cleanliness.', 'addlar' ) ),
+					array( 'icon' => 'wear', 'title' => __( 'Anti-Wear Agents & Friction Modifiers', 'addlar' ), 'text' => __( 'A resilient chemical barrier minimising mechanical drag and metal-on-metal wear.', 'addlar' ) ),
+					array( 'icon' => 'antiox', 'title' => __( 'High-Tier Antioxidants', 'addlar' ), 'text' => __( 'Resist thermal breakdown, extending oil life under extreme temperatures.', 'addlar' ) ),
+					array( 'icon' => 'shield', 'title' => __( 'Global Compliance by Design', 'addlar' ), 'text' => __( 'Tested to meet or exceed API, ACEA, ILSAC and JASO benchmarks.', 'addlar' ) ),
+				) ),
+			),
+		),
+		array(
+			'type'     => 'addlar_stat_band',
+			'settings' => array(
+				'anchor'  => 'numbers',
+				'eyebrow' => __( 'ADDLAR by the numbers', 'addlar' ),
+				'title'   => __( 'Scale you can formulate against.', 'addlar' ),
+				'bg'      => addlar_seed_image( 'numbers-bg' ),
+				'columns' => '5',
 			),
 		),
 		array(
 			'type'     => 'addlar_image_grid',
 			'settings' => array(
 				'soft'    => 'yes',
-				'eyebrow' => __( 'Industries We Serve', 'addlar' ),
+				'style'   => 'caption',
+				'columns' => '6',
+				'mark'    => $mark,
+				'eyebrow' => __( 'Industries we serve', 'addlar' ),
 				'title'   => __( 'Wherever fluids do critical work', 'addlar' ),
+				'lede'    => '',
 				'items'   => addlar_rep( $industry_items ),
-			),
-		),
-		array(
-			'type'     => 'addlar_rich_text',
-			'settings' => array(
-				'eyebrow' => __( 'The ADDLAR Advantage', 'addlar' ),
-				'title'   => __( 'Comprehensive Package. Complexity, Simplified.', 'addlar' ),
-				'body'    => '<p>' . esc_html__( 'In the world of fluid engineering, balancing individual components can be a logistical and technical challenge. ADDLAR eliminates this complexity. We formulate and manufacture complete, all-in-one additive packages that integrate multiple critical chemical components into a single, perfectly balanced formulation:', 'addlar' ) . '</p>'
-					. '<ul>'
-					. '<li><strong>' . esc_html__( 'Detergents & Dispersants:', 'addlar' ) . '</strong> ' . esc_html__( 'Engineered to prevent sludge buildup and maintain pristine engine cleanliness.', 'addlar' ) . '</li>'
-					. '<li><strong>' . esc_html__( 'Anti-Wear Agents & Friction Modifiers:', 'addlar' ) . '</strong> ' . esc_html__( 'Designed to form a resilient chemical barrier, minimizing mechanical drag and metal-on-metal wear.', 'addlar' ) . '</li>'
-					. '<li><strong>' . esc_html__( 'High-Tier Antioxidants:', 'addlar' ) . '</strong> ' . esc_html__( 'Formulated to resist thermal breakdown, extending oil life and protecting machinery under extreme temperatures.', 'addlar' ) . '</li>'
-					. '</ul>'
-					. '<h3>' . esc_html__( 'Global Compliance by Design', 'addlar' ) . '</h3>'
-					. '<p>' . esc_html__( 'Whether you require high-performance Passenger Car Motor Oils (PCMO), heavy-duty diesel formulations, or specialized marine solutions, ADDLAR is precision-engineered to deliver. Every package we manufacture is strictly tested to meet or exceed the world\'s most rigorous industry benchmarks, including API, ACEA, ILSAC, and JASO standards.', 'addlar' ) . '</p>',
-			),
-		),
-		array(
-			'type'     => 'addlar_why_list',
-			'settings' => array(
-				'anchor'  => 'why-rchemie',
-				'eyebrow' => __( 'Why Rchemie', 'addlar' ),
-				'title'   => __( 'Why Leading Industries Choose Rchemie', 'addlar' ),
-				'lede'    => __( 'Our reputation as a market leader is built upon three unwavering pillars of corporate excellence.', 'addlar' ),
-				'rows'    => addlar_rep( $why_rows ),
 			),
 		),
 		array(
@@ -1442,9 +1440,9 @@ function addlar_seed_about_page() {
 			'settings' => array(
 				'anchor'   => 'partner',
 				'bg'       => addlar_seed_image( 'cta' ),
-				'eyebrow'  => __( 'Partner With Us Today', 'addlar' ),
+				'eyebrow'  => __( 'Partner with us today', 'addlar' ),
 				'title'    => __( 'Discover how ADDLAR can elevate your formulations', 'addlar' ),
-				'text'     => __( 'Looking for specific formulations, technical support, or ready to partner with our Dubai-based team? We\'d love to hear from you.', 'addlar' ),
+				'text'     => __( 'Looking for specific formulations, technical support, or ready to partner with our team? We would love to hear from you.', 'addlar' ),
 				'btn_text' => __( 'Get in touch →', 'addlar' ),
 				'btn_link' => array( 'url' => '/contact-us/' ),
 				'maps'     => array(),
@@ -1465,16 +1463,33 @@ function addlar_seed_about_page() {
 function addlar_seed_contact_page() {
 	return addlar_seed_page( 'contact-us', __( 'Contact Us', 'addlar' ), array(
 		array(
-			'type'     => 'addlar_page_intro',
+			'type'     => 'addlar_product_hero',
 			'settings' => array(
-				'eyebrow' => __( 'Contact Us', 'addlar' ),
-				'title'   => __( 'Get in Touch', 'addlar' ),
-				'lede'    => __( "Have a question about ADDLAR's additive packages, need a data sheet, or want to discuss a formulation? Reach us directly below.", 'addlar' ),
+				'anchor'            => 'top',
+				'eyebrow'           => __( 'Contact Us', 'addlar' ),
+				'title'             => __( 'Get in Touch', 'addlar' ),
+				'subtitle'          => __( "Have a question about ADDLAR's additive packages, need a data sheet, or want to discuss a formulation? Reach us directly below.", 'addlar' ),
+				'doc_code'          => '',
+				'image'             => addlar_seed_image( 'about' ),
+				'mark'              => addlar_seed_image( 'mark-white' ),
+				'chips'             => addlar_rep( array(
+					array( 'text' => __( 'Technical support', 'addlar' ) ),
+					array( 'text' => __( 'Samples & data sheets', 'addlar' ) ),
+					array( 'text' => __( 'Global supply', 'addlar' ) ),
+				) ),
+				'show_crumbs'       => 'yes',
+				'crumb_parent'      => '',
+				'crumb_parent_link' => array( 'url' => '' ),
+				'btn1_text'         => __( 'Send a message →', 'addlar' ),
+				'btn1_link'         => array( 'url' => '#form' ),
+				'btn2_text'         => __( 'Ask the expert', 'addlar' ),
+				'btn2_link'         => array( 'url' => '/ask-the-expert/' ),
 			),
 		),
 		array(
 			'type'     => 'addlar_contact_info',
 			'settings' => array(
+				'soft'  => 'yes',
 				'items' => addlar_rep( array(
 					array( 'icon' => 'mail', 'label' => __( 'Email', 'addlar' ), 'value' => addlar_mod( 'addlar_email' ), 'link' => array( 'url' => 'mailto:' . addlar_mod( 'addlar_email' ) ) ),
 					array( 'icon' => 'pin', 'label' => __( 'Headquarters', 'addlar' ), 'value' => addlar_mod( 'addlar_address' ), 'link' => array( 'url' => '' ) ),
@@ -1484,7 +1499,17 @@ function addlar_seed_contact_page() {
 		),
 		array(
 			'type'     => 'addlar_contact_form',
-			'settings' => array( 'preset' => 'contact', 'submit_label' => __( 'Send message →', 'addlar' ) ),
+			'settings' => array( 'anchor' => 'form', 'preset' => 'contact', 'submit_label' => __( 'Send message →', 'addlar' ) ),
+		),
+		array(
+			'type'     => 'addlar_cta_bar',
+			'settings' => array(
+				'icon'     => 'linkedin',
+				'title'    => __( 'Follow ADDLAR on LinkedIn', 'addlar' ),
+				'text'     => __( 'Formulation notes, specification updates and product releases.', 'addlar' ),
+				'btn_text' => __( 'Follow the showcase →', 'addlar' ),
+				'btn_link' => array( 'url' => addlar_mod( 'addlar_linkedin_url' ), 'is_external' => 'on' ),
+			),
 		),
 	) );
 }
@@ -1500,26 +1525,57 @@ function addlar_seed_contact_page() {
 function addlar_seed_ask_the_expert_page() {
 	return addlar_seed_page( 'ask-the-expert', __( 'Ask the Expert', 'addlar' ), array(
 		array(
-			'type'     => 'addlar_page_intro',
+			'type'     => 'addlar_product_hero',
 			'settings' => array(
-				'eyebrow' => __( 'Ask the Expert', 'addlar' ),
-				'title'   => __( 'Ask Our Technical Team', 'addlar' ),
-				'lede'    => __( 'Have a formulation or application question? Send it directly to our chemical engineers below.', 'addlar' ),
+				'anchor'            => 'top',
+				'eyebrow'           => __( 'Ask the Expert', 'addlar' ),
+				'title'             => __( 'Ask Our Technical Team', 'addlar' ),
+				'subtitle'          => __( 'Have a formulation or application question? Send it straight to our chemical engineers.', 'addlar' ),
+				'doc_code'          => '',
+				'image'             => addlar_seed_image( 'components-2' ),
+				'mark'              => addlar_seed_image( 'mark-white' ),
+				'chips'             => addlar_rep( array(
+					array( 'text' => __( 'Formulation support', 'addlar' ) ),
+					array( 'text' => __( 'Treat rate guidance', 'addlar' ) ),
+					array( 'text' => __( 'Base oil strategy', 'addlar' ) ),
+				) ),
+				'show_crumbs'       => 'yes',
+				'crumb_parent'      => '',
+				'crumb_parent_link' => array( 'url' => '' ),
+				'btn1_text'         => __( 'Ask a question →', 'addlar' ),
+				'btn1_link'         => array( 'url' => '#form' ),
+				'btn2_text'         => __( 'Contact us', 'addlar' ),
+				'btn2_link'         => array( 'url' => '/contact-us/' ),
+			),
+		),
+		array(
+			'type'     => 'addlar_spec_cards',
+			'settings' => array(
+				'anchor'  => '',
+				'soft'    => 'yes',
+				'columns' => '3',
+				'eyebrow' => __( 'What we can help with', 'addlar' ),
+				'title'   => __( 'Bring us the hard questions.', 'addlar' ),
+				'lede'    => '',
+				'cards'   => addlar_rep( array(
+					array( 'icon' => 'flask', 'lab' => __( 'Formulation', 'addlar' ), 'title' => __( 'Package selection', 'addlar' ), 'text' => __( 'Which ADDLAR package fits your target specification, base oil and viscosity spread.', 'addlar' ) ),
+					array( 'icon' => 'viscosity', 'lab' => __( 'Treat rates', 'addlar' ), 'title' => __( 'Dosage & cascade', 'addlar' ), 'text' => __( 'How a single package cascades across grades, and the treat rate each level needs.', 'addlar' ) ),
+					array( 'icon' => 'shield', 'lab' => __( 'Compliance', 'addlar' ), 'title' => __( 'Specifications & approvals', 'addlar' ), 'text' => __( 'Meeting API, ACEA, ILSAC and JASO targets, and the OEM approvals behind them.', 'addlar' ) ),
+				) ),
 			),
 		),
 		array(
 			'type'     => 'addlar_contact_form',
-			'settings' => array( 'preset' => 'expert', 'submit_label' => __( 'Ask your question →', 'addlar' ) ),
+			'settings' => array( 'anchor' => 'form', 'preset' => 'expert', 'submit_label' => __( 'Ask your question →', 'addlar' ) ),
 		),
 		array(
-			'type'     => 'addlar_rich_text',
+			'type'     => 'addlar_cta_bar',
 			'settings' => array(
-				'soft' => 'yes',
-				'body' => '<p>' . sprintf(
-					/* translators: %s: linked ADDLAR LinkedIn showcase URL */
-					esc_html__( 'Looking for more technical reading in the meantime? Our latest formulation insights and whitepaper discussions are shared on %s.', 'addlar' ),
-					'<a href="' . esc_url( addlar_mod( 'addlar_linkedin_url' ) ) . '" target="_blank" rel="noopener">' . esc_html__( 'LinkedIn', 'addlar' ) . '</a>'
-				) . '</p>', // phpcs:ignore WordPress.Security.EscapeOutput -- sprintf'd from esc_html()/esc_url()'d parts only.
+				'icon'     => 'linkedin',
+				'title'    => __( 'Follow ADDLAR on LinkedIn', 'addlar' ),
+				'text'     => __( 'Formulation notes, specification updates and product releases.', 'addlar' ),
+				'btn_text' => __( 'Follow the showcase →', 'addlar' ),
+				'btn_link' => array( 'url' => addlar_mod( 'addlar_linkedin_url' ), 'is_external' => 'on' ),
 			),
 		),
 	) );

@@ -134,11 +134,27 @@ body { margin: 0; }
 .adl .pkg-grid-2 { grid-template-columns: repeat(2, 1fr); }
 .adl .pkg-grid-3 { grid-template-columns: repeat(3, 1fr); }
 
-/* ----------------------------------------------------------- breadcrumb */
+/* ----------------------------------------------------------- breadcrumb *
+ * The site header is `position: fixed` at 78px, and the homepage hero
+ * clears it with its own `margin-top: 78px`. Any page whose first element
+ * is a breadcrumb needs the same offset or it renders *underneath* the
+ * header and is invisible — which is exactly what happened on the first
+ * cut of the product page. */
 .adl .crumbs {
+	margin-top: 78px;
 	border-bottom: 1px solid var(--adl-line);
 	background: #fff;
 }
+/* Inside the product hero the breadcrumb is not the page's first element
+ * (the hero itself carries the header offset), so it needs no margin,
+ * border or background of its own. */
+.adl .crumbs-bare {
+	margin-top: 0;
+	border-bottom: 0;
+	background: transparent;
+}
+.adl .prod-hero-crumbs { position: relative; z-index: 3; margin-bottom: 26px; }
+.adl .prod-hero-crumbs .crumbs { display: flex; flex-wrap: wrap; align-items: center; gap: 9px; font-size: 13px; font-weight: 600; }
 .adl .crumbs .wrap {
 	display: flex;
 	flex-wrap: wrap;
@@ -167,7 +183,9 @@ body { margin: 0; }
 	background: var(--adl-ink);
 	color: #fff;
 	overflow: hidden;
-	padding: 92px 0 84px;
+	/* Clears the fixed 78px header, same as the homepage hero does. */
+	margin-top: 78px;
+	padding: 54px 0 84px;
 }
 .adl .prod-hero-wedge {
 	position: absolute;
@@ -401,3 +419,12 @@ body { margin: 0; }
 .adl .rich-text-image { margin: 24px 0; }
 .adl .rich-text-image img { width: 100%; height: auto; display: block; border: 1px solid var(--adl-line); }
 .adl .formulation-row dd { font-weight: 700; color: var(--adl-ink); }
+
+/* Icon List reuses the homepage Applications `.applist` (a 1-column grid
+ * there); a product's applications list reads better multi-column. */
+.adl .applist-2 { grid-template-columns: repeat(2, 1fr); gap: 2px 22px; }
+.adl .applist-3 { grid-template-columns: repeat(3, 1fr); gap: 2px 22px; }
+@media (max-width: 860px) {
+	.adl .applist-2,
+	.adl .applist-3 { grid-template-columns: 1fr; }
+}

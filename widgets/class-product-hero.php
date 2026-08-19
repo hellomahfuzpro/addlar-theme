@@ -83,6 +83,26 @@ class Addlar_Widget_ProductHero extends Addlar_Base_Widget {
 			'type'  => Controls_Manager::MEDIA,
 		) );
 
+		$this->add_control( 'show_crumbs', array(
+			'label'        => __( 'Show breadcrumb', 'addlar' ),
+			'type'         => Controls_Manager::SWITCHER,
+			'default'      => 'yes',
+			'return_value' => 'yes',
+			'description'  => __( 'Rendered inside the hero so it always clears the fixed header.', 'addlar' ),
+		) );
+
+		$this->add_control( 'crumb_parent', array(
+			'label'   => __( 'Breadcrumb parent label', 'addlar' ),
+			'type'    => Controls_Manager::TEXT,
+			'default' => __( 'Products', 'addlar' ),
+		) );
+
+		$this->add_control( 'crumb_parent_link', array(
+			'label'   => __( 'Breadcrumb parent link', 'addlar' ),
+			'type'    => Controls_Manager::URL,
+			'default' => array( 'url' => '/products/' ),
+		) );
+
 		$this->end_controls_section();
 
 		$this->start_controls_section( 'chips_section', array(
@@ -125,6 +145,38 @@ class Addlar_Widget_ProductHero extends Addlar_Base_Widget {
 		);
 		?>
 		<div class="prod-hero-wedge" aria-hidden="true"></div>
+
+		<?php if ( 'yes' === $s['show_crumbs'] ) : ?>
+			<?php
+			$post_id   = get_the_ID();
+			$crumbs    = array( array( 'label' => __( 'Home', 'addlar' ), 'url' => home_url( '/' ) ) );
+			$parent_url = ! empty( $s['crumb_parent_link']['url'] ) ? $s['crumb_parent_link']['url'] : '';
+			if ( ! empty( $s['crumb_parent'] ) ) {
+				$crumbs[] = array( 'label' => $s['crumb_parent'], 'url' => $parent_url );
+			}
+			if ( $post_id && 'addlar_product' === get_post_type( $post_id ) ) {
+				$terms = get_the_terms( $post_id, 'addlar_product_category' );
+				if ( $terms && ! is_wp_error( $terms ) ) {
+					$tlink    = get_term_link( $terms[0] );
+					$crumbs[] = array( 'label' => $terms[0]->name, 'url' => is_wp_error( $tlink ) ? '' : $tlink );
+				}
+			}
+			$crumbs[] = array( 'label' => $s['title'], 'url' => '' );
+			?>
+			<div class="wrap prod-hero-crumbs">
+				<nav class="crumbs crumbs-dark crumbs-bare" aria-label="<?php esc_attr_e( 'Breadcrumb', 'addlar' ); ?>">
+					<?php foreach ( $crumbs as $i => $crumb ) : ?>
+						<?php if ( $i > 0 ) : ?><span class="sep" aria-hidden="true">&rsaquo;</span><?php endif; ?>
+						<?php if ( ! empty( $crumb['url'] ) && $i < count( $crumbs ) - 1 ) : ?>
+							<a href="<?php echo esc_url( $crumb['url'] ); ?>"><?php echo esc_html( $crumb['label'] ); ?></a>
+						<?php else : ?>
+							<span class="cur"><?php echo esc_html( $crumb['label'] ); ?></span>
+						<?php endif; ?>
+					<?php endforeach; ?>
+				</nav>
+			</div>
+		<?php endif; ?>
+
 		<div class="wrap prod-hero-grid">
 
 			<div class="prod-hero-copy">

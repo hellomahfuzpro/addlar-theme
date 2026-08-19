@@ -3,6 +3,55 @@
 All notable changes to the ADDLAR theme. Keep the top version in sync with
 `Version:` in `style.css` — the updater reads it from there.
 
+## [1.6.0] — 2026-08-19
+
+### Changed — URL structure
+- Products now use the requested three-level scheme. The single-product
+  base is **singular** (`/product/`) while the taxonomy owns the plural
+  (`/products/`), which removes the base collision that caused the
+  original archive 404 rather than working around it:
+
+  | Page | URL |
+  |---|---|
+  | Products overview | `/products/` |
+  | Category archive | `/products/{category}/` |
+  | Single product | `/product/{category}/{product}/` |
+
+  The category is folded into a product's path via a
+  `%addlar_product_category%` placeholder substituted per post
+  (`addlar_product_permalink()`). The rewrite tag is registered
+  explicitly — if it were missing, WordPress would leave the literal
+  placeholder in the rule and every product URL would 404.
+
+### Fixed
+- **Breadcrumbs were invisible on product pages.** The site header is
+  `position: fixed` at 78px and the homepage hero clears it with its own
+  `margin-top: 78px`; the breadcrumb, as the page's first element, had no
+  such offset and rendered underneath the header. It now lives inside the
+  hero (which carries the offset), so it can't be hidden — and the
+  standalone breadcrumb widget got the same offset for archive pages.
+
+### Changed — product page composition
+- **Applications** now use the homepage Applications section's dark
+  icon-list treatment (`Addlar_Widget_IconList`, reusing `.applist`/
+  `.appitem`) instead of a row of chips.
+- **"Product at a glance"** keeps the homepage's big-number band and now
+  carries a background image, matching the homepage's own stat band.
+- **Removed** on request: the "Engineered for real-world performance"
+  photo banner, the two-image tile block under Viscosity grades, and the
+  Related Products grid.
+- **Added** `Addlar_Widget_CtaBar` — the homepage's black LinkedIn-bar
+  treatment (`.li-follow`) reused as a compact closing CTA, replacing the
+  removed tile block. It also replaces the red Closing CTA on product
+  pages so the page doesn't end on two stacked calls to action; say the
+  word if you'd rather have both.
+
+### Changed — About Us / Contact Us / Ask the Expert
+- All three rebuilt on the same components as the homepage and product
+  pages: dark hero with breadcrumb and spec chips, hex-icon spec cards,
+  the dark icon list, the big-number stat band, and a black CTA bar —
+  replacing the plainer page-intro/rich-text layouts.
+
 ## [1.5.1] — 2026-08-19
 
 ### Fixed
