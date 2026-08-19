@@ -52,6 +52,14 @@ function addlar_register_product_cpt() {
 		'public'            => true,
 		'show_in_rest'      => true,
 		'hierarchical'      => true,
+		// Explicit rather than left to WP's public=>true default: a taxonomy
+		// missing these is a plausible reason it doesn't appear in Elementor
+		// Theme Builder's Archive → Taxonomy condition picker (unconfirmed
+		// without a live install — see addlar_category_template_mode() for
+		// the guaranteed-working fallback if this doesn't fix it).
+		'show_ui'           => true,
+		'show_in_nav_menus' => true,
+		'show_admin_column' => true,
 		'rewrite'           => array( 'slug' => 'products/category', 'with_front' => false ),
 	) );
 }

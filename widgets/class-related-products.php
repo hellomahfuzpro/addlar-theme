@@ -65,6 +65,11 @@ class Addlar_Widget_RelatedProducts extends Addlar_Base_Widget {
 			'max'     => 24,
 		) );
 
+		$this->add_control( 'mark', array(
+			'label' => __( 'Corner mark (optional)', 'addlar' ),
+			'type'  => Controls_Manager::MEDIA,
+		) );
+
 		$this->end_controls_section();
 	}
 
@@ -110,6 +115,8 @@ class Addlar_Widget_RelatedProducts extends Addlar_Base_Widget {
 			$args['post__not_in'] = array( $post_id );
 		}
 
+		$mark = $this->media_url( isset( $s['mark'] ) ? $s['mark'] : array(), 'full' );
+
 		$query = new WP_Query( $args );
 		if ( ! $query->have_posts() ) {
 			return;
@@ -129,7 +136,12 @@ class Addlar_Widget_RelatedProducts extends Addlar_Base_Widget {
 					?>
 					<a class="pcard reveal" href="<?php the_permalink(); ?>">
 						<?php if ( has_post_thumbnail() ) : ?>
-							<div class="imgwrap"><?php the_post_thumbnail( 'medium' ); ?></div>
+							<div class="imgwrap">
+								<?php the_post_thumbnail( 'medium' ); ?>
+								<?php if ( $mark ) : ?>
+									<img class="cmark" src="<?php echo esc_url( $mark ); ?>" alt="">
+								<?php endif; ?>
+							</div>
 						<?php endif; ?>
 						<div class="body">
 							<?php if ( $sub ) : ?>

@@ -3,6 +3,48 @@
 All notable changes to the ADDLAR theme. Keep the top version in sync with
 `Version:` in `style.css` — the updater reads it from there.
 
+## [1.3.0] — 2026-08-19
+
+Second round of feedback on the product page redesign: still not visual
+enough, every page image needs the ADDLAR mark, the category archive
+condition doesn't appear in Elementor's Theme Builder picker, and a
+guaranteed non-Elementor fallback was requested for that.
+
+### Added
+- `Addlar_Widget_ImageBanner`: full-bleed background-photo band with a dark
+  scrim and centered text — the section type the reference competitor pages
+  use repeatedly and the redesign was missing (everything was plain white
+  sections with one contained photo). Interleaved into every product page
+  between the benefits box and the data tables.
+- `Addlar_Widget_ImageGrid` gained a `tile` style (bordered card, title
+  overlaid on the photo) alongside the original caption-under-image style,
+  used to break up the product page's table sections with a 2-tile row
+  (the product's own photo + a link into its category archive).
+- 6 new free-license stock photos (one more per category, sourced from
+  Unsplash), so a product page's hero/banner/tile sections don't all show
+  the exact same photo. Checked each candidate by hand and rejected ones
+  with a competitor's logo/branding visible in frame (an Audi badge, a
+  Mobil 1 oil bottle) before picking the final six.
+- Every image-bearing widget touched this pass (spec header, image banner,
+  image grid, related products) can now render the ADDLAR mark in the
+  image's bottom corner, matching the treatment already used on the
+  homepage's Product Grid.
+- `addlar_category_template_mode` setting (Tools → ADDLAR setup): forces
+  the category archive to use the coded template
+  (`taxonomy-addlar_product_category.php`) instead of the Elementor Theme
+  Builder template, by clearing the Theme Builder template's condition so
+  Elementor never intercepts the URL. Guaranteed to work regardless of
+  whether Elementor recognises the taxonomy.
+
+### Fixed (best-effort)
+- `addlar_product_category` taxonomy registration now sets `show_ui`,
+  `show_in_nav_menus` and `show_admin_column` explicitly (previously
+  implied only through `public => true`) — a plausible but unconfirmed
+  cause of the taxonomy not appearing in Elementor Theme Builder's
+  condition picker. Can't be verified without a live Elementor install,
+  which is exactly why the settings toggle above exists as a guaranteed
+  fallback independent of whether this fix actually resolves it.
+
 ## [1.2.0] — 2026-08-19
 
 ### Changed

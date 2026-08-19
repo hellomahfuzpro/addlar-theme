@@ -130,6 +130,15 @@ function addlar_image_slots() {
 		'product-9312'  => 'products/9312.png',
 		'product-9342'  => 'products/9342.png',
 		'product-z2612' => 'products/z2612.png',
+		// A second free-license stock photo per category, so one product page
+		// doesn't repeat the exact same image for its hero, banner and tile
+		// sections — see addlar_category_image_slots_secondary().
+		'engine-oil-2'   => 'engine-oil-2.jpg',
+		'driveline-2'    => 'driveline-2.jpg',
+		'marine-2'       => 'marine-2.jpg',
+		'industrial-2'   => 'industrial-2.jpg',
+		'metalworking-2' => 'metalworking-2.jpg',
+		'components-2'   => 'components-2.jpg',
 	) );
 }
 
@@ -414,6 +423,24 @@ function addlar_category_image_slots() {
 }
 
 /**
+ * Category name => a second, different stock-photo slot for that family —
+ * used for a product page's banner/tile sections so the page doesn't show
+ * its hero photo two or three more times further down. Free-license photos
+ * (Unsplash), same "placeholder now, client can replace later" convention
+ * as the original 6 category photos.
+ */
+function addlar_category_image_slots_secondary() {
+	return array(
+		'Engine Oil Additive' => 'engine-oil-2',
+		'Driveline'           => 'driveline-2',
+		'Marine'              => 'marine-2',
+		'Industrial'          => 'industrial-2',
+		'Metal Working Fluid' => 'metalworking-2',
+		'Lubricant Component' => 'components-2',
+	);
+}
+
+/**
  * Resolve one product's hero image: its own real campaign graphic if it has
  * one (7 of the 22 do — see addlar_product_photo_slots()), otherwise its
  * category's stock photo, so every product page gets a real, on-brand image
@@ -437,6 +464,23 @@ function addlar_product_hero_image( $code, $category ) {
 		return addlar_seed_image( $cat_slots[ $category ] );
 	}
 
+	return array();
+}
+
+/**
+ * A product page's second image (banner/tile sections) — always the
+ * category's secondary stock photo, regardless of whether the product has
+ * its own real hero graphic, so a product with a real campaign photo still
+ * gets visual variety further down the page instead of repeating it.
+ *
+ * @param string $category Category name.
+ * @return array Elementor media value, or empty array.
+ */
+function addlar_product_secondary_image( $category ) {
+	$cat_slots = addlar_category_image_slots_secondary();
+	if ( isset( $cat_slots[ $category ] ) ) {
+		return addlar_seed_image( $cat_slots[ $category ] );
+	}
 	return array();
 }
 
@@ -712,7 +756,7 @@ function addlar_seed_products() {
 		// template. Re-seeding overwrites manual edits, same "safe to re-run,
 		// but re-running replaces the layout" contract as the homepage.
 		if ( did_action( 'elementor/loaded' ) ) {
-			$tree = addlar_build_tree( addlar_product_template_widgets() );
+			$tree = addlar_build_tree( addlar_product_template_widgets( $code, $p['category'] ) );
 			addlar_save_page( $post_id, $tree, false );
 		}
 
@@ -758,26 +802,68 @@ add_action( 'init', 'addlar_enable_elementor_for_products', 20 );
  * per-post content, not a shared template — hence seeding this same widget
  * list onto each post's own `_elementor_data` instead.
  *
+ * A second round of feedback specifically wanted more of the page to look
+ * like the reference: full-bleed background-photo bands and photo tiles
+ * breaking up the data sections, not just one photo at the very top. Real
+ * asset inventory is 2 free-license photos per category (the product's own
+ * hero photo + one more — see addlar_product_secondary_image()), so rather
+ * than force a 4-tile row that would repeat one photo needlessly, the same
+ * 1–2 real photos are used at different visual treatments (full hero, dimmed
+ * full-bleed banner, bordered tile) spaced through the page, plus the
+ * Related Products grid further down is its own genuinely photo-rich zone
+ * (each related product shows its own real image).
+ *
+ * @param string $code     Bare product code.
+ * @param string $category Category name.
  * @return array
  */
-function addlar_product_template_widgets() {
+function addlar_product_template_widgets( $code, $category ) {
 	$fragment = function ( $key ) {
 		return array( 'type' => 'addlar_product_fragment', 'settings' => array( 'fragment' => $key ) );
 	};
 
+	$mark      = addlar_seed_image( 'mark-white' );
+	$secondary = addlar_product_secondary_image( $category );
+	$cat_link  = addlar_product_category_link( $category, '/products/' );
+
 	return array(
-		array( 'type' => 'addlar_product_spec_header', 'settings' => array() ),
+		array(
+			'type'     => 'addlar_product_spec_header',
+			'settings' => array( 'mark' => $mark ),
+		),
 		array( 'type' => 'addlar_product_benefits', 'settings' => array() ),
+		array(
+			'type'     => 'addlar_image_banner',
+			'settings' => array(
+				'height'  => 'short',
+				'image'   => $secondary,
+				'mark'    => $mark,
+				'eyebrow' => $category,
+				'title'   => __( 'Engineered for real-world performance', 'addlar' ),
+			),
+		),
 		$fragment( 'description' ),
 		$fragment( 'applications' ),
 		$fragment( 'performance' ),
+		array(
+			'type'     => 'addlar_image_grid',
+			'settings' => array(
+				'style'   => 'tile',
+				'columns' => '2',
+				'mark'    => $mark,
+				'items'   => addlar_rep( array(
+					array( 'image' => addlar_product_hero_image( $code, $category ), 'caption' => 'ADDLAR ' . $code, 'link' => array( 'url' => '' ) ),
+					array( 'image' => $secondary, 'caption' => sprintf( /* translators: %s: category name */ __( 'Explore %s →', 'addlar' ), $category ), 'link' => array( 'url' => $cat_link ) ),
+				) ),
+			),
+		),
 		$fragment( 'approvals' ),
 		$fragment( 'formulation' ),
 		$fragment( 'properties' ),
 		$fragment( 'viscosity' ),
 		array(
 			'type'     => 'addlar_related_products',
-			'settings' => array( 'mode' => 'current', 'heading' => __( 'Related Products', 'addlar' ) ),
+			'settings' => array( 'mode' => 'current', 'heading' => __( 'Related Products', 'addlar' ), 'mark' => $mark ),
 		),
 		array(
 			'type'     => 'addlar_closing_cta',
@@ -794,6 +880,7 @@ function addlar_product_template_widgets() {
  * @return array
  */
 function addlar_category_archive_template_widgets() {
+	$mark = addlar_seed_image( 'mark-white' );
 	return array(
 		array(
 			'type'     => 'addlar_page_intro',
@@ -801,7 +888,7 @@ function addlar_category_archive_template_widgets() {
 		),
 		array(
 			'type'     => 'addlar_related_products',
-			'settings' => array( 'mode' => 'archive', 'heading' => '', 'count' => 24 ),
+			'settings' => array( 'mode' => 'archive', 'heading' => '', 'count' => 24, 'mark' => $mark ),
 		),
 	);
 }
@@ -926,6 +1013,24 @@ function addlar_remove_stale_product_template() {
 }
 
 /**
+ * 'elementor' (default) or 'coded' — whether the category archive should
+ * use the Theme Builder template or always fall through to the coded
+ * `taxonomy-addlar_product_category.php` template. A settings toggle
+ * (Tools → ADDLAR setup) rather than something only fixable in code: the
+ * taxonomy not appearing in Elementor's Theme Builder condition picker is a
+ * real, reported problem that can't be fully diagnosed or guaranteed fixed
+ * without a live Elementor install, so this gives a guaranteed-working
+ * escape hatch regardless of whether the taxonomy-registration fix in
+ * inc/products-cpt.php actually resolves it.
+ *
+ * @return string
+ */
+function addlar_category_template_mode() {
+	$mode = get_option( 'addlar_category_template_mode', 'elementor' );
+	return 'coded' === $mode ? 'coded' : 'elementor';
+}
+
+/**
  * Seed the category archive Elementor Theme Builder template, conditioned
  * to the addlar_product_category taxonomy. This is what fixes "category
  * page shows not exist" together with the flush_rewrite_rules() call in
@@ -933,15 +1038,33 @@ function addlar_remove_stale_product_template() {
  * rewrite rules are regenerated after a new taxonomy is registered, quite
  * apart from whether a template exists for it.
  *
+ * When addlar_category_template_mode() is 'coded', the template's condition
+ * is cleared instead of set, so Elementor never intercepts the archive URL
+ * and WordPress's normal template hierarchy reaches
+ * taxonomy-addlar_product_category.php — the guaranteed-working path.
+ *
  * @return array template_id + message
  */
 function addlar_seed_category_archive_theme_builder_template() {
-	return addlar_seed_theme_builder_template(
+	if ( 'coded' === addlar_category_template_mode() ) {
+		$result = addlar_seed_theme_builder_template(
+			'ADDLAR Product — Category Archive',
+			'archive',
+			array(), // No condition — Elementor never claims this URL.
+			addlar_category_archive_template_widgets()
+		);
+		$result['message'] = __( 'Category archive: using the coded template (Theme Builder disabled in settings).', 'addlar' );
+		return $result;
+	}
+
+	$result             = addlar_seed_theme_builder_template(
 		'ADDLAR Product — Category Archive',
 		'archive',
 		array( 'include/taxonomy/addlar_product_category' ),
 		addlar_category_archive_template_widgets()
 	);
+	$result['message'] .= ' ' . __( 'If "Product Categories" doesn\'t appear as a condition option in Elementor, switch to the coded template below instead.', 'addlar' );
+	return $result;
 }
 
 /**
@@ -1335,6 +1458,15 @@ function addlar_tools_page_render() {
 		$flush_notice = __( 'Permalinks flushed.', 'addlar' );
 	}
 
+	$category_mode_notice = '';
+	if ( isset( $_POST['addlar_category_mode'] ) && check_admin_referer( 'addlar_category_mode_action' ) ) {
+		$mode = 'coded' === sanitize_key( wp_unslash( $_POST['addlar_category_mode'] ) ) ? 'coded' : 'elementor';
+		update_option( 'addlar_category_template_mode', $mode );
+		$result = addlar_seed_category_archive_theme_builder_template();
+		flush_rewrite_rules();
+		$category_mode_notice = $result['message'];
+	}
+
 	echo '<div class="wrap"><h1>' . esc_html__( 'ADDLAR setup', 'addlar' ) . '</h1>';
 
 	if ( $notice ) {
@@ -1372,6 +1504,23 @@ function addlar_tools_page_render() {
 	echo '<form method="post">';
 	wp_nonce_field( 'addlar_flush_action' );
 	submit_button( __( 'Flush permalinks', 'addlar' ), 'secondary', 'addlar_flush' );
+	echo '</form>';
+
+	echo '<hr>';
+
+	echo '<h2>' . esc_html__( 'Category archive template', 'addlar' ) . '</h2>';
+	if ( $category_mode_notice ) {
+		echo '<div class="notice notice-success"><p>' . wp_kses_post( $category_mode_notice ) . '</p></div>';
+	}
+	echo '<p>' . esc_html__( 'If the "Product Categories" taxonomy doesn\'t show up as an option in Elementor\'s own Theme Builder condition picker, switch this to the coded template — it doesn\'t depend on Elementor recognising the taxonomy at all and works immediately.', 'addlar' ) . '</p>';
+	$current_mode = addlar_category_template_mode();
+	echo '<form method="post">';
+	wp_nonce_field( 'addlar_category_mode_action' );
+	echo '<p>';
+	echo '<label style="margin-right:20px;"><input type="radio" name="addlar_category_mode" value="elementor"' . checked( 'elementor', $current_mode, false ) . '> ' . esc_html__( 'Elementor Theme Builder (default)', 'addlar' ) . '</label>';
+	echo '<label><input type="radio" name="addlar_category_mode" value="coded"' . checked( 'coded', $current_mode, false ) . '> ' . esc_html__( 'Coded template (guaranteed to work)', 'addlar' ) . '</label>';
+	echo '</p>';
+	submit_button( __( 'Save', 'addlar' ), 'secondary', 'addlar_save_category_mode' );
 	echo '</form>';
 
 	echo '<hr>';

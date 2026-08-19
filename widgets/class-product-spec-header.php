@@ -70,6 +70,11 @@ class Addlar_Widget_ProductSpecHeader extends Addlar_Base_Widget {
 			'default' => array( 'url' => '/contact-us/' ),
 		) );
 
+		$this->add_control( 'mark', array(
+			'label' => __( 'Corner mark (optional)', 'addlar' ),
+			'type'  => Controls_Manager::MEDIA,
+		) );
+
 		$this->end_controls_section();
 	}
 
@@ -114,8 +119,12 @@ class Addlar_Widget_ProductSpecHeader extends Addlar_Base_Widget {
 				</div>
 
 				<?php if ( 'yes' === $s['show_image'] && has_post_thumbnail( $post_id ) ) : ?>
+					<?php $mark = $this->media_url( isset( $s['mark'] ) ? $s['mark'] : array(), 'full' ); ?>
 					<div class="spec-hero-image">
 						<?php echo get_the_post_thumbnail( $post_id, 'large' ); ?>
+						<?php if ( $mark ) : ?>
+							<img class="cmark" src="<?php echo esc_url( $mark ); ?>" alt="">
+						<?php endif; ?>
 					</div>
 				<?php endif; ?>
 
