@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'ADDLAR_VERSION', '1.9.0' );
+define( 'ADDLAR_VERSION', '1.10.0' );
 define( 'ADDLAR_DIR', get_template_directory() );
 define( 'ADDLAR_URI', get_template_directory_uri() );
 
@@ -82,6 +82,7 @@ add_action( 'elementor/preview/enqueue_styles', 'addlar_elementor_preview_assets
 
 require_once ADDLAR_DIR . '/inc/icons.php';
 require_once ADDLAR_DIR . '/inc/finder-data.php';
+require_once ADDLAR_DIR . '/inc/linkedin-posts.php';
 require_once ADDLAR_DIR . '/inc/products-cpt.php';
 require_once ADDLAR_DIR . '/inc/products-render.php';
 require_once ADDLAR_DIR . '/inc/products-data.php';

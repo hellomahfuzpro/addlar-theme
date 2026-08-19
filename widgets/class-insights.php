@@ -31,26 +31,18 @@ class Addlar_Widget_Insights extends Addlar_Base_Widget {
 	}
 
 	private function default_posts() {
-		return array(
-			array(
-				'kind'  => 'Heavy-Duty Diesel',
-				'title' => 'ADDLAR on Soot Control: why modern HDEO formulation requires a balanced additive system',
-				'text'  => 'Soot control is more than dispersant chemistry. Balancing soot handling, oxidation stability, detergency, anti-wear and viscosity retention across EGR-equipped, high-load duty cycles — with ADDLAR 7750, 7730 and 7706.',
-				'link'  => array( 'url' => 'https://www.linkedin.com/posts/addlar-lubricant-additives_hdeo-sootcontrol-dieselengineoil-activity-7485585693746966528-uZnF', 'is_external' => 'on' ),
-			),
-			array(
-				'kind'  => 'Gear Oils',
-				'title' => 'ADDLAR KC562: EP chemistry for high-load gear oil formulations',
-				'text'  => 'Gear oils face high torque, sliding contact and shock loading. How KC562 meets API GL-5 and GL-4 across automotive axle, transmission and industrial gear oils — verified on the FZG S-A10/16.6R/90 test.',
-				'link'  => array( 'url' => 'https://www.linkedin.com/posts/addlar-lubricant-additives_%F0%9D%97%94%F0%9D%97%97%F0%9D%97%97%F0%9D%97%9F%F0%9D%97%94%F0%9D%97%A5-kc562-activity-7485944178733043713-5nDv', 'is_external' => 'on' ),
-			),
-			array(
-				'kind'  => 'Base Oils',
-				'title' => 'Switching from Group I to Group II or Group III base oils?',
-				'text'  => "An additive package performs differently across base oil groups. Why additive strategy can't be separated from base oil strategy — across oxidation stability, solubility, low-temperature flow and seal compatibility.",
-				'link'  => array( 'url' => 'https://www.linkedin.com/posts/addlar-lubricant-additives_lubricantformulation-baseoil-tribology-activity-7483771438290681857-DgMW', 'is_external' => 'on' ),
-			),
-		);
+		// Sourced from addlar_linkedin_posts() (inc/linkedin-posts.php) so the
+		// homepage, the seeder and the blog page cannot drift apart.
+		$posts = array();
+		foreach ( addlar_linkedin_posts() as $p ) {
+			$posts[] = array(
+				'kind'  => $p['kind'],
+				'title' => $p['title'],
+				'text'  => $p['text'],
+				'link'  => array( 'url' => $p['url'], 'is_external' => 'on' ),
+			);
+		}
+		return $posts;
 	}
 
 	protected function register_controls() {

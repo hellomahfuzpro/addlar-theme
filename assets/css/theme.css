@@ -530,3 +530,23 @@ body { margin: 0; }
 .adl .nav-links a.page-numbers:hover { border-color: var(--adl-red); color: var(--adl-red); }
 .adl .nav-links .page-numbers.current { background: var(--adl-red); border-color: var(--adl-red); color: #fff; }
 .adl .screen-reader-text { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(1px,1px,1px,1px); white-space: nowrap; }
+
+/* ===== BLOG BANDS =====
+ * The blog page carries two different kinds of thing — LinkedIn posts that
+ * leave the site, and articles published here. Each band gets an eyebrow
+ * label, a heading and (for articles) a soft ground, so the distinction is
+ * readable rather than something the visitor has to infer from the cards. */
+.adl .band-title { margin: 14px 0 10px; }
+.adl .band-note { font-size: 14.5px; color: var(--adl-grey); margin-bottom: 6px; }
+.adl .band-empty {
+	background: #fff;
+	border: 1px solid var(--adl-line);
+	border-left: 3px solid var(--adl-red);
+	padding: 22px 26px;
+	margin-top: 22px;
+	font-size: 15px;
+}
+/* li-grid carries its own top margin for the homepage's centred heading;
+ * these bands set their own rhythm above it. */
+.adl .band-title + .band-note + .li-grid,
+.adl .band-title + .li-grid { margin-top: 30px; }

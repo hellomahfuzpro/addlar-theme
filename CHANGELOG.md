@@ -3,6 +3,33 @@
 All notable changes to the ADDLAR theme. Keep the top version in sync with
 `Version:` in `style.css` — the updater reads it from there.
 
+## [1.10.0] — 2026-08-19
+
+### Added
+- **The blog page now carries the LinkedIn section above the article
+  grid**, the same featured posts shown on the homepage. The two are
+  clearly separated rather than left for the reader to work out: each band
+  has its own eyebrow label and heading — *From LinkedIn / Discussion on
+  our showcase page* and *Articles / Published on this site* — the
+  articles band sits on a soft ground, and LinkedIn cards say "Read on
+  LinkedIn" and open in a new tab while articles say "Read article".
+- The empty state now reads as intentional: when nothing is published
+  yet, the articles band says so and points at the LinkedIn discussion
+  above, instead of showing a bare heading over nothing.
+
+### Changed
+- **LinkedIn posts now have one definition.** They had been written out
+  twice already — as the Insights widget's control defaults and again in
+  the seeder — and the blog page needed them a third time. All three now
+  read `addlar_linkedin_posts()` (`inc/linkedin-posts.php`), so updating a
+  post is one edit rather than three that can silently disagree. The set
+  is overridable via the `addlar_linkedin_posts` filter.
+- The blog page resolves LinkedIn images read-only — it prefers the copy
+  the seeder imported into the Media Library, so a replaced image is
+  honoured, and falls back to the bundled file. It deliberately never
+  calls the seeder's import path, which would sideload media during a
+  visitor's page request.
+
 ## [1.9.0] — 2026-08-19
 
 All 22 Product Data Sheets re-read from Drive and transcribed properly.

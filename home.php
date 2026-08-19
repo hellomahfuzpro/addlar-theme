@@ -7,9 +7,13 @@
  * assigned page's content anyway, so there is nothing for Elementor to
  * edit here.
  *
- * Uses the same components as the rest of the site — the dark hero with
- * its breadcrumb, and the homepage Insights section's `.li-grid`/`.licard`
- * cards for the post list — so the blog doesn't read as a different site.
+ * Two clearly separated bands, because the page mixes two different kinds
+ * of thing and a reader should never have to guess which is which:
+ *   1. "From LinkedIn" — the same featured posts as the homepage, sourced
+ *      from addlar_linkedin_posts() so the two can't drift apart. These
+ *      leave the site, so they open in a new tab and say so.
+ *   2. "Articles" — posts published here in WordPress, on a soft ground to
+ *      separate the band visually as well as by label.
  *
  * @package Addlar
  */
@@ -18,6 +22,7 @@ get_header();
 
 $blog_id = (int) get_option( 'page_for_posts' );
 $title   = $blog_id ? get_the_title( $blog_id ) : __( 'Insights', 'addlar' );
+$li_url  = addlar_mod( 'addlar_linkedin_url' );
 ?>
 <div class="adl">
 
@@ -34,20 +39,67 @@ $title   = $blog_id ? get_the_title( $blog_id ) : __( 'Insights', 'addlar' );
 			<div class="prod-hero-copy">
 				<span class="eyebrow"><?php esc_html_e( 'From the ADDLAR desk', 'addlar' ); ?></span>
 				<h1><?php echo esc_html( $title ); ?></h1>
-				<p class="lead"><?php esc_html_e( 'Formulation notes, specification updates and technical discussion from our chemists.', 'addlar' ); ?></p>
+				<p class="lead"><?php esc_html_e( 'Formulation notes, specification updates and technical discussion from our chemists — here and on LinkedIn.', 'addlar' ); ?></p>
 				<div class="prod-hero-btns">
 					<a class="btn btn-red" href="<?php echo esc_url( home_url( '/ask-the-expert/' ) ); ?>"><?php esc_html_e( 'Ask the expert →', 'addlar' ); ?></a>
-					<?php $li = addlar_mod( 'addlar_linkedin_url' ); ?>
-					<?php if ( $li ) : ?>
-						<a class="btn btn-white" href="<?php echo esc_url( $li ); ?>" target="_blank" rel="noopener"><?php esc_html_e( 'Follow on LinkedIn', 'addlar' ); ?></a>
+					<?php if ( $li_url ) : ?>
+						<a class="btn btn-white" href="<?php echo esc_url( $li_url ); ?>" target="_blank" rel="noopener"><?php esc_html_e( 'Follow on LinkedIn', 'addlar' ); ?></a>
 					<?php endif; ?>
 				</div>
 			</div>
 		</div>
 	</section>
 
-	<main class="section">
+	<?php /* -------------------------------------------------- LinkedIn */ ?>
+	<?php $li_posts = function_exists( 'addlar_linkedin_posts' ) ? addlar_linkedin_posts() : array(); ?>
+	<?php if ( $li_posts ) : ?>
+		<section class="section">
+			<div class="wrap">
+				<span class="eyebrow"><?php esc_html_e( 'From LinkedIn', 'addlar' ); ?></span>
+				<h2 class="title band-title"><?php esc_html_e( 'Discussion on our showcase page.', 'addlar' ); ?></h2>
+				<p class="band-note"><?php esc_html_e( 'These open on LinkedIn in a new tab.', 'addlar' ); ?></p>
+
+				<div class="li-grid">
+					<?php foreach ( $li_posts as $p ) : ?>
+						<a class="licard reveal" href="<?php echo esc_url( $p['url'] ); ?>" target="_blank" rel="noopener">
+							<div class="imgwrap">
+								<img src="<?php echo esc_url( addlar_linkedin_image_url( $p ) ); ?>" alt="" loading="lazy">
+							</div>
+							<div class="body">
+								<span class="kind"><?php echo esc_html( $p['kind'] ); ?></span>
+								<h3><?php echo esc_html( $p['title'] ); ?></h3>
+								<p><?php echo esc_html( $p['text'] ); ?></p>
+								<div class="go">
+									<span><?php esc_html_e( 'Read on LinkedIn', 'addlar' ); ?></span>
+									<span class="arw">&rarr;</span>
+								</div>
+							</div>
+						</a>
+					<?php endforeach; ?>
+				</div>
+
+				<?php if ( $li_url ) : ?>
+					<div class="li-follow reveal">
+						<div class="lf-l">
+							<div class="lf-ic"><?php addlar_icon_linkedin(); ?></div>
+							<div>
+								<h3><?php esc_html_e( 'Follow ADDLAR on LinkedIn', 'addlar' ); ?></h3>
+								<p><?php esc_html_e( 'Formulation notes, specification updates and product releases.', 'addlar' ); ?></p>
+							</div>
+						</div>
+						<a class="btn btn-red" href="<?php echo esc_url( $li_url ); ?>" target="_blank" rel="noopener"><?php esc_html_e( 'Follow the showcase →', 'addlar' ); ?></a>
+					</div>
+				<?php endif; ?>
+			</div>
+		</section>
+	<?php endif; ?>
+
+	<?php /* -------------------------------------------------- Articles */ ?>
+	<section class="section soft">
 		<div class="wrap">
+			<span class="eyebrow"><?php esc_html_e( 'Articles', 'addlar' ); ?></span>
+			<h2 class="title band-title"><?php esc_html_e( 'Published on this site.', 'addlar' ); ?></h2>
+
 			<?php if ( have_posts() ) : ?>
 				<div class="li-grid">
 					<?php
@@ -70,7 +122,7 @@ $title   = $blog_id ? get_the_title( $blog_id ) : __( 'Insights', 'addlar' );
 								<h3><?php the_title(); ?></h3>
 								<p><?php echo esc_html( wp_trim_words( get_the_excerpt(), 32 ) ); ?></p>
 								<div class="go">
-									<span><?php esc_html_e( 'Read more', 'addlar' ); ?></span>
+									<span><?php esc_html_e( 'Read article', 'addlar' ); ?></span>
 									<span class="arw">&rarr;</span>
 								</div>
 							</div>
@@ -89,13 +141,12 @@ $title   = $blog_id ? get_the_title( $blog_id ) : __( 'Insights', 'addlar' );
 				?>
 
 			<?php else : ?>
-				<div class="center">
-					<h2 class="title"><?php esc_html_e( 'Nothing published yet.', 'addlar' ); ?></h2>
-					<p class="lead"><?php esc_html_e( 'Technical notes and formulation insights will appear here. In the meantime, our latest discussion happens on LinkedIn.', 'addlar' ); ?></p>
-				</div>
+				<p class="band-note band-empty">
+					<?php esc_html_e( 'No articles published yet — the first one will appear here. In the meantime, the discussion above is running on LinkedIn.', 'addlar' ); ?>
+				</p>
 			<?php endif; ?>
 		</div>
-	</main>
+	</section>
 
 </div>
 <?php
