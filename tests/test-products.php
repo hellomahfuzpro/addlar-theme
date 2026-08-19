@@ -120,6 +120,17 @@ foreach ( $products as $code => $p ) {
 	check_true( "{$code}: has a title", ! empty( $p['title'] ) );
 	check_true( "{$code}: has a category", ! empty( $p['category'] ) );
 	check_true( "{$code}: has a doc_code", ! empty( $p['doc_code'] ) );
+
+	// Descriptions are the client's own PDS paragraph, not a one-line
+	// summary — a short one means someone replaced transcribed copy.
+	check_true( "{$code}: description is the full PDS paragraph", strlen( $p['description'] ) >= 120 );
+
+	// Every typical-properties row must carry its real ASTM/test method.
+	// These were blank for a whole release; this stops that recurring.
+	foreach ( addlar_product_table_rows( $p['properties_text'] ) as $i => $cells ) {
+		check_true( "{$code}: property row " . ( $i + 1 ) . ' has 3 columns', count( $cells ) >= 3 );
+		check_true( "{$code}: property row " . ( $i + 1 ) . " ('" . $cells[0] . "') has a test method", isset( $cells[1] ) && '' !== trim( $cells[1] ) );
+	}
 }
 
 /* ------- Every product's seeded spec cards are renderable, for real ------ *

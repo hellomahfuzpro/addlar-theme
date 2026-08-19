@@ -3,6 +3,41 @@
 All notable changes to the ADDLAR theme. Keep the top version in sync with
 `Version:` in `style.css` — the updater reads it from there.
 
+## [1.9.0] — 2026-08-19
+
+All 22 Product Data Sheets re-read from Drive and transcribed properly.
+
+### Fixed — real data errors found by re-reading the source
+- **7009's kinematic viscosity was 160 cSt. That is its Base Number.** The
+  real value is 65 cSt, and its density (1025 kg/m3) was missing entirely.
+- **Six products had the wrong "Appearance" value**, all recorded as
+  "Brown Viscous Liquid" when their PDS says otherwise: KC311 (Yellow
+  Light Viscous), KC321 (Brown Clear), KC420 / KC562 / KC563 (Clear
+  Yellow) and Z 2612 (Bright & Clear).
+
+### Added
+- **Every typical-properties row now carries its real test method.** All
+  200 rows across the 22 products previously rendered "—" in the Method
+  column, because an earlier pass refused to guess ASTM codes rather than
+  risk printing a wrong standard next to a client's lab value. They are
+  now read off the PDFs: ASTM D445, D1298, D92, D2896, D3228, D5185 /
+  D4951, D874, D130, D2783, and Visual/Internal where the sheet says so.
+- **Product descriptions are now the client's own PDS copy**, replacing
+  the one-line summaries written here. These are real, approved marketing
+  text — "maximises engine durability by providing exceptional wear
+  protection…" — and feed the product hero's subtitle.
+- KC420's applications carry the detail its own PDS gives: "Deep Hole
+  Drilling (e.g. gun drilling)", "Forming and Stamping (especially on
+  tough materials like stainless steel)", "Cold Heading or Cold Forming".
+- Two regression tests, since both problems above shipped undetected:
+  every property row must have a non-empty method, and every description
+  must be a full paragraph rather than a one-line summary. Test count is
+  now 775 assertions.
+
+### Note
+9100 and 9300 still show "—" for viscosity and density. Those cells are
+genuinely blank in the source PDS — not a transcription gap.
+
 ## [1.8.0] — 2026-08-19
 
 ### Fixed
