@@ -428,3 +428,14 @@ body { margin: 0; }
 	.adl .applist-2,
 	.adl .applist-3 { grid-template-columns: 1fr; }
 }
+
+/* Stat Band with a hexagon stage: the numbers sit beside the hexagon
+ * rather than spanning the band, so they need their own compact grid.
+ * Used on product pages that have no Applications section, so the
+ * hexagon treatment still appears somewhere on the page. */
+.adl .nums .appwrap { margin-top: 44px; }
+.adl .numgrid-staged { margin-top: 0; }
+.adl .numgrid-staged .nstat { padding: 26px 18px; }
+@media (max-width: 860px) {
+	.adl .numgrid-staged { grid-template-columns: repeat(2, 1fr); }
+}

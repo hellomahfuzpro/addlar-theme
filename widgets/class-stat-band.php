@@ -75,6 +75,23 @@ class Addlar_Widget_StatBand extends Addlar_Base_Widget {
 			'description' => __( 'Match this to how many statistics you actually add below.', 'addlar' ),
 		) );
 
+		$this->add_control( 'stage_image', array(
+			'label'       => __( 'Hexagon image', 'addlar' ),
+			'type'        => Controls_Manager::MEDIA,
+			'description' => __( 'Optional. Shown hex-clipped beside the numbers, matching the homepage Applications section. Leave empty for the full-width number band.', 'addlar' ),
+		) );
+
+		$this->add_control( 'stage_drop', array(
+			'label' => __( 'Centre mark', 'addlar' ),
+			'type'  => Controls_Manager::MEDIA,
+		) );
+
+		$this->add_control( 'stage_caption', array(
+			'label'   => __( 'Caption under the hexagon', 'addlar' ),
+			'type'    => Controls_Manager::TEXT,
+			'default' => '',
+		) );
+
 		$this->end_controls_section();
 
 		$this->start_controls_section( 'stats_section', array(
@@ -136,24 +153,48 @@ class Addlar_Widget_StatBand extends Addlar_Base_Widget {
 				<h2 style="margin-top:16px"><?php echo esc_html( $s['title'] ); ?></h2>
 			<?php endif; ?>
 		</div>
+		<?php
+		$stage = $this->media_url( isset( $s['stage_image'] ) ? $s['stage_image'] : array(), 'full' );
+		$drop  = $this->media_url( isset( $s['stage_drop'] ) ? $s['stage_drop'] : array(), 'full' );
+		// With a hexagon the numbers stack beside it rather than spanning the
+		// full width — used on product pages that have no Applications
+		// section, so the hexagon treatment still appears somewhere.
+		$cols  = $stage ? '2' : ( ! empty( $s['columns'] ) ? $s['columns'] : '5' );
+		?>
 		<div class="wrap">
-			<div class="numgrid numgrid-<?php echo esc_attr( ! empty( $s['columns'] ) ? $s['columns'] : '5' ); ?>">
-				<?php foreach ( (array) $s['stats'] as $stat ) : ?>
-					<?php
-					// Initial text mirrors the final format so there is no layout
-					// shift when the count-up starts.
-					$initial = $stat['prefix'] . '0' . ( $stat['suffix'] ? '<small>' . esc_html( $stat['suffix'] ) . '</small>' : '' );
-					?>
-					<div class="nstat reveal">
-						<div class="n"
-							data-count="<?php echo esc_attr( preg_replace( '/[^0-9]/', '', $stat['count'] ) ); ?>"
-							<?php echo $stat['prefix'] ? 'data-prefix="' . esc_attr( $stat['prefix'] ) . '"' : ''; ?>
-							<?php echo $stat['suffix'] ? 'data-suffix="' . esc_attr( $stat['suffix'] ) . '"' : ''; ?>
-							<?php echo 'yes' === $stat['comma'] ? 'data-comma="1"' : ''; ?>
-						><?php echo wp_kses_post( $initial ); ?></div>
-						<div class="l"><?php echo wp_kses_post( $stat['label'] ); ?></div>
+			<div class="<?php echo $stage ? 'appwrap' : ''; ?>">
+				<?php if ( $stage ) : ?>
+					<div class="appstage reveal">
+						<div class="appvid">
+							<img src="<?php echo esc_url( $stage ); ?>" alt="" style="width:100%;height:100%;object-fit:cover;opacity:.82">
+							<?php if ( $drop ) : ?>
+								<img class="appdrop" src="<?php echo esc_url( $drop ); ?>" alt="">
+							<?php endif; ?>
+						</div>
+						<?php if ( ! empty( $s['stage_caption'] ) ) : ?>
+							<div class="appcap"><?php echo esc_html( $s['stage_caption'] ); ?></div>
+						<?php endif; ?>
 					</div>
-				<?php endforeach; ?>
+				<?php endif; ?>
+
+				<div class="numgrid numgrid-<?php echo esc_attr( $cols ); ?><?php echo $stage ? ' numgrid-staged' : ''; ?>">
+					<?php foreach ( (array) $s['stats'] as $stat ) : ?>
+						<?php
+						// Initial text mirrors the final format so there is no layout
+						// shift when the count-up starts.
+						$initial = $stat['prefix'] . '0' . ( $stat['suffix'] ? '<small>' . esc_html( $stat['suffix'] ) . '</small>' : '' );
+						?>
+						<div class="nstat reveal">
+							<div class="n"
+								data-count="<?php echo esc_attr( preg_replace( '/[^0-9]/', '', $stat['count'] ) ); ?>"
+								<?php echo $stat['prefix'] ? 'data-prefix="' . esc_attr( $stat['prefix'] ) . '"' : ''; ?>
+								<?php echo $stat['suffix'] ? 'data-suffix="' . esc_attr( $stat['suffix'] ) . '"' : ''; ?>
+								<?php echo 'yes' === $stat['comma'] ? 'data-comma="1"' : ''; ?>
+							><?php echo wp_kses_post( $initial ); ?></div>
+							<div class="l"><?php echo wp_kses_post( $stat['label'] ); ?></div>
+						</div>
+					<?php endforeach; ?>
+				</div>
 			</div>
 		</div>
 		<?php

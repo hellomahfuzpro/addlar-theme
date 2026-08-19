@@ -3,6 +3,42 @@
 All notable changes to the ADDLAR theme. Keep the top version in sync with
 `Version:` in `style.css` — the updater reads it from there.
 
+## [1.7.0] — 2026-08-19
+
+### Changed
+- **The red Closing CTA band is back on product pages**, replacing the
+  black bar introduced in 1.6.0 — it's the stronger close, and its spec
+  chips now carry the product's own specification rather than generic
+  copy. (The black `CtaBar` widget stays, used for the LinkedIn follow
+  bar on Contact Us and Ask the Expert, which is its role on the
+  homepage.)
+- **The Applications section now has the homepage's hex-clipped image on
+  the left** (`.appwrap`/`.appstage`/`.appvid` reused as-is). Without it
+  the list read as a plain bullet column rather than the homepage's
+  signature layout.
+- **Products with no Applications section get the hexagon on their
+  numbers band instead**, so the treatment appears on every product page.
+  Only some of the 22 products have documented applications (raw
+  components like Z 2612 don't), and `Addlar_Widget_StatBand` gained an
+  optional hexagon stage for exactly this — off by default, so the
+  homepage's own stat band is untouched.
+
+### Changed — Products page and category archives redesigned
+- `/products/` now opens with the dark hero (breadcrumb, spec chips,
+  buttons), then the six family cards, then the homepage's three-step
+  Product Finder — this is the page people land on to choose a product,
+  so the Finder belongs on it — and closes on the red CTA band.
+- Category archives use the same dark hero, with the title and subtitle
+  taken from the term itself (`use_archive_term` on the hero widget), the
+  product grid, and the red CTA band.
+- **Breadcrumbs were missing from both.** They now sit inside the dark
+  hero, which carries the fixed-header offset — a standalone breadcrumb
+  strip at the top of a page renders underneath the fixed header and is
+  invisible, which is the same bug fixed for product pages in 1.6.0.
+- The coded category template (`taxonomy-addlar_product_category.php`,
+  used when the Theme Builder route is switched off) got the same dark
+  hero and breadcrumb, so the fallback isn't visibly a different design.
+
 ## [1.6.0] — 2026-08-19
 
 ### Changed — URL structure

@@ -14,14 +14,32 @@ get_header();
 $term = get_queried_object();
 ?>
 <div class="adl">
-	<main class="section">
-		<div class="wrap center">
-			<span class="eyebrow"><?php esc_html_e( 'Product Category', 'addlar' ); ?></span>
-			<h1 class="title"><?php echo esc_html( $term->name ); ?></h1>
-			<?php if ( $term->description ) : ?>
-				<p class="lead"><?php echo wp_kses_post( $term->description ); ?></p>
-			<?php endif; ?>
+	<?php // Matches the dark archive hero the Elementor template uses, so the
+	// coded fallback isn't visibly a different design. `.prod-hero` also
+	// carries the offset that clears the fixed site header. ?>
+	<section class="prod-hero">
+		<div class="prod-hero-wedge" aria-hidden="true"></div>
+		<div class="wrap prod-hero-crumbs">
+			<nav class="crumbs crumbs-dark crumbs-bare" aria-label="<?php esc_attr_e( 'Breadcrumb', 'addlar' ); ?>">
+				<a href="<?php echo esc_url( home_url( '/' ) ); ?>"><?php esc_html_e( 'Home', 'addlar' ); ?></a>
+				<span class="sep" aria-hidden="true">&rsaquo;</span>
+				<a href="<?php echo esc_url( home_url( '/products/' ) ); ?>"><?php esc_html_e( 'Products', 'addlar' ); ?></a>
+				<span class="sep" aria-hidden="true">&rsaquo;</span>
+				<span class="cur"><?php echo esc_html( $term->name ); ?></span>
+			</nav>
 		</div>
+		<div class="wrap prod-hero-grid">
+			<div class="prod-hero-copy">
+				<span class="eyebrow"><?php esc_html_e( 'Product Category', 'addlar' ); ?></span>
+				<h1><?php echo esc_html( $term->name ); ?></h1>
+				<?php if ( $term->description ) : ?>
+					<p class="lead"><?php echo wp_kses_post( $term->description ); ?></p>
+				<?php endif; ?>
+			</div>
+		</div>
+	</section>
+
+	<main class="section">
 
 		<div class="wrap">
 			<?php if ( have_posts() ) : ?>

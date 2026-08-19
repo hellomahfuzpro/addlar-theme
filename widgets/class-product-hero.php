@@ -48,6 +48,14 @@ class Addlar_Widget_ProductHero extends Addlar_Base_Widget {
 			'default' => 'top',
 		) );
 
+		$this->add_control( 'use_archive_term', array(
+			'label'        => __( 'Use current archive term', 'addlar' ),
+			'type'         => Controls_Manager::SWITCHER,
+			'default'      => '',
+			'return_value' => 'yes',
+			'description'  => __( 'On a category archive, take the title and subtitle from the term instead of the fields below.', 'addlar' ),
+		) );
+
 		$this->add_control( 'eyebrow', array(
 			'label'   => __( 'Eyebrow', 'addlar' ),
 			'type'    => Controls_Manager::TEXT,
@@ -139,6 +147,21 @@ class Addlar_Widget_ProductHero extends Addlar_Base_Widget {
 		$img  = $this->media_url( isset( $s['image'] ) ? $s['image'] : array(), 'full' );
 		$mark = $this->media_url( isset( $s['mark'] ) ? $s['mark'] : array(), 'full' );
 
+		// On a taxonomy archive the term supplies the headline, so one hero
+		// widget serves product pages, the Products page and every category
+		// archive without a separate widget per context.
+		$title    = $s['title'];
+		$subtitle = $s['subtitle'];
+		$is_term  = false;
+		if ( 'yes' === $s['use_archive_term'] && ( is_tax() || is_category() || is_tag() ) ) {
+			$term = get_queried_object();
+			if ( $term && ! empty( $term->name ) ) {
+				$is_term  = true;
+				$title    = $term->name;
+				$subtitle = $term->description ? $term->description : $subtitle;
+			}
+		}
+
 		printf(
 			'<div class="adl"><section class="prod-hero"%s>',
 			! empty( $s['anchor'] ) ? ' id="' . esc_attr( $s['anchor'] ) . '"' : ''
@@ -154,14 +177,14 @@ class Addlar_Widget_ProductHero extends Addlar_Base_Widget {
 			if ( ! empty( $s['crumb_parent'] ) ) {
 				$crumbs[] = array( 'label' => $s['crumb_parent'], 'url' => $parent_url );
 			}
-			if ( $post_id && 'addlar_product' === get_post_type( $post_id ) ) {
+			if ( ! $is_term && $post_id && 'addlar_product' === get_post_type( $post_id ) ) {
 				$terms = get_the_terms( $post_id, 'addlar_product_category' );
 				if ( $terms && ! is_wp_error( $terms ) ) {
 					$tlink    = get_term_link( $terms[0] );
 					$crumbs[] = array( 'label' => $terms[0]->name, 'url' => is_wp_error( $tlink ) ? '' : $tlink );
 				}
 			}
-			$crumbs[] = array( 'label' => $s['title'], 'url' => '' );
+			$crumbs[] = array( 'label' => $title, 'url' => '' );
 			?>
 			<div class="wrap prod-hero-crumbs">
 				<nav class="crumbs crumbs-dark crumbs-bare" aria-label="<?php esc_attr_e( 'Breadcrumb', 'addlar' ); ?>">
@@ -184,12 +207,12 @@ class Addlar_Widget_ProductHero extends Addlar_Base_Widget {
 					<span class="eyebrow"><?php echo esc_html( $s['eyebrow'] ); ?></span>
 				<?php endif; ?>
 
-				<?php if ( ! empty( $s['title'] ) ) : ?>
-					<h1><?php echo esc_html( $s['title'] ); ?></h1>
+				<?php if ( ! empty( $title ) ) : ?>
+					<h1><?php echo esc_html( $title ); ?></h1>
 				<?php endif; ?>
 
-				<?php if ( ! empty( $s['subtitle'] ) ) : ?>
-					<p class="lead"><?php echo wp_kses_post( $s['subtitle'] ); ?></p>
+				<?php if ( ! empty( $subtitle ) ) : ?>
+					<p class="lead"><?php echo wp_kses_post( $subtitle ); ?></p>
 				<?php endif; ?>
 
 				<?php if ( ! empty( $s['chips'] ) ) : ?>
@@ -216,7 +239,7 @@ class Addlar_Widget_ProductHero extends Addlar_Base_Widget {
 
 			<?php if ( $img ) : ?>
 				<div class="prod-hero-media reveal">
-					<img class="prod-hero-img" src="<?php echo esc_url( $img ); ?>" alt="<?php echo esc_attr( $s['title'] ); ?>">
+					<img class="prod-hero-img" src="<?php echo esc_url( $img ); ?>" alt="<?php echo esc_attr( $title ); ?>">
 					<?php if ( $mark ) : ?>
 						<img class="cmark" src="<?php echo esc_url( $mark ); ?>" alt="">
 					<?php endif; ?>

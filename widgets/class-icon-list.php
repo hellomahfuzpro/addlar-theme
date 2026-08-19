@@ -53,6 +53,30 @@ class Addlar_Widget_IconList extends Addlar_Base_Widget {
 
 		$this->end_controls_section();
 
+		$this->start_controls_section( 'stage_section', array(
+			'label' => __( 'Hexagon stage', 'addlar' ),
+		) );
+
+		$this->add_control( 'image', array(
+			'label'       => __( 'Hexagon image', 'addlar' ),
+			'type'        => Controls_Manager::MEDIA,
+			'description' => __( 'Shown hex-clipped to the left of the list, as on the homepage. Leave empty for a full-width list.', 'addlar' ),
+		) );
+
+		$this->add_control( 'drop', array(
+			'label'       => __( 'Centre mark', 'addlar' ),
+			'type'        => Controls_Manager::MEDIA,
+			'description' => __( 'White ADDLAR droplet, centred over the hexagon.', 'addlar' ),
+		) );
+
+		$this->add_control( 'caption', array(
+			'label'   => __( 'Caption under the hexagon', 'addlar' ),
+			'type'    => Controls_Manager::TEXT,
+			'default' => '',
+		) );
+
+		$this->end_controls_section();
+
 		$this->start_controls_section( 'items_section', array(
 			'label' => __( 'Items', 'addlar' ),
 		) );
@@ -101,21 +125,44 @@ class Addlar_Widget_IconList extends Addlar_Base_Widget {
 			</div>
 		<?php endif; ?>
 
+		<?php
+		$stage = $this->media_url( isset( $s['image'] ) ? $s['image'] : array(), 'full' );
+		$drop  = $this->media_url( isset( $s['drop'] ) ? $s['drop'] : array(), 'full' );
+		// With a hexagon the list sits beside it and is always single-column;
+		// without one it spans the full width at the chosen column count.
+		$cols  = $stage ? '1' : $s['columns'];
+		?>
 		<div class="wrap">
-			<div class="applist applist-<?php echo esc_attr( $s['columns'] ); ?>">
-				<?php foreach ( (array) $s['items'] as $item ) : ?>
-					<div class="appitem reveal">
-						<div class="aic"><?php $this->render_icon( $item['icon'] ); ?></div>
-						<div>
-							<?php if ( ! empty( $item['title'] ) ) : ?>
-								<h4><?php echo esc_html( $item['title'] ); ?></h4>
-							<?php endif; ?>
-							<?php if ( ! empty( $item['text'] ) ) : ?>
-								<p><?php echo esc_html( $item['text'] ); ?></p>
+			<div class="<?php echo $stage ? 'appwrap' : ''; ?>">
+				<?php if ( $stage ) : ?>
+					<div class="appstage reveal">
+						<div class="appvid">
+							<img src="<?php echo esc_url( $stage ); ?>" alt="" style="width:100%;height:100%;object-fit:cover;opacity:.82">
+							<?php if ( $drop ) : ?>
+								<img class="appdrop" src="<?php echo esc_url( $drop ); ?>" alt="">
 							<?php endif; ?>
 						</div>
+						<?php if ( ! empty( $s['caption'] ) ) : ?>
+							<div class="appcap"><?php echo esc_html( $s['caption'] ); ?></div>
+						<?php endif; ?>
 					</div>
-				<?php endforeach; ?>
+				<?php endif; ?>
+
+				<div class="applist applist-<?php echo esc_attr( $cols ); ?>">
+					<?php foreach ( (array) $s['items'] as $item ) : ?>
+						<div class="appitem reveal">
+							<div class="aic"><?php $this->render_icon( $item['icon'] ); ?></div>
+							<div>
+								<?php if ( ! empty( $item['title'] ) ) : ?>
+									<h4><?php echo esc_html( $item['title'] ); ?></h4>
+								<?php endif; ?>
+								<?php if ( ! empty( $item['text'] ) ) : ?>
+									<p><?php echo esc_html( $item['text'] ); ?></p>
+								<?php endif; ?>
+							</div>
+						</div>
+					<?php endforeach; ?>
+				</div>
 			</div>
 		</div>
 		<?php

@@ -903,10 +903,16 @@ function addlar_product_template_widgets( $code, array $p ) {
 			'type'     => 'addlar_icon_list',
 			'settings' => array(
 				'anchor'  => '',
-				'columns' => count( $app_items ) > 4 ? '2' : '1',
+				'columns' => '1',
 				'eyebrow' => __( "Where it works", 'addlar' ),
 				'title'   => __( 'Applications.', 'addlar' ),
 				'lede'    => '',
+				// The hex-clipped image on the left is the homepage
+				// Applications section's signature; without it the list reads
+				// as a plain bullet column.
+				'image'   => $secondary,
+				'drop'    => $mark,
+				'caption' => __( 'Additive science — in application', 'addlar' ),
 				'items'   => addlar_rep( $app_items ),
 			),
 		);
@@ -916,10 +922,16 @@ function addlar_product_template_widgets( $code, array $p ) {
 	 * The homepage's big-number band, background photo and all. */
 	$glance = addlar_product_glance_stats( $p );
 	if ( count( $glance ) >= 2 ) {
+		// Products with no Applications section never show the hexagon
+		// treatment otherwise, so it moves onto the numbers band for them.
+		$staged = empty( $applications );
 		$widgets[] = array(
 			'type'     => 'addlar_stat_band',
 			'settings' => array(
-				'anchor'  => '',
+				'anchor'        => '',
+				'stage_image'   => $staged ? $secondary : array(),
+				'stage_drop'    => $staged ? $mark : array(),
+				'stage_caption' => $staged ? __( 'Additive science — in application', 'addlar' ) : '',
 				'eyebrow' => __( 'Product at a glance', 'addlar' ),
 				'title'   => sprintf( /* translators: %s: product name */ __( '%s by the numbers.', 'addlar' ), $p['title'] ),
 				'bg'      => $secondary,
@@ -991,19 +1003,29 @@ function addlar_product_template_widgets( $code, array $p ) {
 	}
 
 	/* -------------------------------------------------------- closing CTA *
-	 * A compact black bar closes the page. The photo-tile pair and the
-	 * related-products grid that used to sit here were both removed on
-	 * request — the tiles repeated images already shown further up, and
-	 * related products duplicated the category archive. */
+	 * The red photographic band, same as the homepage and About Us. An
+	 * earlier pass used a compact black bar here; the red band is the
+	 * stronger close, and its spec chips carry the product's own
+	 * specification rather than generic copy.
+	 *
+	 * The photo-tile pair and Related Products grid that used to sit above
+	 * this were both removed on request. */
+	$cta_maps = array();
+	foreach ( array_slice( addlar_product_hero_chips( $p, 3 ), 0, 3 ) as $chip ) {
+		$cta_maps[] = array( 'name' => $p['title'], 'spec' => $chip );
+	}
+
 	$widgets[] = array(
-		'type'     => 'addlar_cta_bar',
+		'type'     => 'addlar_closing_cta',
 		'settings' => array(
 			'anchor'   => '',
-			'icon'     => 'flask',
+			'bg'       => addlar_seed_image( 'cta' ),
+			'eyebrow'  => __( 'Choose wisely — choose ADDLAR', 'addlar' ),
 			'title'    => sprintf( /* translators: %s: product name */ __( 'Formulating with %s?', 'addlar' ), $p['title'] ),
 			'text'     => __( 'Request the full data sheet, a sample, or formulation support from our technical team.', 'addlar' ),
 			'btn_text' => __( 'Talk to our team →', 'addlar' ),
 			'btn_link' => array( 'url' => '/contact-us/' ),
+			'maps'     => addlar_rep( $cta_maps ),
 		),
 	);
 
@@ -1020,25 +1042,37 @@ function addlar_product_template_widgets( $code, array $p ) {
 function addlar_category_archive_template_widgets() {
 	$mark = addlar_seed_image( 'mark-white' );
 	return array(
+		// The dark hero doubles as the archive header and carries the
+		// breadcrumb inside it — a standalone breadcrumb strip here would
+		// render underneath the fixed site header and be invisible.
 		array(
-			'type'     => 'addlar_breadcrumb',
+			'type'     => 'addlar_product_hero',
 			'settings' => array(
-				'home_label'     => __( 'Home', 'addlar' ),
-				'products_label' => __( 'Products', 'addlar' ),
-				'products_url'   => array( 'url' => '/products/' ),
-				// Blank: the widget falls back to the queried object's own
-				// title, which on a taxonomy archive is the term name.
-				'current_label'  => '',
-				'dark'           => '',
+				'anchor'            => 'top',
+				'use_archive_term'  => 'yes',
+				'eyebrow'           => __( 'Product Category', 'addlar' ),
+				'title'             => __( 'Product Category', 'addlar' ),
+				'subtitle'          => __( 'Every ADDLAR package in this family, with its documented treat rates, approvals and lab data.', 'addlar' ),
+				'doc_code'          => '',
+				'image'             => addlar_seed_image( 'industrial-2' ),
+				'mark'              => $mark,
+				'chips'             => array(),
+				'show_crumbs'       => 'yes',
+				'crumb_parent'      => __( 'Products', 'addlar' ),
+				'crumb_parent_link' => array( 'url' => '/products/' ),
+				'btn1_text'         => __( 'Request a data sheet →', 'addlar' ),
+				'btn1_link'         => array( 'url' => '/contact-us/' ),
+				'btn2_text'         => __( 'Talk to a formulator', 'addlar' ),
+				'btn2_link'         => array( 'url' => '/ask-the-expert/' ),
 			),
-		),
-		array(
-			'type'     => 'addlar_page_intro',
-			'settings' => array( 'use_archive_term' => 'yes', 'eyebrow' => __( 'Product Category', 'addlar' ) ),
 		),
 		array(
 			'type'     => 'addlar_related_products',
 			'settings' => array( 'mode' => 'archive', 'heading' => '', 'count' => 24, 'mark' => $mark ),
+		),
+		array(
+			'type'     => 'addlar_closing_cta',
+			'settings' => array( 'bg' => addlar_seed_image( 'cta' ) ),
 		),
 	);
 }
@@ -1249,12 +1283,48 @@ function addlar_seed_products_overview_page() {
 
 	$tree = addlar_build_tree( array(
 		array(
+			'type'     => 'addlar_product_hero',
+			'settings' => array(
+				'anchor'            => 'top',
+				'use_archive_term'  => '',
+				'eyebrow'           => __( 'Product Range', 'addlar' ),
+				'title'             => __( 'Every lubrication challenge.', 'addlar' ),
+				'subtitle'          => __( 'Six additive families plus complementary products — each engineered for a specific world of machinery, and documented down to the treat rate.', 'addlar' ),
+				'doc_code'          => '',
+				'image'             => addlar_seed_image( 'engine-oil-2' ),
+				'mark'              => addlar_seed_image( 'mark-white' ),
+				'chips'             => addlar_rep( array(
+					array( 'text' => __( 'API · ACEA · ILSAC · JASO', 'addlar' ) ),
+					array( 'text' => __( '22 documented products', 'addlar' ) ),
+					array( 'text' => __( 'Automotive · Marine · Industrial', 'addlar' ) ),
+				) ),
+				'show_crumbs'       => 'yes',
+				'crumb_parent'      => '',
+				'crumb_parent_link' => array( 'url' => '' ),
+				'btn1_text'         => __( 'Find your additive →', 'addlar' ),
+				'btn1_link'         => array( 'url' => '#finder' ),
+				'btn2_text'         => __( 'Talk to a formulator', 'addlar' ),
+				'btn2_link'         => array( 'url' => '/ask-the-expert/' ),
+			),
+		),
+		array(
 			'type'     => 'addlar_product_grid',
 			'settings' => array(
+				'anchor'     => 'families',
 				'cards'      => addlar_rep( addlar_product_cards() ),
 				'mark'       => addlar_seed_image( 'mark' ),
 				'promo_link' => array( 'url' => home_url( '/contact-us/' ) ),
 			),
+		),
+		// The homepage's three-step Finder, reused here — this is the page
+		// people land on to choose a product, so it belongs on it.
+		array(
+			'type'     => 'addlar_product_finder',
+			'settings' => array( 'anchor' => 'finder', 'soft' => '' ),
+		),
+		array(
+			'type'     => 'addlar_closing_cta',
+			'settings' => array( 'bg' => addlar_seed_image( 'cta' ) ),
 		),
 	) );
 	addlar_save_page( $page_id, $tree, false );
