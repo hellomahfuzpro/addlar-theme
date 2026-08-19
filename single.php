@@ -16,8 +16,11 @@ get_header();
 while ( have_posts() ) {
 	the_post();
 
-	$blog_id  = (int) get_option( 'page_for_posts' );
-	$blog_url = $blog_id ? get_permalink( $blog_id ) : home_url( '/' );
+	// Resolves via addlar_nav_blog_url(): the blog is a normal page now,
+	// not WordPress's "Posts page", so get_option('page_for_posts') is
+	// deliberately not the source of truth here.
+	$blog_url   = addlar_nav_blog_url();
+	$blog_label = __( 'Insights', 'addlar' );
 	$cats     = get_the_category();
 	?>
 	<div class="adl">
@@ -28,7 +31,7 @@ while ( have_posts() ) {
 				<nav class="crumbs crumbs-dark crumbs-bare" aria-label="<?php esc_attr_e( 'Breadcrumb', 'addlar' ); ?>">
 					<a href="<?php echo esc_url( home_url( '/' ) ); ?>"><?php esc_html_e( 'Home', 'addlar' ); ?></a>
 					<span class="sep" aria-hidden="true">&rsaquo;</span>
-					<a href="<?php echo esc_url( $blog_url ); ?>"><?php echo esc_html( $blog_id ? get_the_title( $blog_id ) : __( 'Insights', 'addlar' ) ); ?></a>
+					<a href="<?php echo esc_url( $blog_url ); ?>"><?php echo esc_html( $blog_label ); ?></a>
 					<span class="sep" aria-hidden="true">&rsaquo;</span>
 					<span class="cur"><?php the_title(); ?></span>
 				</nav>

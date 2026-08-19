@@ -3,6 +3,37 @@
 All notable changes to the ADDLAR theme. Keep the top version in sync with
 `Version:` in `style.css` — the updater reads it from there.
 
+## [1.11.0] — 2026-08-19
+
+### Changed
+- **The blog page is now a standalone, fully Elementor-editable page**,
+  like every other page on the site — no longer a coded template.
+
+  It had to be coded before because of a real WordPress constraint:
+  assigning a page as the "Posts page" (Settings → Reading) hands that URL
+  to `home.php` and **ignores the assigned page's own content entirely**,
+  so nothing arranged in Elementor there would ever render. The fix is to
+  stop using that setting. `/blog/` is now an ordinary page, the seeder
+  clears `page_for_posts`, and the articles list is a widget.
+- **New `Addlar_Widget_PostGrid`** — the articles list as an editable
+  block, with controls for posts per page, category filter, pagination,
+  heading and the empty-state message. Pagination reads both `paged` and
+  `page` query vars, since a static page and the `/blog/page/2/` rewrite
+  supply different ones.
+- The page is assembled from existing widgets: dark hero with breadcrumb,
+  the homepage's own Insights widget for the LinkedIn band, the new Post
+  Grid, and the red closing band — so every section is editable and
+  reorderable on the canvas.
+- `home.php` is removed. Its job is now the page itself, and keeping it
+  would mean two competing blog designs if the Posts-page setting were
+  ever switched back on.
+- `index.php` rewritten as the archive and fallback template — category,
+  tag, author, date and search now get the same dark hero and card grid
+  instead of the bare unstyled list they had before, with a context-aware
+  heading (a category archive names its category).
+- `single.php` no longer resolves its back-link through `page_for_posts`;
+  it uses `addlar_nav_blog_url()`, which is correct either way.
+
 ## [1.10.0] — 2026-08-19
 
 ### Added

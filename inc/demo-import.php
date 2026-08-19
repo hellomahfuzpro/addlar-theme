@@ -1669,35 +1669,91 @@ function addlar_seed_ask_the_expert_page() {
 }
 
 /**
- * Blog only, now — About Us, Contact Us and Ask the Expert are fully
- * designed pages (addlar_seed_about_page(), addlar_seed_contact_page(),
- * addlar_seed_ask_the_expert_page() below), not placeholders. Blog is WP's
- * native "Posts page" mechanism: a page assigned via `page_for_posts`, no
- * Elementor content and no posts to seed — the existing index.php fallback
- * already renders an empty state, and there's no client content for a blog
- * yet (deferred scope, unchanged).
+ * Kept as a thin wrapper: nothing on this site is a stub any more. Every
+ * page — About Us, Contact Us, Ask the Expert and now the blog — is a
+ * fully designed, Elementor-editable page.
  *
  * @return array slug => page_id
  */
 function addlar_seed_stub_pages() {
-	$ids = array();
+	return array( 'blog' => addlar_seed_blog_page() );
+}
 
-	$blog = get_page_by_path( 'blog', OBJECT, 'page' );
-	$blog_id = $blog ? $blog->ID : 0;
-	if ( ! $blog_id ) {
-		$blog_id = wp_insert_post( array(
-			'post_type'   => 'page',
-			'post_title'  => __( 'Blog', 'addlar' ),
-			'post_name'   => 'blog',
-			'post_status' => 'publish',
-		) );
-	}
-	if ( $blog_id && ! is_wp_error( $blog_id ) ) {
-		update_option( 'page_for_posts', $blog_id );
-	}
-	$ids['blog'] = is_wp_error( $blog_id ) ? 0 : $blog_id;
+/**
+ * The blog page — a normal, fully Elementor-editable page.
+ *
+ * Deliberately **not** WordPress's "Posts page" (Settings → Reading).
+ * That setting hands the URL straight to `home.php` and ignores the
+ * assigned page's own content, so anything arranged in Elementor there
+ * would never render. Clearing it is what makes this page editable like
+ * every other page on the site; the articles list is a widget
+ * (`Addlar_Widget_PostGrid`) rather than a template loop.
+ *
+ * Individual posts are unaffected — they still render through single.php.
+ *
+ * @return int Page ID.
+ */
+function addlar_seed_blog_page() {
+	$page_id = addlar_seed_page( 'blog', __( 'Insights', 'addlar' ), array(
+		array(
+			'type'     => 'addlar_product_hero',
+			'settings' => array(
+				'anchor'            => 'top',
+				'use_archive_term'  => '',
+				'eyebrow'           => __( 'From the ADDLAR desk', 'addlar' ),
+				'title'             => __( 'Insights', 'addlar' ),
+				'subtitle'          => __( 'Formulation notes, specification updates and technical discussion from our chemists — here and on LinkedIn.', 'addlar' ),
+				'doc_code'          => '',
+				'image'             => addlar_seed_image( 'li-1' ),
+				'mark'              => addlar_seed_image( 'mark-white' ),
+				'chips'             => array(),
+				'show_crumbs'       => 'yes',
+				'crumb_parent'      => '',
+				'crumb_parent_link' => array( 'url' => '' ),
+				'btn1_text'         => __( 'Ask the expert →', 'addlar' ),
+				'btn1_link'         => array( 'url' => '/ask-the-expert/' ),
+				'btn2_text'         => __( 'Follow on LinkedIn', 'addlar' ),
+				'btn2_link'         => array( 'url' => addlar_mod( 'addlar_linkedin_url' ), 'is_external' => 'on' ),
+			),
+		),
+		// The homepage's own LinkedIn section, reused as-is — same widget,
+		// same three posts, editable here independently.
+		array(
+			'type'     => 'addlar_insights',
+			'settings' => array(
+				'anchor'  => 'linkedin',
+				'eyebrow' => __( 'From LinkedIn', 'addlar' ),
+				'title'   => __( 'Discussion on our showcase page.', 'addlar' ),
+				'lede'    => __( 'These open on LinkedIn in a new tab.', 'addlar' ),
+				'posts'   => addlar_rep( addlar_insight_rows() ),
+			),
+		),
+		array(
+			'type'     => 'addlar_post_grid',
+			'settings' => array(
+				'anchor'     => 'articles',
+				'soft'       => 'yes',
+				'eyebrow'    => __( 'Articles', 'addlar' ),
+				'title'      => __( 'Published on this site.', 'addlar' ),
+				'count'      => 9,
+				'category'   => '',
+				'pagination' => 'yes',
+				'empty_text' => __( 'No articles published yet — the first one will appear here. In the meantime, the discussion above is running on LinkedIn.', 'addlar' ),
+			),
+		),
+		array(
+			'type'     => 'addlar_closing_cta',
+			'settings' => array( 'bg' => addlar_seed_image( 'cta' ) ),
+		),
+	) );
 
-	return $ids;
+	// Release the URL from WordPress's Posts-page mechanism so the page's
+	// own Elementor content is what renders.
+	if ( $page_id && (int) get_option( 'page_for_posts' ) === (int) $page_id ) {
+		update_option( 'page_for_posts', 0 );
+	}
+
+	return $page_id;
 }
 
 /**
