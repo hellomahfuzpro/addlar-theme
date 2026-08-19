@@ -3,6 +3,56 @@
 All notable changes to the ADDLAR theme. Keep the top version in sync with
 `Version:` in `style.css` — the updater reads it from there.
 
+## [1.4.0] — 2026-08-19
+
+Third round of feedback: two confirmed rendering bugs from `v1.3.0` (an
+oversized mark obscuring photos, a literal "Heading" placeholder), and a
+firm "this doesn't look like the homepage" — the product page's design
+patterns (plain checklist, grey chips, bare tables) were considerably
+plainer than the homepage's own sections.
+
+### Fixed
+- **Oversized ADDLAR mark.** `.spec-hero-image img` / `.image-grid-item img`
+  in `theme.css` used a bare `img` selector, which also matched the
+  `<img class="cmark">` mark and out-specificity'd `.adl .cmark`'s
+  `width: 34px` — the mark rendered at its native ~400px size, obscuring
+  most of the photo underneath it. Fixed with `img:not(.cmark)`, the
+  pattern this codebase already uses correctly elsewhere (`widgets.css`:
+  `.about-img img:not(.cmark)`, `.pcard .imgwrap img:not(.cmark)`).
+- **Literal "Heading" text.** `Addlar_Widget_ImageGrid`'s `title` control
+  defaults to the literal string `"Heading"`; the tile-row seed call never
+  passed a `title`, so Elementor fell back to that default and printed it.
+  Fixed by passing `'title' => '', 'eyebrow' => '', 'lede' => ''`
+  explicitly — general lesson recorded in code comments: every
+  heading-capable widget seeded via `addlar_build_tree()` needs its
+  heading keys set explicitly, even to empty strings, never omitted.
+- **Dead whitespace.** Every fragment got the homepage's full 104px
+  section padding regardless of content size, so a two-line description
+  or one chip row read as mostly empty. `Addlar_Widget_ProductFragment`
+  gained a `compact` mode (`.section-tight`, 36px) used for every small
+  text/table fragment; full padding stays for genuinely substantial
+  sections.
+
+### Changed — product page rebuilt on the homepage's own components
+- **Key Performance Benefits** is now `.about-feats`/`.afeat` icon
+  capability cards — the exact markup/CSS the homepage's About section
+  uses — instead of a bordered checklist. `addlar_product_benefit_bullets()`
+  now returns an icon alongside each bullet, mapped 1:1 from which real
+  field it came from (applications → gear, spec string → shield, approval
+  count → globe, performance-level count → layers, viscosity → viscosity).
+- **OEM & Industry Approvals** now reuses `Addlar_Widget_TrustStrip`
+  directly (no new widget) via a new `addlar_product_approval_strip_items()`
+  parser, instead of plain grey chips.
+- **New "Product at a Glance" band** reuses `Addlar_Widget_StatBand`
+  directly (a `columns` control added, default unchanged so the homepage's
+  own usage is untouched) showing real counts — applications, performance
+  levels, approvals, documented properties — never a fabricated number,
+  and the whole section is skipped if fewer than 2 counts are available.
+- Section order reflowed to match: hero → benefits cards → mood banner →
+  description/applications → at-a-glance stats → performance table →
+  photo tiles → approvals strip (if any) → remaining data → related
+  products → closing CTA.
+
 ## [1.3.0] — 2026-08-19
 
 Second round of feedback on the product page redesign: still not visual

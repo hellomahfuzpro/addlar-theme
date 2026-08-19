@@ -1,12 +1,20 @@
 <?php
 /**
- * "Key Performance Benefits" box — the bordered checklist that sits near
- * the top of the reference competitor pages the client asked to match
- * (Afton Chemical's product pages). Bullets come from
- * addlar_product_benefit_bullets() (inc/products-render.php), which derives
- * every line from data already transcribed for this product — a real
- * application, the real spec string, a real count of approvals or
- * performance levels — never an invented claim.
+ * "Key Performance Benefits" — icon capability cards, reusing the exact
+ * `.about-feats`/`.afeat` markup and CSS the homepage's About section
+ * already uses for its 4 capability cards. A first version of this widget
+ * used a plain bordered checklist; client feedback was that the product
+ * page needed to look as considered as the homepage, not a flatter
+ * approximation of it — reusing the homepage's own component directly is
+ * what actually closes that gap (same CSS, so guaranteed visual parity).
+ *
+ * Bullets come from addlar_product_benefit_bullets() (inc/products-render.php),
+ * which derives every line — and its icon — from data already transcribed
+ * for this product: a real application, the real spec string, a real
+ * count of approvals or performance levels, never an invented claim. The
+ * icon is a direct 1:1 mapping from which data field a bullet came from
+ * (applications → gear, spec string → shield, approvals count → globe,
+ * performance-level count → layers, viscosity → viscosity), not a guess.
  *
  * Renders nothing if the product has no derivable bullets at all (won't
  * happen for any of the 22 real products, but kept graceful rather than
@@ -40,11 +48,11 @@ class Addlar_Widget_ProductBenefits extends Addlar_Base_Widget {
 			'label' => __( 'Content', 'addlar' ),
 		) );
 
-		$this->add_control( 'heading', array(
-			'label'   => __( 'Heading', 'addlar' ),
-			'type'    => Controls_Manager::TEXT,
-			'default' => __( 'Key Performance Benefits', 'addlar' ),
-		) );
+		$this->add_heading_controls(
+			__( 'Key Performance Benefits', 'addlar' ),
+			'',
+			''
+		);
 
 		$this->end_controls_section();
 	}
@@ -64,16 +72,17 @@ class Addlar_Widget_ProductBenefits extends Addlar_Base_Widget {
 
 		$this->open_section( 'section', '' );
 		?>
+		<div class="wrap center">
+			<?php $this->render_heading( $s['eyebrow'], $s['title'], $s['lede'] ); ?>
+		</div>
 		<div class="wrap">
-			<div class="benefits-box">
-				<?php if ( ! empty( $s['heading'] ) ) : ?>
-					<h2 class="benefits-heading"><?php echo esc_html( $s['heading'] ); ?></h2>
-				<?php endif; ?>
-				<ul class="benefits-list">
-					<?php foreach ( $bullets as $bullet ) : ?>
-						<li><span class="check" aria-hidden="true">&#10003;</span><?php echo esc_html( $bullet ); ?></li>
-					<?php endforeach; ?>
-				</ul>
+			<div class="about-feats">
+				<?php foreach ( $bullets as $bullet ) : ?>
+					<div class="afeat reveal">
+						<div class="ic"><?php $this->render_icon( $bullet['icon'], 'width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8"' ); ?></div>
+						<h4><?php echo esc_html( $bullet['text'] ); ?></h4>
+					</div>
+				<?php endforeach; ?>
 			</div>
 		</div>
 		<?php

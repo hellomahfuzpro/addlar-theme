@@ -246,65 +246,138 @@ function addlar_render_all_product_fragments( $post_id ) {
 }
 
 /**
- * "Key Performance Benefits" bullets for the product page's checklist box
- * (see widgets/class-product-benefits.php) — modelled on the reference
- * competitor pages the client asked to match, which lead with a short,
- * scannable benefits list above the technical tables.
+ * "Key Performance Benefits" cards for the product page (see
+ * widgets/class-product-benefits.php, which renders these as icon
+ * capability cards reusing the homepage About section's `.afeat` markup)
+ * — modelled on the reference competitor pages the client asked to match,
+ * which lead with a short, scannable benefits list above the technical
+ * tables.
  *
- * Every bullet here is a restatement of a fact already present in this
+ * Every card here is a restatement of a fact already present in this
  * product's own transcribed data (a real application line, the real spec
  * string, a real count of approvals/performance levels) — never an invented
- * performance claim. Products vary in which facts they have (a raw
+ * performance claim. The icon is a direct 1:1 mapping from which field the
+ * fact came from, not a guess: applications → gear, spec compliance →
+ * shield, approval count → globe, performance-level count → layers,
+ * viscosity → viscosity. Products vary in which facts they have (a raw
  * component like Z 2612 has applications but no performance table; 9342 has
  * neither approvals nor applications), so this degrades gracefully rather
  * than assuming every product has the same shape of content.
  *
  * @param int $post_id addlar_product post ID.
- * @param int $limit   Maximum bullets to return.
- * @return array
+ * @param int $limit   Maximum cards to return.
+ * @return array Each item: array( 'icon' => string, 'text' => string ).
  */
 function addlar_product_benefit_bullets( $post_id, $limit = 6 ) {
-	$bullets = array();
+	$cards = array();
 
 	$applications = addlar_product_line_list( get_post_meta( $post_id, '_addlar_applications_text', true ) );
-	foreach ( array_slice( $applications, 0, 4 ) as $app ) {
-		$bullets[] = sprintf(
+	foreach ( array_slice( $applications, 0, 2 ) as $app ) {
+		$cards[] = array(
+			'icon' => 'gear',
 			/* translators: %s: an application/use-case line from the product's own PDS */
-			__( 'Formulated for %s', 'addlar' ),
-			$app
+			'text' => sprintf( __( 'Formulated for %s', 'addlar' ), $app ),
 		);
 	}
 
 	$spec = trim( (string) get_post_meta( $post_id, '_addlar_spec_string', true ) );
 	if ( $spec ) {
-		/* translators: %s: the product's real specification string */
-		$bullets[] = sprintf( __( 'Meets %s', 'addlar' ), $spec );
+		$cards[] = array(
+			'icon' => 'shield',
+			/* translators: %s: the product's real specification string */
+			'text' => sprintf( __( 'Meets %s', 'addlar' ), $spec ),
+		);
 	}
 
 	$approvals = addlar_product_line_list( get_post_meta( $post_id, '_addlar_approvals_text', true ) );
 	if ( $approvals ) {
-		$bullets[] = sprintf(
+		$cards[] = array(
+			'icon' => 'globe',
 			/* translators: %d: number of real OEM/industry approvals listed in this product's PDS */
-			_n( 'Backed by %d OEM & industry approval', 'Backed by %d OEM & industry approvals', count( $approvals ), 'addlar' ),
-			count( $approvals )
+			'text' => sprintf( _n( 'Backed by %d OEM & industry approval', 'Backed by %d OEM & industry approvals', count( $approvals ), 'addlar' ), count( $approvals ) ),
 		);
 	}
 
 	$rows = addlar_product_table_rows( get_post_meta( $post_id, '_addlar_performance_rows_text', true ) );
 	if ( $rows ) {
-		$bullets[] = sprintf(
+		$cards[] = array(
+			'icon' => 'layers',
 			/* translators: %d: number of real graded performance levels in this product's PDS */
-			_n( 'Available across %d performance level', 'Available across %d performance levels', count( $rows ), 'addlar' ),
-			count( $rows )
+			'text' => sprintf( _n( 'Available across %d performance level', 'Available across %d performance levels', count( $rows ), 'addlar' ), count( $rows ) ),
 		);
 	}
 
 	$viscosity = trim( (string) get_post_meta( $post_id, '_addlar_viscosity_note', true ) );
 	if ( $viscosity ) {
-		$bullets[] = __( 'Formulated across multiple viscosity grades', 'addlar' );
+		$cards[] = array( 'icon' => 'viscosity', 'text' => __( 'Formulated across multiple viscosity grades', 'addlar' ) );
 	}
 
-	return array_slice( $bullets, 0, $limit );
+	return array_slice( $cards, 0, $limit );
+}
+
+/**
+ * Real, non-fabricated counts for the "Product at a Glance" stat band
+ * (widgets/class-stat-band.php, reused as-is) — the same facts
+ * addlar_product_benefit_bullets() already derives, just as bare numbers
+ * instead of sentences. Returns at most 4 stats, each
+ * array( 'count', 'label' ); a stat is only included when its count is
+ * greater than zero, so a sparse product (e.g. one with no approvals)
+ * simply gets fewer stats rather than a fabricated one.
+ *
+ * @param int $post_id addlar_product post ID.
+ * @return array
+ */
+function addlar_product_glance_stats( $post_id ) {
+	$stats = array();
+
+	$applications = addlar_product_line_list( get_post_meta( $post_id, '_addlar_applications_text', true ) );
+	if ( $applications ) {
+		$stats[] = array( 'count' => (string) count( $applications ), 'label' => __( 'Applications', 'addlar' ) );
+	}
+
+	$rows = addlar_product_table_rows( get_post_meta( $post_id, '_addlar_performance_rows_text', true ) );
+	if ( $rows ) {
+		$stats[] = array( 'count' => (string) count( $rows ), 'label' => __( 'Performance levels', 'addlar' ) );
+	}
+
+	$approvals = addlar_product_line_list( get_post_meta( $post_id, '_addlar_approvals_text', true ) );
+	if ( $approvals ) {
+		$stats[] = array( 'count' => (string) count( $approvals ), 'label' => __( 'OEM & industry approvals', 'addlar' ) );
+	}
+
+	$properties = addlar_product_table_rows( get_post_meta( $post_id, '_addlar_properties_text', true ) );
+	if ( $properties ) {
+		$stats[] = array( 'count' => (string) count( $properties ), 'label' => __( 'Documented lab properties', 'addlar' ) );
+	}
+
+	return array_slice( $stats, 0, 4 );
+}
+
+/**
+ * Turn a product's approvals list into Addlar_Widget_TrustStrip's
+ * `items` repeater shape (`strong` + `text`), so the product page's
+ * "OEM & Industry Approvals" section reuses that widget directly instead
+ * of a new one. Approval lines are transcribed as `Code (context)`
+ * (e.g. "MB 228.5 (E7)", "ACEA C3/C5 (SN)" — see products-data.php); the
+ * leading code becomes the bold lead, the parenthesised context (if any)
+ * becomes the label. A line with no parenthetical just gets an empty label.
+ *
+ * @param int $post_id addlar_product post ID.
+ * @return array Repeater-shaped rows (still needs addlar_rep() at seed time).
+ */
+function addlar_product_approval_strip_items( $post_id ) {
+	$lines = addlar_product_line_list( get_post_meta( $post_id, '_addlar_approvals_text', true ) );
+	$items = array();
+
+	foreach ( $lines as $line ) {
+		if ( preg_match( '/^(.*?)\s*\(([^)]+)\)\s*$/', $line, $m ) ) {
+			$items[] = array( 'strong' => trim( $m[1] ), 'text' => trim( $m[2] ) );
+		} else {
+			$items[] = array( 'strong' => $line, 'text' => '' );
+		}
+	}
+
+	return $items;
 }
 
 /**

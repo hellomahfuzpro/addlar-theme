@@ -24,8 +24,10 @@ function esc_attr( $s ) { return htmlspecialchars( (string) $s, ENT_QUOTES ); }
 function esc_html__( $s, $d = null ) { return esc_html( $s ); }
 function esc_attr__( $s, $d = null ) { return esc_attr( $s ); }
 function __( $s, $d = null ) { return $s; }
+function _n( $single, $plural, $number, $d = null ) { return 1 === (int) $number ? $single : $plural; }
 
 require __DIR__ . '/../inc/finder-data.php';
+require __DIR__ . '/../inc/icons.php';
 require __DIR__ . '/../inc/products-render.php';
 require __DIR__ . '/../inc/products-data.php';
 
@@ -92,6 +94,22 @@ foreach ( $products as $code => $p ) {
 	check_true( "{$code}: has a title", ! empty( $p['title'] ) );
 	check_true( "{$code}: has a category", ! empty( $p['category'] ) );
 	check_true( "{$code}: has a doc_code", ! empty( $p['doc_code'] ) );
+}
+
+/* ------------- Key Performance Benefits icon keys stay valid ------------- *
+ * addlar_product_benefit_bullets() (inc/products-render.php) hardcodes a
+ * fixed set of icon keys ('gear', 'shield', 'globe', 'layers', 'viscosity')
+ * rather than deriving them from data, so a static check of the source
+ * against addlar_icon_choices() is a complete, not sampled, verification —
+ * no WP post-meta mocking needed to exercise the real per-product path. */
+$render_src = file_get_contents( __DIR__ . '/../inc/products-render.php' );
+preg_match_all( "/'icon'\s*=>\s*'([a-z_]+)'/", $render_src, $icon_matches );
+$used_icons  = array_unique( $icon_matches[1] );
+$valid_icons = array_keys( addlar_icon_choices() );
+
+check_true( 'benefit-bullet icon keys found in source', count( $used_icons ) > 0 );
+foreach ( $used_icons as $icon_key ) {
+	check_true( "icon key '{$icon_key}' used in products-render.php is registered in addlar_icon_choices()", in_array( $icon_key, $valid_icons, true ) );
 }
 
 printf( "\n%d passed, %d failed\n", $pass, $fail );

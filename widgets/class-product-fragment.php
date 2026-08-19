@@ -70,6 +70,14 @@ class Addlar_Widget_ProductFragment extends Addlar_Base_Widget {
 			'description' => __( 'Leave blank to use the section\'s default label (or no heading, for Description).', 'addlar' ),
 		) );
 
+		$this->add_control( 'compact', array(
+			'label'        => __( 'Compact spacing', 'addlar' ),
+			'type'         => Controls_Manager::SWITCHER,
+			'default'      => '',
+			'return_value' => 'yes',
+			'description'  => __( 'Use the tighter section padding — for a small fragment (a couple of lines, one table) rather than a full homepage-style section.', 'addlar' ),
+		) );
+
 		$this->end_controls_section();
 	}
 
@@ -91,7 +99,7 @@ class Addlar_Widget_ProductFragment extends Addlar_Base_Widget {
 
 		$label = '' !== $s['heading_override'] ? $s['heading_override'] : $default_label;
 
-		$this->open_section( 'section', '' );
+		$this->open_section( 'yes' === $s['compact'] ? 'section section-tight' : 'section', '' );
 		?>
 		<div class="wrap" style="max-width:860px;">
 			<?php if ( $label ) : ?>

@@ -121,9 +121,25 @@ body { margin: 0; }
 
 /* ===== PRODUCT PAGE REDESIGN =====
  * Matches the reference competitor pages the client asked to match (Afton
- * Chemical / Lubimax): a real product image alongside the spec text, and a
- * bordered "Key Performance Benefits" checklist — adapted to ADDLAR's own
- * red/black/white brand rather than their blue. */
+ * Chemical / Lubimax), rebuilt on the homepage's own existing visual
+ * patterns rather than plainer one-off treatments — icon capability cards
+ * (.about-feats/.afeat, from Addlar_Widget_About), the certification strip
+ * (.trust, from Addlar_Widget_TrustStrip) and the big-number stat band
+ * (.nums/.numgrid, from Addlar_Widget_StatBand) are all reused as-is. */
+
+/* A fragment holding a couple of lines of text or one table doesn't need
+ * the homepage's full 104px section rhythm — that's what read as "mostly
+ * empty" in review. Full padding stays for genuinely substantial sections
+ * (benefits cards, image banner, stat band, trust strip, related
+ * products, closing CTA); every small text/table fragment uses this. */
+.adl .section-tight { padding: 36px 0; }
+
+/* Stat Band is a homepage widget (5 fixed columns); the product page's
+ * "at a glance" band only ever has 2-4 real counts, so an explicit
+ * columns count is added there without touching the homepage's own call. */
+.adl .numgrid-2 { grid-template-columns: repeat(2, 1fr); }
+.adl .numgrid-3 { grid-template-columns: repeat(3, 1fr); }
+.adl .numgrid-4 { grid-template-columns: repeat(4, 1fr); }
 
 .adl .spec-hero-grid {
 	display: grid;
@@ -134,7 +150,7 @@ body { margin: 0; }
 .adl .spec-hero-text .btn { margin-top: 8px; }
 .adl .spec-doc-code { margin-top: 18px; color: var(--adl-grey-2) !important; }
 .adl .spec-hero-image { position: relative; }
-.adl .spec-hero-image img {
+.adl .spec-hero-image img:not(.cmark) {
 	width: 100%;
 	height: auto;
 	display: block;
@@ -145,47 +161,6 @@ body { margin: 0; }
 	.adl .spec-hero-image { order: -1; max-width: 360px; margin: 0 auto; }
 }
 
-.adl .benefits-box {
-	border: 2px solid var(--adl-red);
-	padding: 32px 36px;
-	background: #fff;
-}
-.adl .benefits-heading {
-	font-size: 20px;
-	font-weight: 800;
-	color: var(--adl-ink);
-	margin-bottom: 18px;
-}
-.adl .benefits-list {
-	list-style: none;
-	display: grid;
-	grid-template-columns: 1fr 1fr;
-	gap: 14px 32px;
-}
-.adl .benefits-list li {
-	display: flex;
-	align-items: flex-start;
-	gap: 10px;
-	font-size: 15px;
-	color: var(--adl-ink-2);
-	line-height: 1.4;
-}
-.adl .benefits-list .check {
-	flex: none;
-	width: 20px;
-	height: 20px;
-	border-radius: 50%;
-	background: var(--adl-red);
-	color: #fff;
-	font-size: 12px;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	margin-top: 1px;
-}
-@media (max-width: 640px) {
-	.adl .benefits-list { grid-template-columns: 1fr; }
-}
 
 /* ===== IMAGE GRID ===== (About Us "industries we serve" band, and the
  * product page's "tile" style — bordered cards with the title overlaid,
@@ -204,7 +179,7 @@ body { margin: 0; }
 	overflow: hidden;
 	background: var(--adl-soft);
 }
-.adl .image-grid-item img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.adl .image-grid-item img:not(.cmark) { width: 100%; height: 100%; object-fit: cover; display: block; }
 .adl .image-grid-caption {
 	position: absolute;
 	left: 0; right: 0; bottom: 0;

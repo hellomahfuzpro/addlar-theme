@@ -67,6 +67,14 @@ class Addlar_Widget_StatBand extends Addlar_Base_Widget {
 			'description' => __( 'Rendered greyscale at 16% opacity behind the band.', 'addlar' ),
 		) );
 
+		$this->add_control( 'columns', array(
+			'label'       => __( 'Columns', 'addlar' ),
+			'type'        => Controls_Manager::SELECT,
+			'options'     => array( '5' => '5 (default)', '4' => '4', '3' => '3', '2' => '2' ),
+			'default'     => '5',
+			'description' => __( 'Match this to how many statistics you actually add below.', 'addlar' ),
+		) );
+
 		$this->end_controls_section();
 
 		$this->start_controls_section( 'stats_section', array(
@@ -129,7 +137,7 @@ class Addlar_Widget_StatBand extends Addlar_Base_Widget {
 			<?php endif; ?>
 		</div>
 		<div class="wrap">
-			<div class="numgrid">
+			<div class="numgrid numgrid-<?php echo esc_attr( ! empty( $s['columns'] ) ? $s['columns'] : '5' ); ?>">
 				<?php foreach ( (array) $s['stats'] as $stat ) : ?>
 					<?php
 					// Initial text mirrors the final format so there is no layout

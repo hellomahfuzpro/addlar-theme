@@ -8,7 +8,7 @@
  * @package Addlar
  */
 
-if ( ! defined( 'ABSPATH' ) ) {
+if ( ! defined( 'ABSPATH' ) && ! defined( 'ADDLAR_TESTING' ) ) {
 	exit;
 }
 

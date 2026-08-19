@@ -756,7 +756,7 @@ function addlar_seed_products() {
 		// template. Re-seeding overwrites manual edits, same "safe to re-run,
 		// but re-running replaces the layout" contract as the homepage.
 		if ( did_action( 'elementor/loaded' ) ) {
-			$tree = addlar_build_tree( addlar_product_template_widgets( $code, $p['category'] ) );
+			$tree = addlar_build_tree( addlar_product_template_widgets( $post_id, $code, $p['category'] ) );
 			addlar_save_page( $post_id, $tree, false );
 		}
 
@@ -802,31 +802,43 @@ add_action( 'init', 'addlar_enable_elementor_for_products', 20 );
  * per-post content, not a shared template — hence seeding this same widget
  * list onto each post's own `_elementor_data` instead.
  *
- * A second round of feedback specifically wanted more of the page to look
- * like the reference: full-bleed background-photo bands and photo tiles
- * breaking up the data sections, not just one photo at the very top. Real
- * asset inventory is 2 free-license photos per category (the product's own
- * hero photo + one more — see addlar_product_secondary_image()), so rather
- * than force a 4-tile row that would repeat one photo needlessly, the same
- * 1–2 real photos are used at different visual treatments (full hero, dimmed
- * full-bleed banner, bordered tile) spaced through the page, plus the
- * Related Products grid further down is its own genuinely photo-rich zone
- * (each related product shows its own real image).
+ * A second round of feedback wanted more of the page to look like the
+ * reference: full-bleed background-photo bands and photo tiles breaking up
+ * the data sections. Real asset inventory is 2 free-license photos per
+ * category (the product's own hero photo + one more — see
+ * addlar_product_secondary_image()), so the same 1–2 real photos are used
+ * at different visual treatments (full hero, dimmed full-bleed banner,
+ * bordered tile) rather than forcing a 4-tile row that would repeat one
+ * photo needlessly.
  *
+ * A third round asked for the page to actually match the *homepage's*
+ * design quality, not just add more photos — so this reuses the
+ * homepage's own component patterns directly instead of plainer one-off
+ * treatments: Key Performance Benefits is `.about-feats` icon cards (same
+ * markup as the homepage About section's capability cards), OEM &
+ * Industry Approvals reuses `Addlar_Widget_TrustStrip` outright, and a new
+ * "Product at a Glance" band reuses `Addlar_Widget_StatBand` outright.
+ * Small text/table fragments use `compact` spacing (`.section-tight`,
+ * 36px) rather than the homepage's full 104px section padding — that
+ * mismatch (tiny content, huge padding) is what read as broken/empty in
+ * the previous pass.
+ *
+ * @param int    $post_id  addlar_product post ID (for the real per-product
+ *                         counts behind the Stat Band and Trust Strip).
  * @param string $code     Bare product code.
  * @param string $category Category name.
  * @return array
  */
-function addlar_product_template_widgets( $code, $category ) {
-	$fragment = function ( $key ) {
-		return array( 'type' => 'addlar_product_fragment', 'settings' => array( 'fragment' => $key ) );
+function addlar_product_template_widgets( $post_id, $code, $category ) {
+	$fragment = function ( $key, $compact = true ) {
+		return array( 'type' => 'addlar_product_fragment', 'settings' => array( 'fragment' => $key, 'compact' => $compact ? 'yes' : '' ) );
 	};
 
 	$mark      = addlar_seed_image( 'mark-white' );
 	$secondary = addlar_product_secondary_image( $category );
 	$cat_link  = addlar_product_category_link( $category, '/products/' );
 
-	return array(
+	$widgets = array(
 		array(
 			'type'     => 'addlar_product_spec_header',
 			'settings' => array( 'mark' => $mark ),
@@ -844,32 +856,62 @@ function addlar_product_template_widgets( $code, $category ) {
 		),
 		$fragment( 'description' ),
 		$fragment( 'applications' ),
-		$fragment( 'performance' ),
-		array(
-			'type'     => 'addlar_image_grid',
+	);
+
+	$glance_stats = addlar_product_glance_stats( $post_id );
+	if ( count( $glance_stats ) >= 2 ) {
+		$widgets[] = array(
+			'type'     => 'addlar_stat_band',
 			'settings' => array(
-				'style'   => 'tile',
-				'columns' => '2',
-				'mark'    => $mark,
-				'items'   => addlar_rep( array(
-					array( 'image' => addlar_product_hero_image( $code, $category ), 'caption' => 'ADDLAR ' . $code, 'link' => array( 'url' => '' ) ),
-					array( 'image' => $secondary, 'caption' => sprintf( /* translators: %s: category name */ __( 'Explore %s →', 'addlar' ), $category ), 'link' => array( 'url' => $cat_link ) ),
-				) ),
+				'anchor'  => '',
+				'eyebrow' => __( 'Product at a Glance', 'addlar' ),
+				'title'   => '',
+				'columns' => (string) count( $glance_stats ),
+				'stats'   => addlar_rep( array_map( function ( $s ) {
+					return array( 'count' => $s['count'], 'prefix' => '', 'suffix' => '', 'comma' => '', 'label' => $s['label'] );
+				}, $glance_stats ) ),
 			),
-		),
-		$fragment( 'approvals' ),
-		$fragment( 'formulation' ),
-		$fragment( 'properties' ),
-		$fragment( 'viscosity' ),
-		array(
-			'type'     => 'addlar_related_products',
-			'settings' => array( 'mode' => 'current', 'heading' => __( 'Related Products', 'addlar' ), 'mark' => $mark ),
-		),
-		array(
-			'type'     => 'addlar_closing_cta',
-			'settings' => array( 'bg' => addlar_seed_image( 'cta' ) ),
+		);
+	}
+
+	$widgets[] = $fragment( 'performance' );
+	$widgets[] = array(
+		'type'     => 'addlar_image_grid',
+		'settings' => array(
+			'style'   => 'tile',
+			'columns' => '2',
+			'mark'    => $mark,
+			'eyebrow' => '',
+			'title'   => '',
+			'lede'    => '',
+			'items'   => addlar_rep( array(
+				array( 'image' => addlar_product_hero_image( $code, $category ), 'caption' => 'ADDLAR ' . $code, 'link' => array( 'url' => '' ) ),
+				array( 'image' => $secondary, 'caption' => sprintf( /* translators: %s: category name */ __( 'Explore %s →', 'addlar' ), $category ), 'link' => array( 'url' => $cat_link ) ),
+			) ),
 		),
 	);
+
+	$approval_items = addlar_product_approval_strip_items( $post_id );
+	if ( $approval_items ) {
+		$widgets[] = array(
+			'type'     => 'addlar_trust_strip',
+			'settings' => array( 'items' => addlar_rep( $approval_items ) ),
+		);
+	}
+
+	$widgets[] = $fragment( 'formulation' );
+	$widgets[] = $fragment( 'properties' );
+	$widgets[] = $fragment( 'viscosity' );
+	$widgets[] = array(
+		'type'     => 'addlar_related_products',
+		'settings' => array( 'mode' => 'current', 'heading' => __( 'Related Products', 'addlar' ), 'mark' => $mark ),
+	);
+	$widgets[] = array(
+		'type'     => 'addlar_closing_cta',
+		'settings' => array( 'bg' => addlar_seed_image( 'cta' ) ),
+	);
+
+	return $widgets;
 }
 
 /**
