@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'ADDLAR_VERSION', '1.4.0' );
+define( 'ADDLAR_VERSION', '1.5.0' );
 define( 'ADDLAR_DIR', get_template_directory() );
 define( 'ADDLAR_URI', get_template_directory_uri() );
 
@@ -84,7 +84,6 @@ require_once ADDLAR_DIR . '/inc/icons.php';
 require_once ADDLAR_DIR . '/inc/finder-data.php';
 require_once ADDLAR_DIR . '/inc/products-cpt.php';
 require_once ADDLAR_DIR . '/inc/products-render.php';
-require_once ADDLAR_DIR . '/inc/products-metabox.php';
 require_once ADDLAR_DIR . '/inc/products-data.php';
 require_once ADDLAR_DIR . '/inc/contact-form.php';
 require_once ADDLAR_DIR . '/inc/customizer.php';

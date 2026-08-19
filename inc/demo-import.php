@@ -724,27 +724,29 @@ function addlar_seed_products() {
 			wp_set_object_terms( $post_id, array( $term_id ), 'addlar_product_category' );
 		}
 
-		$raw = array(
-			'_addlar_code'                  => $code,
-			'_addlar_subcategory'           => isset( $p['subcategory'] ) ? $p['subcategory'] : '',
-			'_addlar_doc_code'              => isset( $p['doc_code'] ) ? $p['doc_code'] : '',
-			'_addlar_spec_string'           => isset( $p['spec_string'] ) ? $p['spec_string'] : '',
-			'_addlar_description'           => isset( $p['description'] ) ? $p['description'] : '',
-			'_addlar_applications_text'     => isset( $p['applications_text'] ) ? $p['applications_text'] : '',
-			'_addlar_performance_note'      => isset( $p['performance_note'] ) ? $p['performance_note'] : '',
-			'_addlar_performance_headers'   => isset( $p['performance_headers'] ) ? $p['performance_headers'] : '',
-			'_addlar_performance_rows_text' => isset( $p['performance_rows_text'] ) ? $p['performance_rows_text'] : '',
-			'_addlar_approvals_text'        => isset( $p['approvals_text'] ) ? $p['approvals_text'] : '',
-			'_addlar_formulation_label'     => isset( $p['formulation_label'] ) ? $p['formulation_label'] : '',
-			'_addlar_formulation_text'      => isset( $p['formulation_text'] ) ? $p['formulation_text'] : '',
-			'_addlar_properties_text'       => isset( $p['properties_text'] ) ? $p['properties_text'] : '',
-			'_addlar_viscosity_note'        => isset( $p['viscosity_note'] ) ? $p['viscosity_note'] : '',
-		);
-		foreach ( $raw as $key => $value ) {
-			update_post_meta( $post_id, $key, $value );
-		}
+		// Only structural meta — everything else lives in the page's own
+		// Elementor widget settings now (see addlar_product_template_widgets()),
+		// so the client edits product content on the Elementor canvas rather
+		// than in a custom-fields metabox. These two are the exception because
+		// the Finder and related-products queries look products up by them.
+		update_post_meta( $post_id, '_addlar_code', $code );
+		update_post_meta( $post_id, '_addlar_subcategory', isset( $p['subcategory'] ) ? $p['subcategory'] : '' );
 
-		addlar_render_all_product_fragments( $post_id );
+		// Clear the content meta the previous (metabox-driven) versions wrote,
+		// so an upgraded install isn't left carrying a stale duplicate of every
+		// value that now lives in Elementor.
+		foreach ( array(
+			'_addlar_doc_code', '_addlar_spec_string', '_addlar_description',
+			'_addlar_applications_text', '_addlar_performance_note',
+			'_addlar_performance_headers', '_addlar_performance_rows_text',
+			'_addlar_approvals_text', '_addlar_formulation_label',
+			'_addlar_formulation_text', '_addlar_properties_text',
+			'_addlar_viscosity_note', '_addlar_performance_table_html',
+			'_addlar_properties_table_html', '_addlar_applications_html',
+			'_addlar_approvals_html', '_addlar_formulation_html',
+		) as $stale ) {
+			delete_post_meta( $post_id, $stale );
+		}
 
 		$hero = addlar_product_hero_image( $code, $p['category'] );
 		if ( ! empty( $hero['id'] ) ) {
@@ -756,7 +758,7 @@ function addlar_seed_products() {
 		// template. Re-seeding overwrites manual edits, same "safe to re-run,
 		// but re-running replaces the layout" contract as the homepage.
 		if ( did_action( 'elementor/loaded' ) ) {
-			$tree = addlar_build_tree( addlar_product_template_widgets( $post_id, $code, $p['category'] ) );
+			$tree = addlar_build_tree( addlar_product_template_widgets( $code, $p ) );
 			addlar_save_page( $post_id, $tree, false );
 		}
 
@@ -783,115 +785,166 @@ add_action( 'init', 'addlar_enable_elementor_for_products', 20 );
 
 /**
  * Each product's widget list — seeded onto every addlar_product post
- * individually (addlar_seed_products() below), not one shared Theme
- * Builder template. Two earlier iterations are worth recording:
+ * individually, not into one shared Theme Builder template.
  *
- * 1. Elementor's native Post Title / Featured Image / Text Editor / HTML /
- *    Posts widgets, bound via Dynamic Tags, inside a single shared Theme
- *    Builder template. None of those native widgets get this theme's `.adl`
- *    scope wrapper (only Addlar_Base_Widget subclasses do), so they
- *    rendered with zero theme CSS, and the native Posts widget's default
- *    skin didn't match the design.
- * 2. A shared Theme Builder template rebuilt on the custom widgets below —
- *    correctly styled, but one fixed layout applied to all 22 products,
- *    and not individually editable in Elementor per product.
+ * **All content is baked into the widgets' own settings here**, at seed
+ * time, from the real PDS data in inc/products-data.php. Nothing is read
+ * from post meta at render time and there is no custom-fields metabox any
+ * more: the client asked to "use standalone elementor widget inputs", so
+ * every headline, chip, table row and card on a product page is a normal
+ * Elementor control they can click and edit on the canvas.
  *
- * The client asked for each product to be a standalone, individually
- * Elementor-editable page with a real product photo and a "Key Performance
- * Benefits" box (matching the reference competitor pages), which needs
- * per-post content, not a shared template — hence seeding this same widget
- * list onto each post's own `_elementor_data` instead.
+ * Visually this is built from the homepage's own component vocabulary
+ * rather than lookalikes, because the gap the client kept flagging was
+ * that product pages didn't read as the same site:
+ *   - `addlar_product_hero`  — dark ground + red wedge, same weight as the
+ *                              homepage hero (not a white text header)
+ *   - `addlar_spec_cards`    — the Package Grid's hex-icon cards
+ *   - `addlar_stat_band`     — the homepage's big-number band, reused as-is
+ *   - `addlar_trust_strip`   — the homepage's certification strip, reused
+ *   - `addlar_image_banner`  — full-bleed photo band
+ *   - `addlar_related_products` / `addlar_closing_cta` — unchanged
  *
- * A second round of feedback wanted more of the page to look like the
- * reference: full-bleed background-photo bands and photo tiles breaking up
- * the data sections. Real asset inventory is 2 free-license photos per
- * category (the product's own hero photo + one more — see
- * addlar_product_secondary_image()), so the same 1–2 real photos are used
- * at different visual treatments (full hero, dimmed full-bleed banner,
- * bordered tile) rather than forcing a 4-tile row that would repeat one
- * photo needlessly.
+ * Sections whose data a given product genuinely lacks are simply not
+ * added (KC420 has no approvals; Z 2612 has no performance table), rather
+ * than seeded as empty blocks.
  *
- * A third round asked for the page to actually match the *homepage's*
- * design quality, not just add more photos — so this reuses the
- * homepage's own component patterns directly instead of plainer one-off
- * treatments: Key Performance Benefits is `.about-feats` icon cards (same
- * markup as the homepage About section's capability cards), OEM &
- * Industry Approvals reuses `Addlar_Widget_TrustStrip` outright, and a new
- * "Product at a Glance" band reuses `Addlar_Widget_StatBand` outright.
- * Small text/table fragments use `compact` spacing (`.section-tight`,
- * 36px) rather than the homepage's full 104px section padding — that
- * mismatch (tiny content, huge padding) is what read as broken/empty in
- * the previous pass.
- *
- * @param int    $post_id  addlar_product post ID (for the real per-product
- *                         counts behind the Stat Band and Trust Strip).
- * @param string $code     Bare product code.
- * @param string $category Category name.
+ * @param string $code Bare product code.
+ * @param array  $p    That product's row from addlar_products_data().
  * @return array
  */
-function addlar_product_template_widgets( $post_id, $code, $category ) {
-	$fragment = function ( $key, $compact = true ) {
-		return array( 'type' => 'addlar_product_fragment', 'settings' => array( 'fragment' => $key, 'compact' => $compact ? 'yes' : '' ) );
-	};
-
+function addlar_product_template_widgets( $code, array $p ) {
+	$category  = isset( $p['category'] ) ? $p['category'] : '';
+	$sub       = isset( $p['subcategory'] ) ? $p['subcategory'] : '';
 	$mark      = addlar_seed_image( 'mark-white' );
 	$secondary = addlar_product_secondary_image( $category );
 	$cat_link  = addlar_product_category_link( $category, '/products/' );
+	$eyebrow   = trim( $category . ( $sub ? ' · ' . $sub : '' ) );
 
-	$widgets = array(
-		array(
-			'type'     => 'addlar_product_spec_header',
-			'settings' => array( 'mark' => $mark ),
+	$widgets = array();
+
+	/* ---------------------------------------------------------- breadcrumb */
+	$widgets[] = array(
+		'type'     => 'addlar_breadcrumb',
+		'settings' => array(
+			'home_label'     => __( 'Home', 'addlar' ),
+			'products_label' => __( 'Products', 'addlar' ),
+			'products_url'   => array( 'url' => '/products/' ),
+			'current_label'  => $p['title'],
+			'dark'           => '',
 		),
-		array( 'type' => 'addlar_product_benefits', 'settings' => array() ),
-		array(
-			'type'     => 'addlar_image_banner',
-			'settings' => array(
-				'height'  => 'short',
-				'image'   => $secondary,
-				'mark'    => $mark,
-				'eyebrow' => $category,
-				'title'   => __( 'Engineered for real-world performance', 'addlar' ),
-			),
-		),
-		$fragment( 'description' ),
-		$fragment( 'applications' ),
 	);
 
-	$glance_stats = addlar_product_glance_stats( $post_id );
-	if ( count( $glance_stats ) >= 2 ) {
+	/* --------------------------------------------------------------- hero */
+	$chips = array();
+	foreach ( addlar_product_hero_chips( $p ) as $chip ) {
+		$chips[] = array( 'text' => $chip );
+	}
+
+	$widgets[] = array(
+		'type'     => 'addlar_product_hero',
+		'settings' => array(
+			'anchor'    => 'top',
+			'eyebrow'   => $eyebrow,
+			'title'     => $p['title'],
+			'subtitle'  => addlar_product_field( $p, 'description' ),
+			'doc_code'  => addlar_product_field( $p, 'doc_code' ),
+			'image'     => addlar_product_hero_image( $code, $category ),
+			'mark'      => $mark,
+			'chips'     => addlar_rep( $chips ),
+			'btn1_text' => __( 'Request data sheet →', 'addlar' ),
+			'btn1_link' => array( 'url' => '/contact-us/' ),
+			'btn2_text' => __( 'Talk to a formulator', 'addlar' ),
+			'btn2_link' => array( 'url' => '/ask-the-expert/' ),
+		),
+	);
+
+	/* -------------------------------------------------------- spec cards */
+	$cards = addlar_product_spec_cards( $p );
+	if ( $cards ) {
 		$widgets[] = array(
-			'type'     => 'addlar_stat_band',
+			'type'     => 'addlar_spec_cards',
 			'settings' => array(
 				'anchor'  => '',
-				'eyebrow' => __( 'Product at a Glance', 'addlar' ),
-				'title'   => '',
-				'columns' => (string) count( $glance_stats ),
-				'stats'   => addlar_rep( array_map( function ( $s ) {
-					return array( 'count' => $s['count'], 'prefix' => '', 'suffix' => '', 'comma' => '', 'label' => $s['label'] );
-				}, $glance_stats ) ),
+				'soft'    => 'yes',
+				'columns' => count( $cards ) >= 3 ? '3' : '2',
+				'eyebrow' => __( 'Why this package', 'addlar' ),
+				'title'   => __( 'Key performance benefits.', 'addlar' ),
+				'lede'    => '',
+				'cards'   => addlar_rep( $cards ),
 			),
 		);
 	}
 
-	$widgets[] = $fragment( 'performance' );
+	/* ------------------------------------------------------ at a glance */
+	$glance = addlar_product_glance_stats( $p );
+	if ( count( $glance ) >= 2 ) {
+		$widgets[] = array(
+			'type'     => 'addlar_stat_band',
+			'settings' => array(
+				'anchor'  => '',
+				'eyebrow' => __( 'Product at a glance', 'addlar' ),
+				'title'   => sprintf( /* translators: %s: product name */ __( '%s by the numbers.', 'addlar' ), $p['title'] ),
+				'bg'      => $secondary,
+				'columns' => (string) count( $glance ),
+				'stats'   => addlar_rep( array_map( function ( $st ) {
+					return array( 'count' => $st['count'], 'prefix' => '', 'suffix' => '', 'comma' => '', 'label' => $st['label'] );
+				}, $glance ) ),
+			),
+		);
+	}
+
+	/* ------------------------------------------------- performance table */
+	$perf_headers = addlar_product_field( $p, 'performance_headers' );
+	$perf_rows    = addlar_product_field( $p, 'performance_rows_text' );
+	if ( $perf_headers && $perf_rows ) {
+		$widgets[] = array(
+			'type'     => 'addlar_spec_table',
+			'settings' => array(
+				'anchor'  => '',
+				'soft'    => '',
+				'eyebrow' => __( 'Treat rates', 'addlar' ),
+				'title'   => __( 'Performance levels.', 'addlar' ),
+				'note'    => addlar_product_field( $p, 'performance_note' ),
+				'headers' => $perf_headers,
+				'rows'    => $perf_rows,
+			),
+		);
+	}
+
+	/* --------------------------------------------------------- applications */
+	$applications = addlar_product_line_list( addlar_product_field( $p, 'applications_text' ) );
+	if ( $applications ) {
+		$widgets[] = array(
+			'type'     => 'addlar_chip_list',
+			'settings' => array(
+				'anchor'  => '',
+				'soft'    => 'yes',
+				'eyebrow' => __( 'Where it works', 'addlar' ),
+				'title'   => __( 'Applications.', 'addlar' ),
+				'items'   => implode( "\n", $applications ),
+				'style'   => 'outline',
+			),
+		);
+	}
+
+	/* -------------------------------------------------------- photo band */
 	$widgets[] = array(
-		'type'     => 'addlar_image_grid',
+		'type'     => 'addlar_image_banner',
 		'settings' => array(
-			'style'   => 'tile',
-			'columns' => '2',
+			'anchor'  => '',
+			'height'  => 'short',
+			'image'   => $secondary,
 			'mark'    => $mark,
-			'eyebrow' => '',
-			'title'   => '',
+			'align'   => 'center',
+			'eyebrow' => $category,
+			'title'   => __( 'Engineered for real-world performance', 'addlar' ),
 			'lede'    => '',
-			'items'   => addlar_rep( array(
-				array( 'image' => addlar_product_hero_image( $code, $category ), 'caption' => 'ADDLAR ' . $code, 'link' => array( 'url' => '' ) ),
-				array( 'image' => $secondary, 'caption' => sprintf( /* translators: %s: category name */ __( 'Explore %s →', 'addlar' ), $category ), 'link' => array( 'url' => $cat_link ) ),
-			) ),
 		),
 	);
 
-	$approval_items = addlar_product_approval_strip_items( $post_id );
+	/* --------------------------------------------------------- approvals */
+	$approval_items = addlar_product_approval_strip_items( $p );
 	if ( $approval_items ) {
 		$widgets[] = array(
 			'type'     => 'addlar_trust_strip',
@@ -899,12 +952,92 @@ function addlar_product_template_widgets( $post_id, $code, $category ) {
 		);
 	}
 
-	$widgets[] = $fragment( 'formulation' );
-	$widgets[] = $fragment( 'properties' );
-	$widgets[] = $fragment( 'viscosity' );
+	/* ------------------------------------------------------- formulation */
+	$formulation_rows = addlar_product_formulation_rows( $p );
+	if ( $formulation_rows ) {
+		$widgets[] = array(
+			'type'     => 'addlar_spec_table',
+			'settings' => array(
+				'anchor'  => '',
+				'soft'    => '',
+				'eyebrow' => __( 'Worked example', 'addlar' ),
+				'title'   => __( 'Formulation example.', 'addlar' ),
+				'note'    => addlar_product_field( $p, 'formulation_label' ),
+				'headers' => __( 'Component | Value', 'addlar' ),
+				'rows'    => $formulation_rows,
+			),
+		);
+	}
+
+	/* -------------------------------------------------- typical properties */
+	$properties_rows = addlar_product_properties_rows( $p );
+	if ( $properties_rows ) {
+		$widgets[] = array(
+			'type'     => 'addlar_spec_table',
+			'settings' => array(
+				'anchor'  => '',
+				'soft'    => 'yes',
+				'eyebrow' => __( 'Lab data', 'addlar' ),
+				'title'   => __( 'Typical properties.', 'addlar' ),
+				'note'    => '',
+				'headers' => __( 'Test | Method | Value', 'addlar' ),
+				'rows'    => $properties_rows,
+			),
+		);
+	}
+
+	/* --------------------------------------------------- viscosity grades */
+	$viscosity = addlar_product_line_list( addlar_product_field( $p, 'viscosity_note' ) );
+	if ( $viscosity ) {
+		$widgets[] = array(
+			'type'     => 'addlar_chip_list',
+			'settings' => array(
+				'anchor'  => '',
+				'soft'    => '',
+				'eyebrow' => __( 'Coverage', 'addlar' ),
+				'title'   => __( 'Viscosity grades.', 'addlar' ),
+				'items'   => implode( "\n", $viscosity ),
+				'style'   => 'solid',
+			),
+		);
+	}
+
+	/* ----------------------------------------------------- photo tile row */
+	$widgets[] = array(
+		'type'     => 'addlar_image_grid',
+		'settings' => array(
+			'anchor'  => '',
+			'soft'    => '',
+			'style'   => 'tile',
+			'columns' => '2',
+			'mark'    => $mark,
+			'eyebrow' => '',
+			'title'   => '',
+			'lede'    => '',
+			'items'   => addlar_rep( array(
+				array(
+					'image'   => addlar_product_hero_image( $code, $category ),
+					'caption' => $p['title'],
+					'link'    => array( 'url' => '' ),
+				),
+				array(
+					'image'   => $secondary,
+					'caption' => sprintf( /* translators: %s: category name */ __( 'Explore %s →', 'addlar' ), $category ),
+					'link'    => array( 'url' => $cat_link ),
+				),
+			) ),
+		),
+	);
+
+	/* ------------------------------------------------- related + closing */
 	$widgets[] = array(
 		'type'     => 'addlar_related_products',
-		'settings' => array( 'mode' => 'current', 'heading' => __( 'Related Products', 'addlar' ), 'mark' => $mark ),
+		'settings' => array(
+			'mode'    => 'current',
+			'heading' => __( 'Related Products', 'addlar' ),
+			'count'   => 3,
+			'mark'    => $mark,
+		),
 	);
 	$widgets[] = array(
 		'type'     => 'addlar_closing_cta',
@@ -924,6 +1057,18 @@ function addlar_product_template_widgets( $post_id, $code, $category ) {
 function addlar_category_archive_template_widgets() {
 	$mark = addlar_seed_image( 'mark-white' );
 	return array(
+		array(
+			'type'     => 'addlar_breadcrumb',
+			'settings' => array(
+				'home_label'     => __( 'Home', 'addlar' ),
+				'products_label' => __( 'Products', 'addlar' ),
+				'products_url'   => array( 'url' => '/products/' ),
+				// Blank: the widget falls back to the queried object's own
+				// title, which on a taxonomy archive is the term name.
+				'current_label'  => '',
+				'dark'           => '',
+			),
+		),
 		array(
 			'type'     => 'addlar_page_intro',
 			'settings' => array( 'use_archive_term' => 'yes', 'eyebrow' => __( 'Product Category', 'addlar' ) ),
@@ -1529,7 +1674,7 @@ function addlar_tools_page_render() {
 		echo '<div class="notice notice-success"><p>' . wp_kses_post( $products_notice ) . '</p></div>';
 	}
 
-	echo '<p>' . esc_html__( 'Builds the 22 real product pages (from the client’s Product Data Sheets) as individually standalone, Elementor-editable pages — each with its own real product photo and a Key Performance Benefits box. Also seeds the category archive Theme Builder template, the Products landing page, and fully designed About Us / Contact Us / Ask the Expert pages (Blog stays a placeholder — no client content for it yet). Flushes permalinks too, so a new category archive URL works immediately instead of 404ing until Settings → Permalinks is re-saved by hand.', 'addlar' ) . '</p>';
+	echo '<p>' . esc_html__( 'Builds the 22 real product pages (from the client’s Product Data Sheets) as individually standalone, Elementor-editable pages. All product content — headline, spec chips, benefit cards, data tables — is written into each page’s own Elementor widgets, so it is edited on the Elementor canvas, not in a custom-fields box. Also seeds the category archive template, the Products landing page, and the About Us / Contact Us / Ask the Expert pages (Blog stays a placeholder — no client content for it yet), and flushes permalinks.', 'addlar' ) . '</p>';
 	echo '<p><strong>' . esc_html__( 'Safe to re-run', 'addlar' ) . '</strong> — ' . esc_html__( 'products and pages are matched by slug and updated in place, not duplicated. Re-running replaces each product page\'s layout, so manual edits made directly in Elementor will be lost.', 'addlar' ) . '</p>';
 
 	echo '<form method="post">';

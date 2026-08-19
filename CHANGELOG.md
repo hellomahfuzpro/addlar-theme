@@ -3,6 +3,51 @@
 All notable changes to the ADDLAR theme. Keep the top version in sync with
 `Version:` in `style.css` — the updater reads it from there.
 
+## [1.5.0] — 2026-08-19
+
+Product pages rebuilt again, this time changing where content *lives*, not
+just how it looks — plus the category-archive 404 root-caused properly and
+breadcrumbs added.
+
+### Changed — content moved out of custom fields, into Elementor widgets
+- **`inc/products-metabox.php` and the whole post-meta content pipeline are
+  gone.** Product content (headline, spec chips, benefit cards, every data
+  table) is now written directly into each page's own Elementor widget
+  settings at seed time, so the client edits it on the Elementor canvas.
+  Previously it was: metabox textarea → `save_post` → pre-rendered HTML in
+  post meta → a widget echoing that meta. Four moving parts became one.
+- Only two structural meta values remain (`_addlar_code`,
+  `_addlar_subcategory`) — the Finder and related-products queries look
+  products up by them. Re-seeding also deletes the now-stale content meta
+  an upgraded install would otherwise still be carrying.
+- New standalone widgets, all with normal Elementor inputs and no meta
+  dependency: `ProductHero`, `SpecCards`, `SpecTable`, `ChipList`,
+  `Breadcrumb`. The three meta-reading widgets they replace
+  (`ProductSpecHeader`, `ProductBenefits`, `ProductFragment`) are removed.
+
+### Changed — visual design
+- **Product hero is now a full-bleed dark section with a red diagonal
+  wedge**, oversized headline and spec chips — the same visual weight as
+  the homepage hero, replacing the white text-on-white header that made
+  product pages read as a different site.
+- Benefit cards use the homepage Package Grid's hex-icon cards
+  (`.pkg`/`.phex`); approvals reuse the homepage certification strip;
+  "at a glance" reuses the homepage stat band. Chips are squared and
+  red-accented rather than small grey pills.
+
+### Fixed
+- **Category archives 404'd.** Root cause: the taxonomy's rewrite slug was
+  `products/category`, nested underneath *both* the hand-curated
+  `/products/` Page and the CPT's own `products` rewrite base — a
+  three-way collision no amount of permalink flushing could resolve. The
+  taxonomy now uses a distinct top-level base, `/product-category/…/`,
+  which cannot collide with either. The taxonomy is also registered
+  before the post type, and a version-keyed one-shot `flush_rewrite_rules()`
+  runs on update so the new URLs work without a manual permalinks re-save.
+- Breadcrumbs added to product pages and category archives
+  (`Addlar_Widget_Breadcrumb`), archive-aware so a taxonomy archive shows
+  the term name rather than the first product's title.
+
 ## [1.4.0] — 2026-08-19
 
 Third round of feedback: two confirmed rendering bugs from `v1.3.0` (an

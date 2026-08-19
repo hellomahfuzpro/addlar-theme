@@ -1,26 +1,26 @@
 <?php
 /**
- * Product data parsing + HTML-fragment rendering.
+ * Seed-time product helpers + Product Finder catalogue derivation.
  *
- * Elementor Pro's "Post Custom Field" Dynamic Tag only reads a single scalar
- * meta value — it cannot iterate a repeater the way ACF Pro would. Rather
- * than add ACF Pro as a new paid dependency just for two tables, the admin
- * metabox (inc/products-metabox.php) stores the tables as line-based,
- * delimiter-separated text (the same convention addlar_parse_finder_rows()
- * already uses), and the functions below turn that text into ready-to-display
- * HTML at save time. The Theme Builder template then binds an HTML widget to
- * the pre-rendered meta key via a plain Dynamic Tag — no repeater needed.
+ * Product content is authored in each page's own Elementor widgets, not in
+ * post meta (client's request: "instead of using custom fields use
+ * standalone elementor widget inputs"). So the helpers here run **once, at
+ * seed time**: they turn the raw PDS data in inc/products-data.php into
+ * ready-made Elementor widget settings. After seeding, nothing on the front
+ * end calls them — the page renders straight from `_elementor_data`, and
+ * the client edits it in Elementor.
  *
- * The 22 real PDS documents this schema was built from turned out far more
- * heterogeneous than a single fixed table shape: some products have no
- * performance table at all (raw components, dosed by a flat % range, e.g.
- * KC420/Z 2612), some use 2 columns (grease/hydraulic/gear — treat-rate only,
- * no TBN), one uses a formulation recipe instead of a table (9200), and
- * several rows carry long OEM-approval lists that render far better as a
- * flat chip list than crammed into a table cell. Every renderer below is
- * written to be optional/blank-tolerant for exactly that reason — a missing
- * section renders nothing, and a blank table cell renders "—", never a
- * fabricated value.
+ * That's a deliberate simplification of the previous pipeline (metabox
+ * textareas → save_post → pre-rendered HTML in meta → a widget echoing it),
+ * which had four moving parts where one now does.
+ *
+ * The 22 real PDS documents are heterogeneous: some products have no
+ * performance table at all (raw components dosed by a flat % range, e.g.
+ * KC420/Z 2612), some use 2 columns rather than 3, one uses a formulation
+ * recipe instead of a table (9200), and several carry long OEM-approval
+ * lists. Every helper below returns an empty result rather than a
+ * placeholder when a product genuinely lacks that data, and the seeder
+ * skips the corresponding section entirely.
  *
  * @package Addlar
  */
@@ -35,7 +35,7 @@ if ( ! defined( 'ABSPATH' ) && ! defined( 'ADDLAR_TESTING' ) ) {
  * (two consecutive `|` characters, or nothing after the last `|`) is kept as
  * an empty string rather than dropped, so column position never shifts.
  *
- * @param string $text Raw textarea value.
+ * @param string $text Raw value.
  * @return array
  */
 function addlar_product_table_rows( $text ) {
@@ -53,11 +53,10 @@ function addlar_product_table_rows( $text ) {
 }
 
 /**
- * Split a plain "one item per line" textarea into a trimmed, blank-filtered
- * list. Used for applications and approvals, which are flat lists, not
- * tables.
+ * Split a plain "one item per line" value into a trimmed, blank-filtered
+ * list. Used for applications and approvals, which are flat lists.
  *
- * @param string $text Raw textarea value.
+ * @param string $text Raw value.
  * @return array
  */
 function addlar_product_line_list( $text ) {
@@ -70,306 +69,164 @@ function addlar_product_line_list( $text ) {
 }
 
 /**
- * Render the performance/treat-rate table as HTML, or '' if there is
- * nothing to show — several documented products (raw components dosed by a
- * flat percentage, not a graded performance level) legitimately have no
- * table here at all.
+ * Read a key from a product's data array (inc/products-data.php) without
+ * repeating an isset() ternary at every call site.
  *
- * @param string $headers_line Pipe-delimited column headers, e.g. "Level|Treat Rate %|TBN".
- * @param string $rows_text    One row per line, same column count as the headers.
- * @param string $note         Optional label above the table, e.g. "Multigrade" or "Automotive".
+ * @param array  $p   Product data row.
+ * @param string $key Key.
  * @return string
  */
-function addlar_render_performance_table_html( $headers_line, $rows_text, $note = '' ) {
-	$headers = array_filter( array_map( 'trim', explode( '|', (string) $headers_line ) ), function ( $h ) {
-		return '' !== $h;
-	} );
-	$rows = addlar_product_table_rows( $rows_text );
-
-	if ( ! $headers || ! $rows ) {
-		return '';
-	}
-
-	$out = '';
-	if ( '' !== trim( (string) $note ) ) {
-		$out .= '<p class="spec-table-note">' . esc_html( $note ) . '</p>';
-	}
-
-	$out .= '<table class="spec-table spec-table-performance"><thead><tr>';
-	foreach ( $headers as $h ) {
-		$out .= '<th>' . esc_html( $h ) . '</th>';
-	}
-	$out .= '</tr></thead><tbody>';
-
-	foreach ( $rows as $cells ) {
-		$out .= '<tr>';
-		foreach ( $headers as $i => $h ) {
-			$cell = isset( $cells[ $i ] ) ? trim( $cells[ $i ] ) : '';
-			$out .= '<td>' . ( '' !== $cell ? esc_html( $cell ) : '&#8212;' ) . '</td>';
-		}
-		$out .= '</tr>';
-	}
-	$out .= '</tbody></table>';
-
-	return $out;
+function addlar_product_field( array $p, $key ) {
+	return isset( $p[ $key ] ) ? (string) $p[ $key ] : '';
 }
 
 /**
- * Render the typical-properties table: Test | Method | Value | Unit rows.
- * Not every product reports the same set of tests (e.g. an "ashless"
- * additive has no Calcium/Phosphorus/Zinc/Sulphated Ash rows to report), so
- * the row set itself is whatever the metabox textarea contains — nothing is
- * assumed. A row whose Value cell is blank in the source PDS renders "—",
- * matching the document rather than inventing a number.
+ * "Key Performance Benefits" cards for the product hero's card row —
+ * icon + short title + supporting text, ready for Addlar_Widget_SpecCards.
  *
- * @param string $text One row per line: Test | Method | Value | Unit.
- * @return string
+ * Every card restates a fact already present in this product's own
+ * transcribed PDS data (a real application, the real spec string, a real
+ * count of approvals or performance levels) — never an invented performance
+ * claim. The icon is a direct 1:1 mapping from which field the fact came
+ * from, not a guess.
+ *
+ * @param array $p     Product data row.
+ * @param int   $limit Maximum cards.
+ * @return array Each: array( icon, lab, title, text ).
  */
-function addlar_render_properties_table_html( $text ) {
-	$rows = addlar_product_table_rows( $text );
-	if ( ! $rows ) {
-		return '';
-	}
-
-	$out = '<table class="spec-table spec-table-properties"><thead><tr><th>' . esc_html__( 'Test', 'addlar' ) . '</th><th>' . esc_html__( 'Method', 'addlar' ) . '</th><th>' . esc_html__( 'Value', 'addlar' ) . '</th></tr></thead><tbody>';
-
-	foreach ( $rows as $cells ) {
-		$test   = isset( $cells[0] ) ? trim( $cells[0] ) : '';
-		$method = isset( $cells[1] ) ? trim( $cells[1] ) : '';
-		$value  = isset( $cells[2] ) ? trim( $cells[2] ) : '';
-		$unit   = isset( $cells[3] ) ? trim( $cells[3] ) : '';
-
-		if ( '' === $test ) {
-			continue;
-		}
-
-		$value_cell = '' !== $value ? esc_html( $value . ( '' !== $unit ? ' ' . $unit : '' ) ) : '&#8212;';
-
-		$out .= '<tr><td>' . esc_html( $test ) . '</td><td>' . ( '' !== $method ? esc_html( $method ) : '&#8212;' ) . '</td><td>' . $value_cell . '</td></tr>';
-	}
-	$out .= '</tbody></table>';
-
-	return $out;
-}
-
-/**
- * Render a flat list (applications, approvals) as chip spans. Returns '' if
- * the list is empty — most products have applications only as an implicit
- * reading of their spec string, and not every product carries an OEM
- * approvals list (raw components like Z 2612 are dosed by the formulator,
- * not independently approval-tested).
- *
- * @param string $text  One item per line.
- * @param string $class Extra class on the wrapping <ul>, e.g. "chips-approvals".
- * @return string
- */
-function addlar_render_chip_list_html( $text, $class = '' ) {
-	$items = addlar_product_line_list( $text );
-	if ( ! $items ) {
-		return '';
-	}
-
-	$out = '<ul class="chip-list ' . esc_attr( $class ) . '">';
-	foreach ( $items as $item ) {
-		$out .= '<li class="chip">' . esc_html( $item ) . '</li>';
-	}
-	$out .= '</ul>';
-
-	return $out;
-}
-
-/**
- * Render a formulation recipe (ADDLAR 9200-style: base oil + additive +
- * pour-point depressant percentages for one finished-oil example) as a
- * definition list. This is a distinct content shape from the performance
- * table — a worked example, not a graded treat-rate — so it gets its own
- * renderer rather than being force-fit into the table schema.
- *
- * @param string $label Heading above the list, e.g. "SAE 30 (TBN 5) Formulation".
- * @param string $text  One "Component: value" per line.
- * @return string
- */
-function addlar_render_formulation_html( $label, $text ) {
-	$items = addlar_product_line_list( $text );
-	if ( ! $items ) {
-		return '';
-	}
-
-	$out = '';
-	if ( '' !== trim( (string) $label ) ) {
-		$out .= '<p class="spec-table-note">' . esc_html( $label ) . '</p>';
-	}
-
-	$out .= '<dl class="formulation-list">';
-	foreach ( $items as $item ) {
-		if ( false === strpos( $item, ':' ) ) {
-			continue;
-		}
-		list( $k, $v ) = explode( ':', $item, 2 );
-		$out .= '<div class="formulation-row"><dt>' . esc_html( trim( $k ) ) . '</dt><dd>' . esc_html( trim( $v ) ) . '</dd></div>';
-	}
-	$out .= '</dl>';
-
-	return $out;
-}
-
-/**
- * Compute and save all five pre-rendered HTML fragments for one product
- * post from its raw meta fields. Shared by the admin metabox's save_post
- * hook (products-metabox.php) and the seeder (demo-import.php) so both
- * paths produce identical output from the same raw text — one rendering
- * pipeline, not two.
- *
- * @param int $post_id addlar_product post ID. Raw meta must already be saved.
- */
-function addlar_render_all_product_fragments( $post_id ) {
-	$get = function ( $key ) use ( $post_id ) {
-		return get_post_meta( $post_id, $key, true );
-	};
-
-	update_post_meta( $post_id, '_addlar_performance_table_html', addlar_render_performance_table_html(
-		$get( '_addlar_performance_headers' ),
-		$get( '_addlar_performance_rows_text' ),
-		$get( '_addlar_performance_note' )
-	) );
-
-	update_post_meta( $post_id, '_addlar_properties_table_html', addlar_render_properties_table_html( $get( '_addlar_properties_text' ) ) );
-
-	update_post_meta( $post_id, '_addlar_applications_html', addlar_render_chip_list_html( $get( '_addlar_applications_text' ), 'chips-applications' ) );
-
-	update_post_meta( $post_id, '_addlar_approvals_html', addlar_render_chip_list_html( $get( '_addlar_approvals_text' ), 'chips-approvals' ) );
-
-	update_post_meta( $post_id, '_addlar_formulation_html', addlar_render_formulation_html(
-		$get( '_addlar_formulation_label' ),
-		$get( '_addlar_formulation_text' )
-	) );
-}
-
-/**
- * "Key Performance Benefits" cards for the product page (see
- * widgets/class-product-benefits.php, which renders these as icon
- * capability cards reusing the homepage About section's `.afeat` markup)
- * — modelled on the reference competitor pages the client asked to match,
- * which lead with a short, scannable benefits list above the technical
- * tables.
- *
- * Every card here is a restatement of a fact already present in this
- * product's own transcribed data (a real application line, the real spec
- * string, a real count of approvals/performance levels) — never an invented
- * performance claim. The icon is a direct 1:1 mapping from which field the
- * fact came from, not a guess: applications → gear, spec compliance →
- * shield, approval count → globe, performance-level count → layers,
- * viscosity → viscosity. Products vary in which facts they have (a raw
- * component like Z 2612 has applications but no performance table; 9342 has
- * neither approvals nor applications), so this degrades gracefully rather
- * than assuming every product has the same shape of content.
- *
- * @param int $post_id addlar_product post ID.
- * @param int $limit   Maximum cards to return.
- * @return array Each item: array( 'icon' => string, 'text' => string ).
- */
-function addlar_product_benefit_bullets( $post_id, $limit = 6 ) {
+function addlar_product_spec_cards( array $p, $limit = 3 ) {
 	$cards = array();
 
-	$applications = addlar_product_line_list( get_post_meta( $post_id, '_addlar_applications_text', true ) );
-	foreach ( array_slice( $applications, 0, 2 ) as $app ) {
-		$cards[] = array(
-			'icon' => 'gear',
-			/* translators: %s: an application/use-case line from the product's own PDS */
-			'text' => sprintf( __( 'Formulated for %s', 'addlar' ), $app ),
-		);
-	}
-
-	$spec = trim( (string) get_post_meta( $post_id, '_addlar_spec_string', true ) );
+	$spec = trim( addlar_product_field( $p, 'spec_string' ) );
 	if ( $spec ) {
 		$cards[] = array(
-			'icon' => 'shield',
-			/* translators: %s: the product's real specification string */
-			'text' => sprintf( __( 'Meets %s', 'addlar' ), $spec ),
+			'icon'  => 'shield',
+			'lab'   => __( 'Specification', 'addlar' ),
+			'title' => __( 'Meets global standards', 'addlar' ),
+			'text'  => $spec,
 		);
 	}
 
-	$approvals = addlar_product_line_list( get_post_meta( $post_id, '_addlar_approvals_text', true ) );
-	if ( $approvals ) {
-		$cards[] = array(
-			'icon' => 'globe',
-			/* translators: %d: number of real OEM/industry approvals listed in this product's PDS */
-			'text' => sprintf( _n( 'Backed by %d OEM & industry approval', 'Backed by %d OEM & industry approvals', count( $approvals ), 'addlar' ), count( $approvals ) ),
-		);
-	}
-
-	$rows = addlar_product_table_rows( get_post_meta( $post_id, '_addlar_performance_rows_text', true ) );
+	$rows = addlar_product_table_rows( addlar_product_field( $p, 'performance_rows_text' ) );
 	if ( $rows ) {
 		$cards[] = array(
-			'icon' => 'layers',
+			'icon'  => 'layers',
+			'lab'   => __( 'Cascade', 'addlar' ),
 			/* translators: %d: number of real graded performance levels in this product's PDS */
-			'text' => sprintf( _n( 'Available across %d performance level', 'Available across %d performance levels', count( $rows ), 'addlar' ), count( $rows ) ),
+			'title' => sprintf( _n( '%d performance level', '%d performance levels', count( $rows ), 'addlar' ), count( $rows ) ),
+			'text'  => __( 'One package cascades across multiple grades, simplifying blending inventory.', 'addlar' ),
 		);
 	}
 
-	$viscosity = trim( (string) get_post_meta( $post_id, '_addlar_viscosity_note', true ) );
+	$approvals = addlar_product_line_list( addlar_product_field( $p, 'approvals_text' ) );
+	if ( $approvals ) {
+		$cards[] = array(
+			'icon'  => 'globe',
+			'lab'   => __( 'Approvals', 'addlar' ),
+			/* translators: %d: number of real OEM/industry approvals listed in this product's PDS */
+			'title' => sprintf( _n( '%d OEM approval', '%d OEM approvals', count( $approvals ), 'addlar' ), count( $approvals ) ),
+			'text'  => __( 'Independently aligned with leading OEM and industry performance targets.', 'addlar' ),
+		);
+	}
+
+	$applications = addlar_product_line_list( addlar_product_field( $p, 'applications_text' ) );
+	if ( $applications ) {
+		$cards[] = array(
+			'icon'  => 'gear',
+			'lab'   => __( 'Applications', 'addlar' ),
+			/* translators: %d: number of real application/use-case lines in this product's PDS */
+			'title' => sprintf( _n( '%d documented application', '%d documented applications', count( $applications ), 'addlar' ), count( $applications ) ),
+			'text'  => implode( ' · ', array_slice( $applications, 0, 3 ) ),
+		);
+	}
+
+	$viscosity = trim( addlar_product_field( $p, 'viscosity_note' ) );
 	if ( $viscosity ) {
-		$cards[] = array( 'icon' => 'viscosity', 'text' => __( 'Formulated across multiple viscosity grades', 'addlar' ) );
+		$cards[] = array(
+			'icon'  => 'viscosity',
+			'lab'   => __( 'Viscometry', 'addlar' ),
+			'title' => __( 'Multiple viscosity grades', 'addlar' ),
+			'text'  => __( 'Formulated to cover a broad grade spread from a single package.', 'addlar' ),
+		);
 	}
 
 	return array_slice( $cards, 0, $limit );
 }
 
 /**
- * Real, non-fabricated counts for the "Product at a Glance" stat band
- * (widgets/class-stat-band.php, reused as-is) — the same facts
- * addlar_product_benefit_bullets() already derives, just as bare numbers
- * instead of sentences. Returns at most 4 stats, each
- * array( 'count', 'label' ); a stat is only included when its count is
- * greater than zero, so a sparse product (e.g. one with no approvals)
- * simply gets fewer stats rather than a fabricated one.
+ * Short spec chips for the product hero — the spec string split on its
+ * natural separators, so "API SN/CF, SL to SJ · ACEA C3/C4 · ILSAC GF-5"
+ * becomes three chips instead of one long line.
  *
- * @param int $post_id addlar_product post ID.
+ * @param array $p     Product data row.
+ * @param int   $limit Maximum chips.
  * @return array
  */
-function addlar_product_glance_stats( $post_id ) {
+function addlar_product_hero_chips( array $p, $limit = 4 ) {
+	$spec = trim( addlar_product_field( $p, 'spec_string' ) );
+	if ( '' === $spec ) {
+		return array();
+	}
+
+	$parts = preg_split( '/\s*·\s*|\s*\|\s*/u', $spec );
+	$parts = array_values( array_filter( array_map( 'trim', (array) $parts ), function ( $x ) {
+		return '' !== $x;
+	} ) );
+
+	return array_slice( $parts, 0, $limit );
+}
+
+/**
+ * Real, non-fabricated counts for the "Product at a Glance" stat band.
+ * A stat is only included when its count is greater than zero, so a sparse
+ * product simply gets fewer stats rather than a padded-out one.
+ *
+ * @param array $p Product data row.
+ * @return array Each: array( count, label ).
+ */
+function addlar_product_glance_stats( array $p ) {
 	$stats = array();
 
-	$applications = addlar_product_line_list( get_post_meta( $post_id, '_addlar_applications_text', true ) );
+	$applications = addlar_product_line_list( addlar_product_field( $p, 'applications_text' ) );
 	if ( $applications ) {
-		$stats[] = array( 'count' => (string) count( $applications ), 'label' => __( 'Applications', 'addlar' ) );
+		$stats[] = array( 'count' => (string) count( $applications ), 'label' => __( 'Documented<br>applications', 'addlar' ) );
 	}
 
-	$rows = addlar_product_table_rows( get_post_meta( $post_id, '_addlar_performance_rows_text', true ) );
+	$rows = addlar_product_table_rows( addlar_product_field( $p, 'performance_rows_text' ) );
 	if ( $rows ) {
-		$stats[] = array( 'count' => (string) count( $rows ), 'label' => __( 'Performance levels', 'addlar' ) );
+		$stats[] = array( 'count' => (string) count( $rows ), 'label' => __( 'Performance<br>levels', 'addlar' ) );
 	}
 
-	$approvals = addlar_product_line_list( get_post_meta( $post_id, '_addlar_approvals_text', true ) );
+	$approvals = addlar_product_line_list( addlar_product_field( $p, 'approvals_text' ) );
 	if ( $approvals ) {
-		$stats[] = array( 'count' => (string) count( $approvals ), 'label' => __( 'OEM & industry approvals', 'addlar' ) );
+		$stats[] = array( 'count' => (string) count( $approvals ), 'label' => __( 'OEM &amp; industry<br>approvals', 'addlar' ) );
 	}
 
-	$properties = addlar_product_table_rows( get_post_meta( $post_id, '_addlar_properties_text', true ) );
+	$properties = addlar_product_table_rows( addlar_product_field( $p, 'properties_text' ) );
 	if ( $properties ) {
-		$stats[] = array( 'count' => (string) count( $properties ), 'label' => __( 'Documented lab properties', 'addlar' ) );
+		$stats[] = array( 'count' => (string) count( $properties ), 'label' => __( 'Lab-documented<br>properties', 'addlar' ) );
 	}
 
 	return array_slice( $stats, 0, 4 );
 }
 
 /**
- * Turn a product's approvals list into Addlar_Widget_TrustStrip's
- * `items` repeater shape (`strong` + `text`), so the product page's
- * "OEM & Industry Approvals" section reuses that widget directly instead
- * of a new one. Approval lines are transcribed as `Code (context)`
- * (e.g. "MB 228.5 (E7)", "ACEA C3/C5 (SN)" — see products-data.php); the
- * leading code becomes the bold lead, the parenthesised context (if any)
- * becomes the label. A line with no parenthetical just gets an empty label.
+ * Turn a product's approvals list into Addlar_Widget_TrustStrip's `items`
+ * shape (`strong` + `text`), so the approvals section reuses the homepage's
+ * certification strip rather than a lookalike. Approval lines are
+ * transcribed as `Code (context)` — e.g. "MB 228.5 (E7)" — so the leading
+ * code becomes the bold lead and the parenthesised context the label.
  *
- * @param int $post_id addlar_product post ID.
- * @return array Repeater-shaped rows (still needs addlar_rep() at seed time).
+ * @param array $p     Product data row.
+ * @param int   $limit Maximum items (the strip is a single row; a product
+ *                     with 24 approvals would wrap into an unreadable block).
+ * @return array
  */
-function addlar_product_approval_strip_items( $post_id ) {
-	$lines = addlar_product_line_list( get_post_meta( $post_id, '_addlar_approvals_text', true ) );
+function addlar_product_approval_strip_items( array $p, $limit = 8 ) {
+	$lines = addlar_product_line_list( addlar_product_field( $p, 'approvals_text' ) );
 	$items = array();
 
-	foreach ( $lines as $line ) {
+	foreach ( array_slice( $lines, 0, $limit ) as $line ) {
 		if ( preg_match( '/^(.*?)\s*\(([^)]+)\)\s*$/', $line, $m ) ) {
 			$items[] = array( 'strong' => trim( $m[1] ), 'text' => trim( $m[2] ) );
 		} else {
@@ -378,6 +235,57 @@ function addlar_product_approval_strip_items( $post_id ) {
 	}
 
 	return $items;
+}
+
+/**
+ * A product's typical-properties rows re-flowed for Addlar_Widget_SpecTable.
+ * products-data.php stores them as `Test | Method | Value | Unit`; the table
+ * shows three columns, with unit appended to the value.
+ *
+ * @param array $p Product data row.
+ * @return string Rows text, one row per line, `|`-separated.
+ */
+function addlar_product_properties_rows( array $p ) {
+	$out = array();
+
+	foreach ( addlar_product_table_rows( addlar_product_field( $p, 'properties_text' ) ) as $cells ) {
+		$test   = isset( $cells[0] ) ? $cells[0] : '';
+		$method = isset( $cells[1] ) ? $cells[1] : '';
+		$value  = isset( $cells[2] ) ? $cells[2] : '';
+		$unit   = isset( $cells[3] ) ? $cells[3] : '';
+
+		if ( '' === $test ) {
+			continue;
+		}
+		if ( '' !== $unit ) {
+			$value = trim( $value . ' ' . $unit );
+		}
+
+		$out[] = $test . ' | ' . $method . ' | ' . $value;
+	}
+
+	return implode( "\n", $out );
+}
+
+/**
+ * A product's formulation example as two-column table rows
+ * ("Component: value" per line → `Component | value`).
+ *
+ * @param array $p Product data row.
+ * @return string
+ */
+function addlar_product_formulation_rows( array $p ) {
+	$out = array();
+
+	foreach ( addlar_product_line_list( addlar_product_field( $p, 'formulation_text' ) ) as $line ) {
+		if ( false === strpos( $line, ':' ) ) {
+			continue;
+		}
+		list( $k, $v ) = explode( ':', $line, 2 );
+		$out[] = trim( $k ) . ' | ' . trim( $v );
+	}
+
+	return implode( "\n", $out );
 }
 
 /**
@@ -420,8 +328,8 @@ function addlar_product_url_map() {
  * product URLs: a code with a real product page becomes ['code'=>…,
  * 'url'=>…], a code without one stays a plain string. theme.js's finder
  * renders the former as a link and the latter as plain text, so the pass-
- * through data itself (never the parser, never the metabox convention)
- * carries the "this one's documented" distinction.
+ * through data itself (never the parser) carries the "this one's
+ * documented" distinction.
  *
  * @param array $data Output of addlar_parse_finder_rows().
  * @return array
@@ -451,9 +359,8 @@ function addlar_finder_enrich_with_urls( $data ) {
  * entry folded in that the hand-maintained catalogue doesn't already list
  * under its category/sub-category. This is what keeps the Finder and the
  * CPT from drifting apart again the way the original 4-code mismatch
- * happened: from here forward, adding a product via the CPT admin screen is
- * enough — the Finder's default catalogue picks it up next time the theme
- * is (re)seeded, with no parallel textarea edit required.
+ * happened: adding a product is enough — the Finder's default catalogue
+ * picks it up next time the theme is (re)seeded.
  *
  * @return array
  */

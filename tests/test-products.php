@@ -1,12 +1,15 @@
 <?php
 /**
- * Unit tests for the Phase 2 product data:
+ * Unit tests for the product data and the seed-time helpers that turn it
+ * into Elementor widget settings:
  *  - addlar_default_finder_categories() carries the 4 previously-missing
  *    codes (7155, KC420, Z 2612, KC321) plus the 2 additional gaps found
  *    while reading the real PDS set (7375, 7376 were documented products
  *    missing from the Finder's Passenger Car list).
- *  - addlar_render_performance_table_html() / addlar_render_properties_table_html()
- *    round-trip correctly, including the blank-cell "—" behaviour.
+ *  - The seed-time helpers (spec cards, hero chips, glance stats, approval
+ *    strip items, properties/formulation row re-flow) produce well-formed
+ *    output for real products and degrade to empty — never to a fabricated
+ *    placeholder — for products genuinely missing that data.
  *  - Every one of the 22 real products in products-data.php has internally
  *    consistent table data: a performance table's row column counts match
  *    its header column count (a transcription-error tripwire, not a content
@@ -60,17 +63,40 @@ check_true( '7155 now under Engine Oil Additive -> Passenger Car', in_array( '71
 check_true( '7375 now under Engine Oil Additive -> Passenger Car', in_array( '7375', $data['Engine Oil Additive']['Passenger Car'], true ) );
 check_true( '7376 now under Engine Oil Additive -> Passenger Car', in_array( '7376', $data['Engine Oil Additive']['Passenger Car'], true ) );
 
-/* --------------------------------------------------------- table renderers */
+/* ------------------------------------------------ seed-time helper output */
 
-$perf = addlar_render_performance_table_html( 'Level | Treat Rate % | TBN', "SN | 6.75% | 6.7\nSM | 6.00% | ", 'Multigrade' );
-check_true( 'performance table renders a <table>', false !== strpos( $perf, '<table class="spec-table spec-table-performance">' ) );
-check_true( 'performance table blank cell renders em-dash', false !== strpos( $perf, '<td>&#8212;</td>' ) );
-check_true( 'performance table note renders', false !== strpos( $perf, 'Multigrade' ) );
-check( 'empty performance table returns empty string', addlar_render_performance_table_html( '', '', '' ), '' );
+$all = addlar_products_data();
 
-$props = addlar_render_properties_table_html( "Appearance | | Brown Viscous Liquid\nKinematic Viscosity @ 100°C | | " );
-check_true( 'properties table renders a <table>', false !== strpos( $props, '<table class="spec-table spec-table-properties">' ) );
-check_true( 'properties table blank value renders em-dash', false !== strpos( $props, '<td>&#8212;</td><td>&#8212;</td>' ) );
+// 7375: a rich product — spec string, performance table, viscosity note.
+$p7375 = $all['7375'];
+check_true( '7375 produces spec cards', count( addlar_product_spec_cards( $p7375 ) ) > 0 );
+check_true( '7375 spec string splits into multiple hero chips', count( addlar_product_hero_chips( $p7375 ) ) > 1 );
+check_true( '7375 has at least 2 glance stats', count( addlar_product_glance_stats( $p7375 ) ) >= 2 );
+check_true( '7375 properties re-flow to 3-column rows', false !== strpos( addlar_product_properties_rows( $p7375 ), '|' ) );
+
+// Properties re-flow must append the unit to the value, not drop it.
+check_true(
+	'properties re-flow keeps the unit with the value',
+	false !== strpos( addlar_product_properties_rows( $p7375 ), '80 cSt' )
+);
+
+// KC420: no performance table and no approvals — helpers must return empty,
+// never a fabricated placeholder row.
+$pkc420 = $all['KC420'];
+check( 'KC420 has no approval strip items', addlar_product_approval_strip_items( $pkc420 ), array() );
+check( 'KC420 has no formulation rows', addlar_product_formulation_rows( $pkc420 ), '' );
+
+// 7730: long approval list — parsed into strong/text pairs and capped so the
+// single-row strip can't wrap into an unreadable block.
+$p7730    = $all['7730'];
+$approvals = addlar_product_approval_strip_items( $p7730 );
+check_true( '7730 approvals parse into strip items', count( $approvals ) > 0 );
+check_true( '7730 approval strip is capped at 8 items', count( $approvals ) <= 8 );
+check( "7730 first approval's code is split from its context", $approvals[0]['strong'], 'ACEA A3/B4' );
+check( "7730 first approval's context becomes the label", $approvals[0]['text'], 'E7' );
+
+// 9200: documented as a formulation recipe rather than a treat-rate table.
+check_true( '9200 produces formulation rows', false !== strpos( addlar_product_formulation_rows( $all['9200'] ), '|' ) );
 
 /* ------------------------------------------------- products-data.php shape */
 
@@ -96,20 +122,22 @@ foreach ( $products as $code => $p ) {
 	check_true( "{$code}: has a doc_code", ! empty( $p['doc_code'] ) );
 }
 
-/* ------------- Key Performance Benefits icon keys stay valid ------------- *
- * addlar_product_benefit_bullets() (inc/products-render.php) hardcodes a
- * fixed set of icon keys ('gear', 'shield', 'globe', 'layers', 'viscosity')
- * rather than deriving them from data, so a static check of the source
- * against addlar_icon_choices() is a complete, not sampled, verification —
- * no WP post-meta mocking needed to exercise the real per-product path. */
-$render_src = file_get_contents( __DIR__ . '/../inc/products-render.php' );
-preg_match_all( "/'icon'\s*=>\s*'([a-z_]+)'/", $render_src, $icon_matches );
-$used_icons  = array_unique( $icon_matches[1] );
+/* ------- Every product's seeded spec cards are renderable, for real ------ *
+ * Now that the helpers take a plain data array rather than a post ID, this
+ * exercises the real per-product code path for all 22 products instead of
+ * scanning source text: an icon key that isn't registered would render as a
+ * silently-missing SVG in production, so it fails here instead. */
 $valid_icons = array_keys( addlar_icon_choices() );
 
-check_true( 'benefit-bullet icon keys found in source', count( $used_icons ) > 0 );
-foreach ( $used_icons as $icon_key ) {
-	check_true( "icon key '{$icon_key}' used in products-render.php is registered in addlar_icon_choices()", in_array( $icon_key, $valid_icons, true ) );
+foreach ( $products as $code => $p ) {
+	$cards = addlar_product_spec_cards( $p );
+	check_true( "{$code}: produces at least one spec card", count( $cards ) > 0 );
+	check_true( "{$code}: spec cards capped at 3", count( $cards ) <= 3 );
+
+	foreach ( $cards as $i => $card ) {
+		check_true( "{$code}: card " . ( $i + 1 ) . " icon '{$card['icon']}' is a registered icon", in_array( $card['icon'], $valid_icons, true ) );
+		check_true( "{$code}: card " . ( $i + 1 ) . ' has a title', '' !== trim( $card['title'] ) );
+	}
 }
 
 printf( "\n%d passed, %d failed\n", $pass, $fail );

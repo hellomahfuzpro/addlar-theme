@@ -17,11 +17,16 @@
  * data — so Method renders as "—" rather than risk printing a wrong standard
  * number next to a client's real spec. The handful of Method values that
  * are filled in (e.g. KC311, KC420) were explicitly confirmed against the
- * source text during the read. Whoever finishes wiring these up in the
- * admin metabox can fill the rest in per-row against the PDF without
- * touching any other field.
+ * source text during the read. The rest can be filled in per-row against
+ * the PDF — either here before re-seeding, or directly in the product
+ * page's Spec Table widget in Elementor afterwards.
  *
- * Column conventions (matching inc/products-metabox.php's textareas):
+ * This array is the **seed source**, read once by addlar_seed_products()
+ * to populate each product page's Elementor widgets. After seeding, the
+ * pages are the source of truth and are edited in Elementor; re-seeding
+ * regenerates them from here and overwrites those edits.
+ *
+ * Column conventions:
  * - performance_rows_text: one row per line, `|`-separated, matching performance_headers.
  * - properties_text: one row per line, `Test | Method | Value` (Method left blank — see above).
  * - applications_text / approvals_text: one item per line.
