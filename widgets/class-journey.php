@@ -39,7 +39,7 @@ class Addlar_Widget_Journey extends Addlar_Base_Widget {
 			array( 'icon' => 'flask',    'accent' => '#3FA34D', 'tint' => '#E4F3E6', 'ph' => 'Milestone 04', 'num' => '2015',    'sub' => 'New Plant',     'title' => 'UAE adhesives plant',              'text' => 'A dedicated adhesives & hot-melt manufacturing plant opens in the UAE.' ),
 			array( 'icon' => 'factory',  'accent' => '#12A5A0', 'tint' => '#DDF1F0', 'ph' => 'Milestone 05', 'num' => '2019',    'sub' => 'Scaling Up',    'title' => 'Türkiye manufacturing',            'text' => 'A new plant scales regional production capacity.' ),
 			array( 'icon' => 'gear',     'accent' => '#2C6FB5', 'tint' => '#E1EAF6', 'ph' => 'Milestone 06', 'num' => '2019–22', 'sub' => 'Foundation',    'title' => 'Rubber & lubricant additives',     'text' => 'The portfolio widens into rubber additives and lubricant additives.' ),
-			array( 'icon' => 'spark',    'accent' => '#7A4BA8', 'tint' => '#EDE6F4', 'ph' => 'Milestone 07', 'num' => '2023–25', 'sub' => 'ADDLAR',        'title' => 'ADDLAR is launched',               'text' => "Rchemie formulates and launches ADDLAR's groundbreaking technology." ),
+			array( 'icon' => 'spark',    'accent' => '#E2231A', 'tint' => '#FBE4E2', 'ph' => 'Milestone 07', 'num' => '2025',    'sub' => 'ADDLAR',        'title' => 'ADDLAR is launched',               'text' => "Rchemie formulates and launches ADDLAR's groundbreaking technology." ),
 			array( 'icon' => 'globe',    'accent' => '#E2231A', 'tint' => '#FBE4E2', 'ph' => 'Milestone 08', 'num' => '2026',    'sub' => 'Worldwide',     'title' => 'Serving formulators globally',     'text' => 'ADDLAR now serves lubricant formulators across the globe.' ),
 		);
 	}
@@ -54,6 +54,16 @@ class Addlar_Widget_Journey extends Addlar_Base_Widget {
 			'label'   => __( 'Anchor id', 'addlar' ),
 			'type'    => Controls_Manager::TEXT,
 			'default' => 'journey',
+		) );
+
+		$this->add_control( 'layout', array(
+			'label'   => __( 'Layout mode', 'addlar' ),
+			'type'    => Controls_Manager::SELECT,
+			'options' => array(
+				'horizontal' => __( 'Horizontal (Landscape)', 'addlar' ),
+				'vertical'   => __( 'Vertical (Hexagon Chain)', 'addlar' ),
+			),
+			'default' => 'horizontal',
 		) );
 
 		$this->add_control( 'soft', array(
@@ -132,7 +142,8 @@ class Addlar_Widget_Journey extends Addlar_Base_Widget {
 	}
 
 	protected function render() {
-		$s = $this->get_settings_for_display();
+		$s             = $this->get_settings_for_display();
+		$is_horizontal = ( 'horizontal' === ( isset( $s['layout'] ) ? $s['layout'] : 'horizontal' ) );
 
 		$this->open_section(
 			'yes' === $s['soft'] ? 'section soft' : 'section',
@@ -142,51 +153,88 @@ class Addlar_Widget_Journey extends Addlar_Base_Widget {
 		<div class="wrap center">
 			<?php $this->render_heading( $s['eyebrow'], $s['title'], $s['lede'] ); ?>
 		</div>
-		<div class="wrap">
-			<div class="jrny">
-				<?php
-				$i = 0;
-				foreach ( (array) $s['rows'] as $row ) {
-					$side = ( 0 === $i % 2 ) ? 'h-a' : 'h-b';
-					$i++;
-
-					printf(
-						'<div class="jr %1$s reveal" style="--adl-ja:%2$s;--adl-jt:%3$s">',
-						esc_attr( $side ),
-						esc_attr( $row['accent'] ),
-						esc_attr( $row['tint'] )
-					);
-
-					ob_start();
-					?>
-					<div class="jtxt">
-						<h4><?php echo esc_html( $row['title'] ); ?></h4>
-						<p><?php echo esc_html( $row['text'] ); ?></p>
+		<div class="wrap<?php echo $is_horizontal ? ' wrap-wide' : ''; ?>">
+			<?php if ( $is_horizontal ) : ?>
+				<div class="jrny-h">
+					<div class="jh-track">
+						<div class="jh-line"></div>
+						<div class="jh-list">
+							<?php
+							$i = 0;
+							foreach ( (array) $s['rows'] as $row ) {
+								$pos = ( 0 === $i % 2 ) ? 'top' : 'bottom';
+								$i++;
+								?>
+								<div class="jh-item jh-<?php echo esc_attr( $pos ); ?> reveal" style="--adl-ja:<?php echo esc_attr( $row['accent'] ); ?>">
+									<div class="jh-card">
+										<div class="jh-header">
+											<span class="jh-ph"><?php echo esc_html( $row['ph'] ); ?></span>
+											<span class="jh-num"><?php echo esc_html( $row['num'] ); ?></span>
+										</div>
+										<h4 class="jh-title"><?php echo esc_html( $row['title'] ); ?></h4>
+										<p class="jh-text"><?php echo esc_html( $row['text'] ); ?></p>
+									</div>
+									<div class="jh-node">
+										<div class="jh-stem"></div>
+										<div class="jh-dot">
+											<div class="jh-icon">
+												<?php $this->render_icon( $row['icon'] ); ?>
+											</div>
+										</div>
+									</div>
+								</div>
+								<?php
+							}
+							?>
+						</div>
 					</div>
+				</div>
+			<?php else : ?>
+				<div class="jrny">
 					<?php
-					$txt = ob_get_clean();
+					$i = 0;
+					foreach ( (array) $s['rows'] as $row ) {
+						$side = ( 0 === $i % 2 ) ? 'h-a' : 'h-b';
+						$i++;
 
-					ob_start();
+						printf(
+							'<div class="jr %1$s reveal" style="--adl-ja:%2$s;--adl-jt:%3$s">',
+							esc_attr( $side ),
+							esc_attr( $row['accent'] ),
+							esc_attr( $row['tint'] )
+						);
+
+						ob_start();
+						?>
+						<div class="jtxt">
+							<h4><?php echo esc_html( $row['title'] ); ?></h4>
+							<p><?php echo esc_html( $row['text'] ); ?></p>
+						</div>
+						<?php
+						$txt = ob_get_clean();
+
+						ob_start();
+						?>
+						<div class="jmeta">
+							<div class="ph"><?php echo esc_html( $row['ph'] ); ?></div>
+							<div class="num"><?php echo esc_html( $row['num'] ); ?></div>
+							<div class="sub"><?php echo esc_html( $row['sub'] ); ?></div>
+						</div>
+						<?php
+						$meta = ob_get_clean();
+
+						// Mirror the mockup: copy leads on h-a rows, the year on h-b.
+						echo 'h-a' === $side ? $txt : $meta; // phpcs:ignore WordPress.Security.EscapeOutput -- built from escaped parts above.
+						echo '<div class="jhexwrap"><div class="jhex"><div class="jhin">';
+						$this->render_icon( $row['icon'] );
+						echo '</div></div></div>';
+						echo 'h-a' === $side ? $meta : $txt; // phpcs:ignore WordPress.Security.EscapeOutput -- built from escaped parts above.
+						echo '<span class="jline t"></span><span class="jline b"></span>';
+						echo '</div>';
+					}
 					?>
-					<div class="jmeta">
-						<div class="ph"><?php echo esc_html( $row['ph'] ); ?></div>
-						<div class="num"><?php echo esc_html( $row['num'] ); ?></div>
-						<div class="sub"><?php echo esc_html( $row['sub'] ); ?></div>
-					</div>
-					<?php
-					$meta = ob_get_clean();
-
-					// Mirror the mockup: copy leads on h-a rows, the year on h-b.
-					echo 'h-a' === $side ? $txt : $meta; // phpcs:ignore WordPress.Security.EscapeOutput -- built from escaped parts above.
-					echo '<div class="jhexwrap"><div class="jhex"><div class="jhin">';
-					$this->render_icon( $row['icon'] );
-					echo '</div></div></div>';
-					echo 'h-a' === $side ? $meta : $txt; // phpcs:ignore WordPress.Security.EscapeOutput -- built from escaped parts above.
-					echo '<span class="jline t"></span><span class="jline b"></span>';
-					echo '</div>';
-				}
-				?>
-			</div>
+				</div>
+			<?php endif; ?>
 		</div>
 		<?php
 		$this->close_section();

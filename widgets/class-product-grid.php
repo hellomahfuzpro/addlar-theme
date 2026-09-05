@@ -56,6 +56,16 @@ class Addlar_Widget_ProductGrid extends Addlar_Base_Widget {
 			'return_value' => 'yes',
 		) );
 
+		$this->add_control( 'layout_style', array(
+			'label'   => __( 'Layout style', 'addlar' ),
+			'type'    => Controls_Manager::SELECT,
+			'options' => array(
+				'roofly' => __( 'Roofly Showcase (Interactive Pills)', 'addlar' ),
+				'grid'   => __( 'Standard 3-Column Grid', 'addlar' ),
+			),
+			'default' => 'roofly',
+		) );
+
 		$this->add_heading_controls(
 			__( 'Product Range', 'addlar' ),
 			__( 'One partner. Every lubrication challenge.', 'addlar' ),
@@ -105,8 +115,9 @@ class Addlar_Widget_ProductGrid extends Addlar_Base_Widget {
 	}
 
 	protected function render() {
-		$s    = $this->get_settings_for_display();
-		$mark = $this->media_url( isset( $s['mark'] ) ? $s['mark'] : array(), 'full' );
+		$s           = $this->get_settings_for_display();
+		$mark        = $this->media_url( isset( $s['mark'] ) ? $s['mark'] : array(), 'full' );
+		$is_roofly   = ( 'roofly' === ( isset( $s['layout_style'] ) ? $s['layout_style'] : 'roofly' ) );
 
 		$this->open_section(
 			'yes' === $s['soft'] ? 'section soft' : 'section',
@@ -117,30 +128,61 @@ class Addlar_Widget_ProductGrid extends Addlar_Base_Widget {
 			<?php $this->render_heading( $s['eyebrow'], $s['title'], $s['lede'] ); ?>
 		</div>
 		<div class="wrap">
-			<div class="prod-grid">
-				<?php foreach ( (array) $s['cards'] as $card ) : ?>
-					<?php $url = ! empty( $card['link']['url'] ) ? $card['link']['url'] : '#'; ?>
-					<a class="pcard reveal" href="<?php echo esc_url( $url ); ?>">
-						<div class="imgwrap">
-							<?php $this->render_media( $card['image'], $card['title'] ); ?>
-							<?php if ( $mark ) : ?>
-								<img class="cmark" src="<?php echo esc_url( $mark ); ?>" alt="">
-							<?php endif; ?>
-						</div>
-						<div class="body">
-							<span class="cat"><?php echo esc_html( $card['cat'] ); ?></span>
-							<h3><?php echo esc_html( $card['title'] ); ?></h3>
-							<div class="sub"><?php echo esc_html( $card['sub'] ); ?></div>
-							<div class="foot">
-								<span class="cnt"><?php echo esc_html( $card['count'] ); ?></span>
-								<span class="arw">&rarr;</span>
+			<?php if ( $is_roofly ) : ?>
+				<div class="prod-roofly reveal">
+					<div class="roofly-stage">
+						<?php
+						$i = 0;
+						foreach ( (array) $s['cards'] as $card ) {
+							$active = ( 0 === $i ) ? ' active' : '';
+							$img    = $this->media_url( isset( $card['image'] ) ? $card['image'] : array(), 'full' );
+							$url    = ! empty( $card['link']['url'] ) ? $card['link']['url'] : '#';
+							?>
+							<div class="roofly-panel<?php echo esc_attr( $active ); ?>" data-tab="<?php echo esc_attr( (string) $i ); ?>">
+								<div class="roofly-bg"<?php echo $img ? ' style="background-image:url(\'' . esc_url( $img ) . '\')"' : ''; ?>>
+									<div class="roofly-overlay"></div>
+									<?php if ( $mark ) : ?>
+										<img class="cmark" src="<?php echo esc_url( $mark ); ?>" alt="">
+									<?php endif; ?>
+								</div>
+								<div class="roofly-content">
+									<span class="roofly-cat"><?php echo esc_html( $card['cat'] ); ?></span>
+									<h3 class="roofly-title"><?php echo esc_html( $card['title'] ); ?></h3>
+									<p class="roofly-sub"><?php echo esc_html( $card['sub'] ); ?></p>
+									<div class="roofly-meta">
+										<span class="roofly-count"><?php echo esc_html( $card['count'] ); ?></span>
+										<a class="btn btn-red" href="<?php echo esc_url( $url ); ?>">Explore Products →</a>
+									</div>
+								</div>
 							</div>
+							<?php
+							$i++;
+						}
+						?>
+					</div>
+
+					<!-- Bottom overlapping pill bar (Roofly style) -->
+					<div class="roofly-pills-bar">
+						<div class="roofly-pills">
+							<?php
+							$j = 0;
+							foreach ( (array) $s['cards'] as $card ) {
+								$active = ( 0 === $j ) ? ' active' : '';
+								?>
+								<button type="button" class="roofly-pill<?php echo esc_attr( $active ); ?>" data-tab-target="<?php echo esc_attr( (string) $j ); ?>">
+									<span class="roofly-pill-dot"></span>
+									<span class="roofly-pill-label"><?php echo esc_html( $card['cat'] ); ?></span>
+								</button>
+								<?php
+								$j++;
+							}
+							?>
 						</div>
-					</a>
-				<?php endforeach; ?>
+					</div>
+				</div>
 
 				<?php if ( ! empty( $s['promo_title'] ) ) : ?>
-					<div class="pcard-comp reveal">
+					<div class="pcard-comp reveal" style="margin-top:36px">
 						<div>
 							<span class="cat"><?php echo esc_html( $s['promo_cat'] ); ?></span>
 							<h3><?php echo esc_html( $s['promo_title'] ); ?></h3>
@@ -148,7 +190,41 @@ class Addlar_Widget_ProductGrid extends Addlar_Base_Widget {
 						<?php $this->render_button( $s['promo_btn'], $s['promo_link'], 'btn-red' ); ?>
 					</div>
 				<?php endif; ?>
-			</div>
+
+			<?php else : ?>
+				<div class="prod-grid">
+					<?php foreach ( (array) $s['cards'] as $card ) : ?>
+						<?php $url = ! empty( $card['link']['url'] ) ? $card['link']['url'] : '#'; ?>
+						<a class="pcard reveal" href="<?php echo esc_url( $url ); ?>">
+							<div class="imgwrap">
+								<?php $this->render_media( $card['image'], $card['title'] ); ?>
+								<?php if ( $mark ) : ?>
+									<img class="cmark" src="<?php echo esc_url( $mark ); ?>" alt="">
+								<?php endif; ?>
+							</div>
+							<div class="body">
+								<span class="cat"><?php echo esc_html( $card['cat'] ); ?></span>
+								<h3><?php echo esc_html( $card['title'] ); ?></h3>
+								<div class="sub"><?php echo esc_html( $card['sub'] ); ?></div>
+								<div class="foot">
+									<span class="cnt"><?php echo esc_html( $card['count'] ); ?></span>
+									<span class="arw">&rarr;</span>
+								</div>
+							</div>
+						</a>
+					<?php endforeach; ?>
+
+					<?php if ( ! empty( $s['promo_title'] ) ) : ?>
+						<div class="pcard-comp reveal">
+							<div>
+								<span class="cat"><?php echo esc_html( $s['promo_cat'] ); ?></span>
+								<h3><?php echo esc_html( $s['promo_title'] ); ?></h3>
+							</div>
+							<?php $this->render_button( $s['promo_btn'], $s['promo_link'], 'btn-red' ); ?>
+						</div>
+					<?php endif; ?>
+				</div>
+			<?php endif; ?>
 		</div>
 		<?php
 		$this->close_section();

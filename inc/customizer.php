@@ -24,19 +24,23 @@ if ( ! defined( 'ABSPATH' ) ) {
  */
 function addlar_defaults() {
 	return apply_filters( 'addlar_customizer_defaults', array(
-		'addlar_cta_label'    => __( 'Get in touch', 'addlar' ),
-		'addlar_cta_link'     => '#contact',
-		'addlar_email'        => 'info@rchemie.com',
-		'addlar_website'      => 'https://www.rchemie.com',
-		'addlar_address'      => 'Sharjah, United Arab Emirates',
-		'addlar_linkedin_url' => 'https://www.linkedin.com/showcase/addlar-lubricant-additives/',
-		'addlar_youtube_url'  => '',
-		'addlar_foot_head_1'  => __( 'Our Information', 'addlar' ),
-		'addlar_foot_head_2'  => __( 'Product Range', 'addlar' ),
-		'addlar_foot_head_3'  => __( 'Resources', 'addlar' ),
-		'addlar_foot_head_4'  => __( 'Social Media', 'addlar' ),
-		'addlar_footer_mark'  => '',
-		'addlar_copyright'    => '',
+		'addlar_cta_label'      => __( 'Get in touch', 'addlar' ),
+		'addlar_cta_link'       => '#contact',
+		'addlar_email'          => 'operations@rchemie.com',
+		'addlar_phone_mobile'   => '+971 (50) 307 4886',
+		'addlar_phone_office'   => '+971 (6) 526 1816',
+		'addlar_contact_person' => 'Shreya Barlingay',
+		'addlar_contact_title'  => 'Operations',
+		'addlar_website'        => 'https://www.rchemie.com',
+		'addlar_address'        => 'WH# 1/30/01 & 08, Al Yarmook Free Zone, Sharjah, UAE',
+		'addlar_linkedin_url'   => 'https://www.linkedin.com/showcase/addlar-lubricant-additives/',
+		'addlar_youtube_url'    => '',
+		'addlar_foot_head_1'    => __( 'Our Information', 'addlar' ),
+		'addlar_foot_head_2'    => __( 'Product Range', 'addlar' ),
+		'addlar_foot_head_3'    => __( 'Resources', 'addlar' ),
+		'addlar_foot_head_4'    => __( 'Direct Contact', 'addlar' ),
+		'addlar_footer_mark'    => '',
+		'addlar_copyright'      => '',
 	) );
 }
 

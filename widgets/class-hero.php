@@ -124,6 +124,19 @@ class Addlar_Widget_Hero extends Addlar_Base_Widget {
 		$video = $this->media_url( isset( $s['video'] ) ? $s['video'] : array() );
 		$post  = $this->media_url( isset( $s['poster'] ) ? $s['poster'] : array(), 'full' );
 
+		if ( ! $video ) {
+			$default_video = get_template_directory_uri() . '/assets/video/hero-v2.mp4';
+			if ( file_exists( get_template_directory() . '/assets/video/hero-v2.mp4' ) ) {
+				$video = $default_video;
+			}
+		}
+		if ( ! $post ) {
+			$default_post = get_template_directory_uri() . '/assets/images/hero-v2-poster.jpg';
+			if ( file_exists( get_template_directory() . '/assets/images/hero-v2-poster.jpg' ) ) {
+				$post = $default_post;
+			}
+		}
+
 		$this->open_section( 'hero', ! empty( $s['anchor'] ) ? $s['anchor'] : '' );
 		?>
 		<div class="hero-visual"<?php echo 'yes' !== $s['scrim'] ? ' data-noscrim="1"' : ''; ?>>

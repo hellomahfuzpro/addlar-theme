@@ -31,6 +31,12 @@ class Addlar_Widget_TrustStrip extends Addlar_Base_Widget {
 			'label' => __( 'Items', 'addlar' ),
 		) );
 
+		$this->add_control( 'lead_label', array(
+			'label'   => __( 'Ribbon prefix', 'addlar' ),
+			'type'    => Controls_Manager::TEXT,
+			'default' => __( 'Meets the following specifications:', 'addlar' ),
+		) );
+
 		$rep = new Repeater();
 		$rep->add_control( 'strong', array(
 			'label'   => __( 'Bold lead', 'addlar' ),
@@ -40,7 +46,7 @@ class Addlar_Widget_TrustStrip extends Addlar_Base_Widget {
 		$rep->add_control( 'text', array(
 			'label'   => __( 'Text', 'addlar' ),
 			'type'    => Controls_Manager::TEXT,
-			'default' => __( 'Licensed Standards', 'addlar' ),
+			'default' => __( 'Specifications', 'addlar' ),
 		) );
 
 		$this->add_control( 'items', array(
@@ -49,11 +55,10 @@ class Addlar_Widget_TrustStrip extends Addlar_Base_Widget {
 			'fields'      => $rep->get_controls(),
 			'title_field' => '{{{ strong }}} {{{ text }}}',
 			'default'     => array(
-				array( 'strong' => 'API', 'text' => __( 'Licensed Standards', 'addlar' ) ),
+				array( 'strong' => 'API', 'text' => __( 'Specifications', 'addlar' ) ),
 				array( 'strong' => 'ACEA', 'text' => __( 'Full Spectrum', 'addlar' ) ),
 				array( 'strong' => 'ILSAC', 'text' => 'GF-5 / GF-6' ),
 				array( 'strong' => 'JASO', 'text' => 'MA / MA2' ),
-				array( 'strong' => '10,000 MT', 'text' => __( 'Annual Capacity', 'addlar' ) ),
 				array( 'strong' => 'UAE', 'text' => __( 'Manufactured', 'addlar' ) ),
 			),
 		) );
@@ -63,18 +68,25 @@ class Addlar_Widget_TrustStrip extends Addlar_Base_Widget {
 
 	protected function render() {
 		$s = $this->get_settings_for_display();
-		if ( empty( $s['items'] ) ) {
+		if ( empty( $s['items'] ) && empty( $s['lead_label'] ) ) {
 			return;
 		}
 		// This band is a plain div in the mockup, not a .section.
-		echo '<div class="adl"><div class="trust"><div class="wrap">';
-		foreach ( $s['items'] as $item ) {
-			printf(
-				'<div class="item"><b>%1$s</b> %2$s</div>',
-				esc_html( $item['strong'] ),
-				esc_html( $item['text'] )
-			);
+		echo '<div class="adl"><div class="trust"><div class="wrap trust-bar">';
+		if ( ! empty( $s['lead_label'] ) ) {
+			printf( '<div class="trust-prefix">%s</div>', esc_html( $s['lead_label'] ) );
 		}
+		echo '<div class="trust-items">';
+		if ( ! empty( $s['items'] ) ) {
+			foreach ( $s['items'] as $item ) {
+				printf(
+					'<div class="trust-pill"><b>%1$s</b>&nbsp;%2$s</div>',
+					esc_html( $item['strong'] ),
+					esc_html( $item['text'] )
+				);
+			}
+		}
+		echo '</div>';
 		echo '</div></div></div>';
 	}
 }

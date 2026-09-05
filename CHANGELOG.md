@@ -3,6 +3,24 @@
 All notable changes to the ADDLAR theme. Keep the top version in sync with
 `Version:` in `style.css` — the updater reads it from there.
 
+## [1.12.0] — 2026-09-05
+
+### Changed & Enhanced (Client Feedback Implementation)
+- **#1 Hero Banner Video & Diagonal Gradient**: Updated default hero video to `hero-v2.mp4` and poster to `hero-v2-poster.jpg`, rendering the deep red and black split gradient matching client reference. Updated CSS overlay and fallback gradient.
+- **#2 Section Reordering**: Milestone journey section moved directly beneath the main hero banner.
+- **#3 Specification Ribbon (Trust Strip)**: Relocated below the milestone section; updated lead label to "Meets the following specifications:" and removed "10,000 MT Capacity". Styled as interactive badge pills.
+- **#4 Horizontal Journey Timeline**: Added horizontal layout mode (`jrny-h`) with interactive timeline nodes, alternating milestone cards, and year badges. Milestone 07 date corrected to `2025`.
+- **#5 Why Choose Addlar Numbers & Clean Typography**: Increased numeral size to clamp(96px, 12vw, 168px) with background clip text; removed 1-liner category labels for punchy visual focus.
+- **#6 Product Range Roofly Showcase**: Added interactive Roofly showcase mode (`prod-roofly`) with category pill tabs, active states, product stage, and dynamic switching in `theme.js`.
+- **#7 Engine Oil Range Packages**: Removed standalone package grid from homepage layout.
+- **#8 Product Page Linking**: Linked category cards directly to dedicated product family pages (`/category/engine-oil-additive/`, etc.).
+- **#9 Stat Band 3-Column Layout**: Reduced stat band from 5 columns to 3 prominent columns, removing "Capacity (10,000 MT)" and "Countries (25+)" duplicates.
+- **#10 Lubricant Finder Retention**: Verified 3-step dynamic product selection and results.
+- **#11 LinkedIn Insights 3-Column Layout**: Restructured LinkedIn insights grid (`.li-grid`) to display 3 posts horizontally on desktop with responsive 1-column mobile collapse.
+- **#12 Why Addlar Reorganization**: Removed Why Addlar section from homepage in favor of Lubricant Finder integration.
+- **#13 About Section Relocation**: Removed `addlar_about` ("Precision Engineered Lubricants") from homepage and relocated to dedicated `/about-us/` page.
+- **Footer Corporate Contact & 20-Year Anniversary**: Added Rchemie International lockup, Operations contact card (Shreya Barlingay, phones, email, Al Yarmook Sharjah address), and 20-Year Anniversary badge ("Thank you for 20 YEARS 2026", "Depending on us... ADDLAR").
+
 ## [1.11.0] — 2026-08-19
 
 ### Changed

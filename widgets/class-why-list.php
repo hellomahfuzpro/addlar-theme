@@ -103,6 +103,14 @@ class Addlar_Widget_WhyList extends Addlar_Base_Widget {
 			'default'     => $this->default_rows(),
 		) );
 
+		$this->add_control( 'show_labels', array(
+			'label'        => __( 'Show category labels', 'addlar' ),
+			'type'         => Controls_Manager::SWITCHER,
+			'default'      => '',
+			'return_value' => 'yes',
+			'description'  => __( 'Disabled by default per client feedback.', 'addlar' ),
+		) );
+
 		$this->end_controls_section();
 	}
 
@@ -131,7 +139,9 @@ class Addlar_Widget_WhyList extends Addlar_Base_Widget {
 					<div class="wrow<?php echo esc_attr( $rev ); ?> reveal">
 						<div class="imgnum"<?php echo $style ? ' style="' . esc_attr( $style ) . '"' : ''; ?>><?php echo esc_html( $num ); ?></div>
 						<div class="wtxt">
-							<div class="lbl"><?php echo esc_html( $row['lbl'] ); ?></div>
+							<?php if ( 'yes' === ( isset( $s['show_labels'] ) ? $s['show_labels'] : '' ) && ! empty( $row['lbl'] ) ) : ?>
+								<div class="lbl"><?php echo esc_html( $row['lbl'] ); ?></div>
+							<?php endif; ?>
 							<h3><?php echo esc_html( $row['title'] ); ?></h3>
 							<p><?php echo esc_html( $row['text'] ); ?></p>
 						</div>
