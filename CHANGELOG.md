@@ -3,6 +3,14 @@
 All notable changes to the ADDLAR theme. Keep the top version in sync with
 `Version:` in `style.css` — the updater reads it from there.
 
+## [1.13.0] — 2026-09-05
+
+### Added
+- **Theme Rollback & Version Switcher**: Built-in functionality allowing administrators to downgrade or switch to any published release of the ADDLAR theme directly from the WordPress Admin or via WP-CLI (`wp addlar rollback <version>`).
+- **Release Directory & Fast Fallback**: Automatically discovers and lists all published releases from the GitHub repository (`hellomahfuzpro/addlar-theme`), complete with release dates and version badges. Built-in offline fallback ensures all historical releases remain accessible even if the GitHub API is rate-limited.
+- **Admin UI Integration**: Accessible both under **Tools → ADDLAR setup** and through a dedicated **Appearance → Theme Rollback** menu screen with 1-click upgrade/rollback buttons and confirmation prompts.
+- **Cache Flushing & Auto-Activation**: Switching versions automatically purges Elementor CSS caches, LiteSpeed caches, OPcache, and WordPress theme caches while keeping the active theme assigned.
+
 ## [1.12.1] — 2026-09-05
 
 ### Fixed

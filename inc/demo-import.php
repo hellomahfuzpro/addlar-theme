@@ -1929,45 +1929,11 @@ function addlar_tools_page_render() {
 
 	echo '<hr>';
 
-	/* ------------------------------------------------------------ updates */
-	echo '<h2>' . esc_html__( 'Theme updates', 'addlar' ) . '</h2>';
-	if ( $update_notice ) {
-		echo '<div class="notice notice-success"><p>' . esc_html( $update_notice ) . '</p></div>';
+	/* ------------------------------------------------------------ updates & rollback */
+	echo '<h2>' . esc_html__( 'Theme updates & Version Rollback', 'addlar' ) . '</h2>';
+	if ( function_exists( 'addlar_render_rollback_ui' ) ) {
+		addlar_render_rollback_ui( 'tools' );
 	}
-
-	$repo    = function_exists( 'addlar_github_repo' ) ? addlar_github_repo() : '';
-	$enabled = function_exists( 'addlar_updates_enabled' ) && addlar_updates_enabled();
-
-	echo '<table class="widefat striped" style="max-width:720px;margin-bottom:14px;"><tbody>';
-	printf(
-		'<tr><td style="width:220px;"><strong>%s</strong></td><td>%s</td></tr>',
-		esc_html__( 'Installed version', 'addlar' ),
-		esc_html( ADDLAR_VERSION )
-	);
-	printf(
-		'<tr><td><strong>%s</strong></td><td>%s</td></tr>',
-		esc_html__( 'Update source', 'addlar' ),
-		$repo ? esc_html( $repo ) : '<em>' . esc_html__( 'not configured', 'addlar' ) . '</em>'
-	);
-	printf(
-		'<tr><td><strong>%s</strong></td><td>%s</td></tr>',
-		esc_html__( 'Status', 'addlar' ),
-		$enabled
-			? '<span style="color:#007017;">' . esc_html__( 'Enabled — updates appear under Appearance → Themes', 'addlar' ) . '</span>'
-			: '<span style="color:#b32d2e;">' . esc_html__( 'Disabled — no updates will ever be offered', 'addlar' ) . '</span>'
-	);
-	printf(
-		'<tr><td><strong>%s</strong></td><td><code>%s</code></td></tr>',
-		esc_html__( 'Theme folder', 'addlar' ),
-		esc_html( basename( ADDLAR_DIR ) )
-	);
-	echo '</tbody></table>';
-
-	echo '<p>' . esc_html__( 'Updates come from GitHub Releases that have a .zip attached — pushing code alone never triggers one. WordPress only checks periodically, so use this button to check immediately after a release is published.', 'addlar' ) . '</p>';
-	echo '<form method="post">';
-	wp_nonce_field( 'addlar_check_updates_action' );
-	submit_button( __( 'Check for updates now', 'addlar' ), 'secondary', 'addlar_check_updates' );
-	echo '</form>';
 
 	echo '<hr>';
 
