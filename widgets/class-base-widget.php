@@ -147,7 +147,7 @@ abstract class Addlar_Base_Widget extends Widget_Base {
 	 */
 	protected function render_icon( $key, $extra = '' ) {
 		printf(
-			'<svg viewBox="0 0 24 24" aria-hidden="true"%1$s>%2$s</svg>',
+			'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"%1$s>%2$s</svg>',
 			$extra ? ' ' . $extra : '', // phpcs:ignore WordPress.Security.EscapeOutput -- theme-authored attribute string.
 			addlar_icon_path( $key ) // phpcs:ignore WordPress.Security.EscapeOutput -- theme-authored SVG path data.
 		);

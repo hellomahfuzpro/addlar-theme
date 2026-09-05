@@ -3,6 +3,12 @@
 All notable changes to the ADDLAR theme. Keep the top version in sync with
 `Version:` in `style.css` — the updater reads it from there.
 
+## [1.12.1] — 2026-09-05
+
+### Fixed
+- **Cache Busting**: Bumped `ADDLAR_VERSION` in `functions.php` to `1.12.1` so WordPress refreshes all enqueued stylesheets and scripts, clearing 7-day LiteSpeed server and browser asset caches.
+- **Milestone SVGs & Inline Dimensions**: Added self-contained critical CSS and hardcoded `width="18" height="18" fill="none" stroke="currentColor"` attributes onto milestone SVG icons in `class-journey.php` and `class-base-widget.php`, preventing unstyled SVG icon expansion.
+
 ## [1.12.0] — 2026-09-05
 
 ### Changed & Enhanced (Client Feedback Implementation)

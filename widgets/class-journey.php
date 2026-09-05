@@ -155,6 +155,45 @@ class Addlar_Widget_Journey extends Addlar_Base_Widget {
 		</div>
 		<div class="wrap<?php echo $is_horizontal ? ' wrap-wide' : ''; ?>">
 			<?php if ( $is_horizontal ) : ?>
+				<style>
+				.adl .jrny-h{position:relative;margin:44px auto 0;width:100%;overflow-x:auto;overflow-y:hidden;padding:70px 10px 70px;scrollbar-width:thin;scrollbar-color:var(--adl-red) var(--adl-soft)}
+				.adl .jrny-h::-webkit-scrollbar{height:6px}
+				.adl .jrny-h::-webkit-scrollbar-track{background:var(--adl-soft)}
+				.adl .jrny-h::-webkit-scrollbar-thumb{background:var(--adl-red);border-radius:3px}
+				.adl .jh-track{display:flex;position:relative;min-width:1160px;align-items:center;min-height:360px}
+				.adl .jh-line{position:absolute;top:50%;left:20px;right:20px;height:3px;background:linear-gradient(90deg,var(--adl-red) 0%,#8b120c 60%,var(--adl-ink) 100%);transform:translateY(-50%);z-index:1}
+				.adl .jh-list{display:flex;position:relative;z-index:2;width:100%;justify-content:space-between;align-items:center}
+				.adl .jh-item{position:relative;flex:1;display:flex;flex-direction:column;align-items:center;min-width:160px;padding:0 8px}
+				.adl .jh-item.jh-top{justify-content:flex-end;padding-bottom:170px}
+				.adl .jh-item.jh-bottom{justify-content:flex-start;padding-top:170px}
+				.adl .jh-node{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);z-index:3;display:flex;flex-direction:column;align-items:center}
+				.adl .jh-dot{width:36px;height:36px;border-radius:50%;background:#fff;border:3px solid var(--adl-ja,var(--adl-red));display:flex;align-items:center;justify-content:center;box-shadow:0 0 0 4px rgba(226,35,26,.15);transition:.25s;cursor:pointer}
+				.adl .jh-icon{width:18px;height:18px;color:var(--adl-ja,var(--adl-red));display:flex;align-items:center;justify-content:center}
+				.adl .jh-icon svg{width:18px!important;height:18px!important;stroke:currentColor!important;fill:none!important;stroke-width:1.6!important}
+				.adl .jh-item:hover .jh-dot{transform:scale(1.18);box-shadow:0 0 0 7px rgba(226,35,26,.25);background:var(--adl-ja,var(--adl-red))}
+				.adl .jh-item:hover .jh-icon{color:#fff}
+				.adl .jh-stem{width:2px;background:var(--adl-line)}
+				.adl .jh-top .jh-stem{height:54px;margin-top:-54px;order:1}
+				.adl .jh-bottom .jh-stem{height:54px;margin-bottom:-54px;order:2}
+				.adl .jh-card{background:#fff;border:1px solid var(--adl-line);padding:16px 14px;box-shadow:0 6px 20px rgba(20,20,18,.05);transition:.25s;text-align:left;width:100%;max-width:184px}
+				.adl .jh-item:hover .jh-card{border-color:var(--adl-ja,var(--adl-red));transform:translateY(-4px);box-shadow:0 12px 28px rgba(20,20,18,.1)}
+				.adl .jh-header{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:6px;gap:6px}
+				.adl .jh-ph{font-size:9.5px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--adl-grey-2)}
+				.adl .jh-num{font-size:22px;font-weight:900;letter-spacing:-.03em;color:var(--adl-ja,var(--adl-red));line-height:1}
+				.adl .jh-title{font-size:13.5px;font-weight:800;color:var(--adl-ink);margin:0 0 5px;line-height:1.25}
+				.adl .jh-text{font-size:11.5px;color:var(--adl-grey);line-height:1.45;margin:0}
+				@media(max-width:960px){
+				 .adl .jrny-h{padding:20px 0;overflow-x:visible}
+				 .adl .jh-track{min-width:0;height:auto;flex-direction:column;gap:18px;align-items:stretch}
+				 .adl .jh-list{flex-direction:column;gap:20px;align-items:stretch}
+				 .adl .jh-line,.adl .jh-stem{display:none}
+				 .adl .jh-item{flex-direction:row;align-items:flex-start;text-align:left;gap:14px;min-width:0;padding:0}
+				 .adl .jh-item.jh-top,.adl .jh-item.jh-bottom{padding:0;justify-content:flex-start}
+				 .adl .jh-node{position:static;transform:none!important;margin-top:5px;flex:none}
+				 .adl .jh-dot{position:static;transform:none!important}
+				 .adl .jh-card{position:static;width:100%;max-width:none;transform:none!important}
+				}
+				</style>
 				<div class="jrny-h">
 					<div class="jh-track">
 						<div class="jh-line"></div>
@@ -178,7 +217,7 @@ class Addlar_Widget_Journey extends Addlar_Base_Widget {
 										<div class="jh-stem"></div>
 										<div class="jh-dot">
 											<div class="jh-icon">
-												<?php $this->render_icon( $row['icon'] ); ?>
+												<?php $this->render_icon( $row['icon'], 'width="18" height="18" style="width:18px;height:18px;max-width:18px;max-height:18px;display:block;fill:none;stroke:currentColor;stroke-width:1.6;"' ); ?>
 											</div>
 										</div>
 									</div>
