@@ -3,6 +3,15 @@
 All notable changes to the ADDLAR theme. Keep the top version in sync with
 `Version:` in `style.css` — the updater reads it from there.
 
+## [1.15.0] — 2026-09-06
+
+### Added
+- **Design 2 Alternating Wave**: Added modern roadmap card styling alternating above and below the central track line.
+- **Design 2 Linear Roadmap**: Added modern roadmap card styling hanging uniformly below top track.
+- **Boxed vs Full Width Container**: Added container width control allowing the Journey section to be boxed (1240px centered) or full width (100% edge-to-edge).
+- **Draggable / Scroll Track Switcher**: Toggle between a single continuous horizontal draggable track (with grab cursor and scroll buttons) and a multi-row grid system.
+- **Items Per Row Control**: Configurable items per row (`3`, `4`, `5`, or `6` items per row, default `4`) when draggable is turned off, dividing milestones into clean, centered horizontal rows with zero horizontal scrollbar.
+
 ## [1.14.0] — 2026-09-06
 
 ### Changed
