@@ -3,6 +3,14 @@
 All notable changes to the ADDLAR theme. Keep the top version in sync with
 `Version:` in `style.css` — the updater reads it from there.
 
+## [1.13.1] — 2026-09-06
+
+### Changed
+- **Horizontal Journey Timeline**: Refined horizontal timeline with mathematically consistent 3-row column alignment (`jh-col`), ensuring all 8 circular milestone nodes sit precisely on the central gradient axis. Connected via vertical stems to alternating top and bottom cards.
+- **Milestone 07 Date Correction**: Corrected year for Milestone 07 (ADDLAR is launched) from `2023–2025` to `2025`.
+- **Responsive Stacking**: Seamless vertical rail fallback on mobile viewports (< 960px) with vertical line and left-aligned milestone nodes.
+- **Cache Busting**: Bumped `ADDLAR_VERSION` to `1.13.1` to refresh all enqueued stylesheets and scripts.
+
 ## [1.13.0] — 2026-09-05
 
 ### Added
