@@ -536,26 +536,27 @@ function addlar_homepage_widgets() {
 				'video'  => addlar_seed_video( 'hero-video' ),
 			),
 		),
+		array( 'type' => 'addlar_trust_strip' ),
 		array(
-			'type'     => 'addlar_journey',
+			'type'     => 'addlar_about',
 			'settings' => array(
-				'layout' => 'horizontal',
+				'image' => addlar_seed_image( 'about' ),
+				'mark'  => $mark,
 			),
 		),
+		array( 'type' => 'addlar_journey' ),
 		array(
-			'type'     => 'addlar_trust_strip',
-			'settings' => array(
-				'lead_label' => __( 'Meets the following specifications:', 'addlar' ),
-			),
+			'type'     => 'addlar_why_list',
+			'settings' => array( 'rows' => addlar_rep( addlar_why_rows() ) ),
 		),
 		array(
 			'type'     => 'addlar_product_grid',
 			'settings' => array(
-				'layout_style' => 'roofly',
-				'cards'        => addlar_rep( addlar_product_cards() ),
-				'mark'         => $mark,
+				'cards' => addlar_rep( addlar_product_cards() ),
+				'mark'  => $mark,
 			),
 		),
+		array( 'type' => 'addlar_package_grid' ),
 		array(
 			'type'     => 'addlar_applications',
 			'settings' => array(
@@ -566,10 +567,7 @@ function addlar_homepage_widgets() {
 		),
 		array(
 			'type'     => 'addlar_stat_band',
-			'settings' => array(
-				'bg'      => addlar_seed_image( 'numbers-bg' ),
-				'columns' => '3',
-			),
+			'settings' => array( 'bg' => addlar_seed_image( 'numbers-bg' ) ),
 		),
 		array( 'type' => 'addlar_product_finder' ),
 		array(
@@ -1443,13 +1441,6 @@ function addlar_seed_about_page() {
 				'btn1_link'         => array( 'url' => '/products/' ),
 				'btn2_text'         => __( 'Get in touch', 'addlar' ),
 				'btn2_link'         => array( 'url' => '/contact-us/' ),
-			),
-		),
-		array(
-			'type'     => 'addlar_about',
-			'settings' => array(
-				'image' => addlar_seed_image( 'about' ),
-				'mark'  => $mark,
 			),
 		),
 		array(

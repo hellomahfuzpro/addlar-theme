@@ -201,28 +201,6 @@
 		});
 	}
 
-	/* -------------------------------------------------------- roofly tabs */
-	function initRooflyTabs() {
-		document.querySelectorAll('.prod-roofly').forEach(function (container) {
-			if (container.dataset.bound) { return; }
-			container.dataset.bound = '1';
-			var pills = container.querySelectorAll('.roofly-pill');
-			var panels = container.querySelectorAll('.roofly-panel');
-			pills.forEach(function (pill) {
-				pill.addEventListener('click', function () {
-					var target = this.getAttribute('data-tab-target');
-					pills.forEach(function (p) { p.classList.remove('active'); });
-					panels.forEach(function (pan) { pan.classList.remove('active'); });
-					this.classList.add('active');
-					var match = container.querySelector('.roofly-panel[data-tab="' + target + '"]');
-					if (match) {
-						match.classList.add('active');
-					}
-				});
-			});
-		});
-	}
-
 	/* --------------------------------------------------------------- boot */
 	function init() {
 		initHeader();
@@ -230,7 +208,6 @@
 		initReveal();
 		initCounters();
 		initFinder();
-		initRooflyTabs();
 	}
 
 	if (document.readyState === 'loading') {

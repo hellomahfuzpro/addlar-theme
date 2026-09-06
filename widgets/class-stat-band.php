@@ -28,9 +28,12 @@ class Addlar_Widget_StatBand extends Addlar_Base_Widget {
 
 	private function default_stats() {
 		return array(
-			array( 'count' => '17', 'prefix' => '$', 'suffix' => 'B+', 'comma' => '', 'label' => "Lubricant additive<br>market served" ),
-			array( 'count' => '50', 'prefix' => '',  'suffix' => '+',  'comma' => '', 'label' => "Years of combined<br>industry experience" ),
-			array( 'count' => '45', 'prefix' => '',  'suffix' => '+',  'comma' => '', 'label' => "Products &amp;<br>additive packages" ),
+			// The market figure is a placeholder pending a source — see CONTENT-CHECKLIST.md.
+			array( 'count' => '17',    'prefix' => '$', 'suffix' => 'B+', 'comma' => '', 'label' => "Lubricant additive<br>market served" ),
+			array( 'count' => '50',    'prefix' => '',  'suffix' => '+',  'comma' => '', 'label' => "Years of combined<br>industry experience" ),
+			array( 'count' => '45',    'prefix' => '',  'suffix' => '',   'comma' => '', 'label' => "Products &amp;<br>additive packages" ),
+			array( 'count' => '10000', 'prefix' => '',  'suffix' => '+',  'comma' => 'yes', 'label' => "MT supplied<br>annually" ),
+			array( 'count' => '25',    'prefix' => '',  'suffix' => '+',  'comma' => '', 'label' => "Countries<br>served" ),
 		);
 	}
 
@@ -67,8 +70,8 @@ class Addlar_Widget_StatBand extends Addlar_Base_Widget {
 		$this->add_control( 'columns', array(
 			'label'       => __( 'Columns', 'addlar' ),
 			'type'        => Controls_Manager::SELECT,
-			'options'     => array( '5' => '5', '4' => '4', '3' => '3 (default)', '2' => '2' ),
-			'default'     => '3',
+			'options'     => array( '5' => '5 (default)', '4' => '4', '3' => '3', '2' => '2' ),
+			'default'     => '5',
 			'description' => __( 'Match this to how many statistics you actually add below.', 'addlar' ),
 		) );
 

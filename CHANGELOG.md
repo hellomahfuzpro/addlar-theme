@@ -3,45 +3,15 @@
 All notable changes to the ADDLAR theme. Keep the top version in sync with
 `Version:` in `style.css` — the updater reads it from there.
 
-## [1.13.1] — 2026-09-06
+## [1.14.0] — 2026-09-06
 
 ### Changed
-- **Horizontal Journey Timeline**: Refined horizontal timeline with mathematically consistent 3-row column alignment (`jh-col`), ensuring all 8 circular milestone nodes sit precisely on the central gradient axis. Connected via vertical stems to alternating top and bottom cards.
+- **Horizontal Journey Timeline**: Implemented refined horizontal journey timeline layout based on the clean v1.11.0 site foundation. Features mathematically aligned 3-row columns (`jh-col`) with continuous central gradient axis, alternating top and bottom milestone cards, and vertical mobile rail fallback (< 960px).
 - **Milestone 07 Date Correction**: Corrected year for Milestone 07 (ADDLAR is launched) from `2023–2025` to `2025`.
-- **Responsive Stacking**: Seamless vertical rail fallback on mobile viewports (< 960px) with vertical line and left-aligned milestone nodes.
-- **Cache Busting**: Bumped `ADDLAR_VERSION` to `1.13.1` to refresh all enqueued stylesheets and scripts.
-
-## [1.13.0] — 2026-09-05
+- **All Other Sections Retained**: Retained all original v1.11.0 homepage sections, layouts, styles, and configurations without modification.
 
 ### Added
-- **Theme Rollback & Version Switcher**: Built-in functionality allowing administrators to downgrade or switch to any published release of the ADDLAR theme directly from the WordPress Admin or via WP-CLI (`wp addlar rollback <version>`).
-- **Release Directory & Fast Fallback**: Automatically discovers and lists all published releases from the GitHub repository (`hellomahfuzpro/addlar-theme`), complete with release dates and version badges. Built-in offline fallback ensures all historical releases remain accessible even if the GitHub API is rate-limited.
-- **Admin UI Integration**: Accessible both under **Tools → ADDLAR setup** and through a dedicated **Appearance → Theme Rollback** menu screen with 1-click upgrade/rollback buttons and confirmation prompts.
-- **Cache Flushing & Auto-Activation**: Switching versions automatically purges Elementor CSS caches, LiteSpeed caches, OPcache, and WordPress theme caches while keeping the active theme assigned.
-
-## [1.12.1] — 2026-09-05
-
-### Fixed
-- **Cache Busting**: Bumped `ADDLAR_VERSION` in `functions.php` to `1.12.1` so WordPress refreshes all enqueued stylesheets and scripts, clearing 7-day LiteSpeed server and browser asset caches.
-- **Milestone SVGs & Inline Dimensions**: Added self-contained critical CSS and hardcoded `width="18" height="18" fill="none" stroke="currentColor"` attributes onto milestone SVG icons in `class-journey.php` and `class-base-widget.php`, preventing unstyled SVG icon expansion.
-
-## [1.12.0] — 2026-09-05
-
-### Changed & Enhanced (Client Feedback Implementation)
-- **#1 Hero Banner Video & Diagonal Gradient**: Updated default hero video to `hero-v2.mp4` and poster to `hero-v2-poster.jpg`, rendering the deep red and black split gradient matching client reference. Updated CSS overlay and fallback gradient.
-- **#2 Section Reordering**: Milestone journey section moved directly beneath the main hero banner.
-- **#3 Specification Ribbon (Trust Strip)**: Relocated below the milestone section; updated lead label to "Meets the following specifications:" and removed "10,000 MT Capacity". Styled as interactive badge pills.
-- **#4 Horizontal Journey Timeline**: Added horizontal layout mode (`jrny-h`) with interactive timeline nodes, alternating milestone cards, and year badges. Milestone 07 date corrected to `2025`.
-- **#5 Why Choose Addlar Numbers & Clean Typography**: Increased numeral size to clamp(96px, 12vw, 168px) with background clip text; removed 1-liner category labels for punchy visual focus.
-- **#6 Product Range Roofly Showcase**: Added interactive Roofly showcase mode (`prod-roofly`) with category pill tabs, active states, product stage, and dynamic switching in `theme.js`.
-- **#7 Engine Oil Range Packages**: Removed standalone package grid from homepage layout.
-- **#8 Product Page Linking**: Linked category cards directly to dedicated product family pages (`/category/engine-oil-additive/`, etc.).
-- **#9 Stat Band 3-Column Layout**: Reduced stat band from 5 columns to 3 prominent columns, removing "Capacity (10,000 MT)" and "Countries (25+)" duplicates.
-- **#10 Lubricant Finder Retention**: Verified 3-step dynamic product selection and results.
-- **#11 LinkedIn Insights 3-Column Layout**: Restructured LinkedIn insights grid (`.li-grid`) to display 3 posts horizontally on desktop with responsive 1-column mobile collapse.
-- **#12 Why Addlar Reorganization**: Removed Why Addlar section from homepage in favor of Lubricant Finder integration.
-- **#13 About Section Relocation**: Removed `addlar_about` ("Precision Engineered Lubricants") from homepage and relocated to dedicated `/about-us/` page.
-- **Footer Corporate Contact & 20-Year Anniversary**: Added Rchemie International lockup, Operations contact card (Shreya Barlingay, phones, email, Al Yarmook Sharjah address), and 20-Year Anniversary badge ("Thank you for 20 YEARS 2026", "Depending on us... ADDLAR").
+- **Theme Rollback & Version Switcher ("Rollout")**: Built-in dashboard feature under **Tools → ADDLAR setup** and **Appearance → Theme Rollback** (and WP-CLI `wp addlar rollback <version>`), allowing administrators to switch or downgrade to any available theme version at any time with 1 click.
 
 ## [1.11.0] — 2026-08-19
 
