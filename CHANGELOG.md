@@ -3,6 +3,20 @@
 All notable changes to the ADDLAR theme. Keep the top version in sync with
 `Version:` in `style.css` — the updater reads it from there.
 
+## [1.19.0] — 2026-09-10
+
+### Changed
+- **Journey Spacing & Year Styling**:
+  - Added clear 14px vertical space between year boxes and hexagons.
+  - Added subtle 4px border radius (`border-radius: 4px`) to year boxes.
+- **Journey Navigation & Draggable Customization**:
+  - Removed draggable option and drag gesture listeners.
+  - Removed the hint text *"Drag or swipe to explore our journey"*.
+  - Repositioned navigation arrows to the vertical middle on the left and right sides of the timeline track (`top: 50%; transform: translateY(-50%)`).
+  - Added responsive Elementor control for `items_per_row` (Desktop, Tablet, Mobile).
+- **Fixed Why List (Photo inside Numeral) Section**:
+  - Restored complete `.why2`, `.wrow`, and `.imgnum` styles with `-webkit-background-clip: text`, `font-size: clamp(74px, 8.4vw, 124px)`, and alternating RTL/LTR alignments so numerals are properly photo-filled and not squished.
+
 ## [1.18.0] — 2026-09-10
 
 ### Changed

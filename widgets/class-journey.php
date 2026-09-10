@@ -80,31 +80,26 @@ class Addlar_Widget_Journey extends Addlar_Base_Widget {
 			),
 		) );
 
-		$this->add_control( 'enable_drag', array(
-			'label'        => __( 'Draggable / Scroll track', 'addlar' ),
-			'description'  => __( 'Enable a continuous horizontal draggable track. When disabled, milestones divide into a multi-row centered grid.', 'addlar' ),
-			'type'         => Controls_Manager::SWITCHER,
-			'default'      => 'yes',
-			'return_value' => 'yes',
-			'condition'    => array(
+		$this->add_responsive_control( 'items_per_row', array(
+			'label'           => __( 'Items per row / view', 'addlar' ),
+			'description'     => __( 'Number of milestones visible across device breakpoints.', 'addlar' ),
+			'type'            => Controls_Manager::SELECT,
+			'options'         => array(
+				'2' => __( '2 Milestones', 'addlar' ),
+				'3' => __( '3 Milestones', 'addlar' ),
+				'4' => __( '4 Milestones', 'addlar' ),
+				'5' => __( '5 Milestones', 'addlar' ),
+				'6' => __( '6 Milestones', 'addlar' ),
+				'8' => __( '8 Milestones', 'addlar' ),
+			),
+			'desktop_default' => '8',
+			'tablet_default'  => '4',
+			'mobile_default'  => '2',
+			'condition'       => array(
 				'layout_style!' => 'vertical',
 			),
-		) );
-
-		$this->add_control( 'items_per_row', array(
-			'label'       => __( 'Items per row (When Drag is Off)', 'addlar' ),
-			'description' => __( 'Number of milestones to display per row when draggable track is turned off.', 'addlar' ),
-			'type'        => Controls_Manager::SELECT,
-			'options'     => array(
-				'3' => __( '3 Milestones per row', 'addlar' ),
-				'4' => __( '4 Milestones per row', 'addlar' ),
-				'5' => __( '5 Milestones per row', 'addlar' ),
-				'6' => __( '6 Milestones per row', 'addlar' ),
-			),
-			'default'     => '4',
-			'condition'   => array(
-				'layout_style!' => 'vertical',
-				'enable_drag!'  => 'yes',
+			'selectors'       => array(
+				'{{WRAPPER}} .jrny-cols-grid' => 'grid-template-columns: repeat({{VALUE}}, minmax(185px, 1fr)) !important;',
 			),
 		) );
 
@@ -238,12 +233,7 @@ class Addlar_Widget_Journey extends Addlar_Base_Widget {
 		}
 
 		$is_vertical = ( 'vertical' === $style );
-		$is_drag     = ( 'yes' === ( isset( $s['enable_drag'] ) ? $s['enable_drag'] : 'yes' ) );
 		$is_full     = ( 'full' === ( isset( $s['container_width'] ) ? $s['container_width'] : 'boxed' ) );
-		$cols        = ! empty( $s['items_per_row'] ) ? intval( $s['items_per_row'] ) : 4;
-		if ( $cols < 2 ) {
-			$cols = 4;
-		}
 
 		$this->open_section(
 			'yes' === $s['soft'] ? 'section soft' : 'section',
@@ -256,20 +246,17 @@ class Addlar_Widget_Journey extends Addlar_Base_Widget {
 		<div class="wrap <?php echo $is_full ? 'jrny-wrap-full wrap-full' : 'jrny-wrap-boxed'; ?>">
 			<?php if ( ! $is_vertical ) : ?>
 				<div class="jrny-h-outer <?php echo $is_full ? 'is-full' : 'is-boxed'; ?>">
-					<div class="jrny-drag-nav">
-						<button type="button" class="jrny-nav-arrow prev" aria-label="<?php esc_attr_e( 'Scroll left', 'addlar' ); ?>">&#8249;</button>
-						<div class="jrny-drag-hint"><span>&#8592;</span> <span><?php esc_html_e( 'Drag or swipe to explore our journey', 'addlar' ); ?></span> <span>&#8594;</span></div>
-						<button type="button" class="jrny-nav-arrow next" aria-label="<?php esc_attr_e( 'Scroll right', 'addlar' ); ?>">&#8250;</button>
-					</div>
-					<div class="jrny-h jrny-drag-track">
+					<button type="button" class="jrny-nav-arrow prev" aria-label="<?php esc_attr_e( 'Previous', 'addlar' ); ?>">&#8249;</button>
+					<button type="button" class="jrny-nav-arrow next" aria-label="<?php esc_attr_e( 'Next', 'addlar' ); ?>">&#8250;</button>
+					<div class="jrny-h">
 						<div id="timeline-track" class="jh-track-angle min-w-[1560px] relative">
 							<!-- Dynamic Zig-Zag Dashed SVG Line -->
 							<svg id="poly-svg" class="angle-border-svg pointer-events-none" style="position:absolute;inset:0;width:100%;height:100%;z-index:1;">
 								<polyline id="poly-main" points="" fill="none" stroke="#CBD5E1" stroke-dasharray="7 5" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"></polyline>
 							</svg>
 
-							<!-- 8 Milestone Columns Grid -->
-							<div class="jrny-cols-8">
+							<!-- Milestone Columns Grid -->
+							<div class="jrny-cols-8 jrny-cols-grid">
 								<?php
 								$i = 0;
 								foreach ( (array) $s['rows'] as $row ) {
@@ -299,8 +286,8 @@ class Addlar_Widget_Journey extends Addlar_Base_Widget {
 												</div>
 											</div>
 
-											<!-- Year Pill Below Hexagon -->
-											<div class="year-pill-wrap mt-2">
+											<!-- Year Pill Below Hexagon with clear space -->
+											<div class="year-pill-wrap year-below mt-3.5">
 												<span class="year-pill"><?php echo esc_html( $row['num'] ); ?></span>
 											</div>
 
@@ -310,8 +297,8 @@ class Addlar_Widget_Journey extends Addlar_Base_Widget {
 											<!-- Top Spacer to shift Upper Hexagon to higher wave position -->
 											<div class="col-spacer-t"></div>
 
-											<!-- Year Pill Above Hexagon -->
-											<div class="year-pill-wrap mb-2">
+											<!-- Year Pill Above Hexagon with clear space -->
+											<div class="year-pill-wrap year-above mb-3.5">
 												<span class="year-pill"><?php echo esc_html( $row['num'] ); ?></span>
 											</div>
 
@@ -368,37 +355,25 @@ class Addlar_Widget_Journey extends Addlar_Base_Widget {
 					window.addEventListener('load', calibrateAngleBorder);
 					window.addEventListener('resize', calibrateAngleBorder);
 					if(document.fonts){ document.fonts.ready.then(calibrateAngleBorder); }
-					var scroller = document.querySelector('.adl .jrny-h');
-					if(scroller){ scroller.addEventListener('scroll', calibrateAngleBorder); }
-
-					// Smooth drag & button navigation
-					var tracks = document.querySelectorAll('.adl .jrny-drag-track');
-					tracks.forEach(function(slider){
-						if(slider.dataset.dragInit) return;
-						slider.dataset.dragInit = '1';
-						var isDown = false, startX, scrollLeft;
-						var parent = slider.closest('.jrny-h-outer');
-						if(parent){
+					var scrollers = document.querySelectorAll('.adl .jrny-h');
+					scrollers.forEach(function(scroller){
+						scroller.addEventListener('scroll', calibrateAngleBorder);
+						var parent = scroller.closest('.jrny-h-outer');
+						if(parent && !scroller.dataset.navInit){
+							scroller.dataset.navInit = '1';
 							var btnPrev = parent.querySelector('.jrny-nav-arrow.prev');
 							var btnNext = parent.querySelector('.jrny-nav-arrow.next');
-							if(btnPrev){ btnPrev.addEventListener('click', function(){ slider.scrollBy({ left: -320, behavior: 'smooth' }); }); }
-							if(btnNext){ btnNext.addEventListener('click', function(){ slider.scrollBy({ left: 320, behavior: 'smooth' }); }); }
+							if(btnPrev){
+								btnPrev.addEventListener('click', function(){
+									scroller.scrollBy({ left: -340, behavior: 'smooth' });
+								});
+							}
+							if(btnNext){
+								btnNext.addEventListener('click', function(){
+									scroller.scrollBy({ left: 340, behavior: 'smooth' });
+								});
+							}
 						}
-						slider.addEventListener('mousedown', function(e){
-							isDown = true;
-							slider.classList.add('is-dragging');
-							startX = e.pageX - slider.offsetLeft;
-							scrollLeft = slider.scrollLeft;
-						});
-						slider.addEventListener('mouseleave', function(){ isDown = false; slider.classList.remove('is-dragging'); });
-						slider.addEventListener('mouseup', function(){ isDown = false; slider.classList.remove('is-dragging'); });
-						slider.addEventListener('mousemove', function(e){
-							if(!isDown) return;
-							e.preventDefault();
-							var x = e.pageX - slider.offsetLeft;
-							slider.scrollLeft = scrollLeft - (x - startX) * 1.5;
-							calibrateAngleBorder();
-						});
 					});
 				})();
 				</script>

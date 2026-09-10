@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'ADDLAR_VERSION', '1.18.0' );
+define( 'ADDLAR_VERSION', '1.19.0' );
 define( 'ADDLAR_DIR', get_template_directory() );
 define( 'ADDLAR_URI', get_template_directory_uri() );
 
