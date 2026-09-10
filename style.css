@@ -4,7 +4,7 @@ Theme URI: https://www.rchemie.com
 Author: Rchemie International
 Author URI: https://www.rchemie.com
 Description: Bespoke Elementor-powered theme for ADDLAR by Rchemie International — advanced lubricant additive technology. Each homepage section is a custom Elementor widget; header and footer are Customizer-driven.
-Version: 1.24.1
+Version: 1.25.0
 Requires at least: 6.0
 Requires PHP: 7.4
 License: GNU General Public License v2 or later
@@ -24,17 +24,20 @@ Tags: elementor, one-page, business, custom-logo, custom-menu
  * (specificity 0,1,1), which ties or beats our scoped rules and silently
  * swaps the brand font. Enforce it here. See skill gotcha #5.
  * ------------------------------------------------------------------------ */
+html,
+body,
 .adl,
 .adl p, .adl a, .adl li, .adl span, .adl div,
 .adl button, .adl input, .adl select, .adl textarea {
-	font-family: var(--adl-font-body) !important;
+	font-family: var(--adl-font-body, 'Montserrat', sans-serif) !important;
 }
 
+h1, h2, h3, h4, h5, h6,
 .adl h1, .adl h2, .adl h3, .adl h4, .adl h5, .adl h6,
 .adl .title, .adl .heading, .adl .jh-title {
-	font-family: var(--adl-font-heading) !important;
+	font-family: var(--adl-font-heading, 'Montserrat', sans-serif) !important;
 	font-weight: 700;
-	letter-spacing: -.01em;
+	letter-spacing: -.02em;
 }
 
 /* Elementor containers add their own padding; our widgets are full-bleed and

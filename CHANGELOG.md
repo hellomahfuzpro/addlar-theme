@@ -3,6 +3,15 @@
 All notable changes to the ADDLAR theme. Keep the top version in sync with
 `Version:` in `style.css` — the updater reads it from there.
 
+## [1.25.0] — 2026-09-11
+
+### Changed
+- **Unified Site-Wide Typography to Montserrat Only (`functions.php`, `assets/css/tokens.css`, `style.css`, `assets/css/widgets.css`)**:
+  - Removed Google Font `Quattrocento` completely from assets enqueue and CSS `@import`.
+  - Switched all heading selectors (`h1`, `h2`, `h3`, `h4`, `h5`, `h6`, `.title`, `.heading`, `.jh-title`, `.showcase-headline`, `.chem-title`, `.contact-title`, `.cf-header h3`, `.stitch-head`) to `Montserrat` with bold/extra-bold weights (`700`/`800`) and refined tracking (`letter-spacing: -0.02em`).
+  - Enforced `Montserrat` on `html`, `body`, and all text elements via `style.css` with `!important` to override any Elementor kit typography rules.
+  - Eliminated extra font network request, improving site performance and load times.
+
 ## [1.24.1] — 2026-09-10
 
 ### Fixed

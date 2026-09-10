@@ -9,7 +9,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'ADDLAR_VERSION', '1.24.1' );
+define( 'ADDLAR_VERSION', '1.25.0' );
 define( 'ADDLAR_DIR', get_template_directory() );
 define( 'ADDLAR_URI', get_template_directory_uri() );
 
@@ -46,8 +46,8 @@ add_action( 'after_setup_theme', 'addlar_setup' );
  * ---------------------------------------------------------------------- */
 
 function addlar_assets() {
-	// Google Fonts: Quattrocento (Headings) + Montserrat (Body & UI)
-	wp_enqueue_style( 'addlar-fonts', 'https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300..900;1,300..900&family=Quattrocento:wght@400;700&display=swap', array(), null );
+	// Google Fonts: Montserrat only (site-wide typography)
+	wp_enqueue_style( 'addlar-fonts', 'https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300..900;1,300..900&display=swap', array(), null );
 
 	// Dependency order: fonts -> tokens (vars + chrome) -> widgets (sections) -> style.css (type enforcement).
 	wp_enqueue_style( 'addlar-tokens', ADDLAR_URI . '/assets/css/tokens.css', array( 'addlar-fonts' ), ADDLAR_VERSION );
@@ -66,7 +66,7 @@ add_action( 'wp_enqueue_scripts', 'addlar_assets' );
  * styling and makes dark-mode controls unreadable. See skill gotcha #4.
  */
 function addlar_elementor_preview_assets() {
-	wp_enqueue_style( 'addlar-fonts', 'https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300..900;1,300..900&family=Quattrocento:wght@400;700&display=swap', array(), null );
+	wp_enqueue_style( 'addlar-fonts', 'https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300..900;1,300..900&display=swap', array(), null );
 	wp_enqueue_style( 'addlar-tokens', ADDLAR_URI . '/assets/css/tokens.css', array( 'addlar-fonts' ), ADDLAR_VERSION );
 	wp_enqueue_style( 'addlar-widgets', ADDLAR_URI . '/assets/css/widgets.css', array( 'addlar-tokens' ), ADDLAR_VERSION );
 	wp_enqueue_style( 'addlar-theme-css', ADDLAR_URI . '/assets/css/theme.css', array( 'addlar-widgets' ), ADDLAR_VERSION );

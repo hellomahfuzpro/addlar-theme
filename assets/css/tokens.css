@@ -5,26 +5,27 @@
  * so nothing collides with Elementor container vars or plugin CSS.
  */
 
-@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300..900;1,300..900&family=Quattrocento:wght@400;700&display=swap');
-
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300..900;1,300..900&display=swap');
+ 
 :root{
  --adl-red:#D32F2F; --adl-red-dark:#B71C1C; --adl-ink:#1A1D20; --adl-ink-2:#2D3748;
  --adl-slate:#4A5568; --adl-grey:#4A5568; --adl-grey-2:#718096; --adl-line:#E2E8F0; --adl-bg:#FFFFFF;
  --adl-soft:#F8F9FA; --adl-soft-2:#EDF2F7; --adl-gold:#D8A54A;
- --adl-font-heading:'Quattrocento', Georgia, serif;
+ --adl-font-heading:'Montserrat', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
  --adl-font-body:'Montserrat', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
  --adl-sans:var(--adl-font-body);
  --adl-maxw:1200px;
 }
 .adl *{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth}
+body{font-family:var(--adl-font-body);color:var(--adl-ink);background:var(--adl-bg);line-height:1.6;-webkit-font-smoothing:antialiased}
 .adl{font-family:var(--adl-font-body);color:var(--adl-ink);background:var(--adl-bg);line-height:1.6;-webkit-font-smoothing:antialiased;overflow-x:hidden}
 .adl img{max-width:100%;display:block}
 .adl a{color:inherit;text-decoration:none}
 .adl .wrap{max-width:var(--adl-maxw);margin:0 auto;padding:0 32px}
 .adl .eyebrow{font-family:var(--adl-font-body);font-size:13px;font-weight:800;letter-spacing:.18em;text-transform:uppercase;color:var(--adl-red);display:inline-flex;align-items:center;gap:12px}
 .adl .eyebrow::before{content:'';width:28px;height:2px;background:var(--adl-red);display:inline-block}
-.adl h1,.adl h2,.adl h3,.adl h4,.adl h5,.adl h6{font-family:var(--adl-font-heading);line-height:1.15;letter-spacing:-.01em;font-weight:700}
+.adl h1,.adl h2,.adl h3,.adl h4,.adl h5,.adl h6{font-family:var(--adl-font-heading);line-height:1.15;letter-spacing:-.02em;font-weight:700}
 .adl h2.title{font-size:clamp(30px,4.4vw,52px);color:var(--adl-ink);margin:18px 0 14px}
 .adl .lead{font-size:18px;color:var(--adl-slate);max-width:620px}
 .adl .section{padding:104px 0}
