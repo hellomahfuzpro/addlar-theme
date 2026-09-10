@@ -28,7 +28,13 @@ class Addlar_Widget_TrustStrip extends Addlar_Base_Widget {
 
 	protected function register_controls() {
 		$this->start_controls_section( 'content', array(
-			'label' => __( 'Items', 'addlar' ),
+			'label' => __( 'Specifications Ribbon', 'addlar' ),
+		) );
+
+		$this->add_control( 'heading', array(
+			'label'   => __( 'Ribbon Heading', 'addlar' ),
+			'type'    => Controls_Manager::TEXT,
+			'default' => __( 'Meets the following specifications', 'addlar' ),
 		) );
 
 		$rep = new Repeater();
@@ -50,10 +56,9 @@ class Addlar_Widget_TrustStrip extends Addlar_Base_Widget {
 			'title_field' => '{{{ strong }}} {{{ text }}}',
 			'default'     => array(
 				array( 'strong' => 'API', 'text' => __( 'Licensed Standards', 'addlar' ) ),
-				array( 'strong' => 'ACEA', 'text' => __( 'Full Spectrum', 'addlar' ) ),
+				array( 'strong' => 'ACEA', 'text' => __( 'Full Spectrum Performance', 'addlar' ) ),
 				array( 'strong' => 'ILSAC', 'text' => 'GF-5 / GF-6' ),
 				array( 'strong' => 'JASO', 'text' => 'MA / MA2' ),
-				array( 'strong' => '10,000 MT', 'text' => __( 'Annual Capacity', 'addlar' ) ),
 				array( 'strong' => 'UAE', 'text' => __( 'Manufactured', 'addlar' ) ),
 			),
 		) );
@@ -66,15 +71,25 @@ class Addlar_Widget_TrustStrip extends Addlar_Base_Widget {
 		if ( empty( $s['items'] ) ) {
 			return;
 		}
-		// This band is a plain div in the mockup, not a .section.
-		echo '<div class="adl"><div class="trust"><div class="wrap">';
-		foreach ( $s['items'] as $item ) {
-			printf(
-				'<div class="item"><b>%1$s</b> %2$s</div>',
-				esc_html( $item['strong'] ),
-				esc_html( $item['text'] )
-			);
-		}
-		echo '</div></div></div>';
+		?>
+		<div class="adl">
+			<div class="trust trust-spec-ribbon">
+				<?php if ( ! empty( $s['heading'] ) ) : ?>
+					<div class="trust-eyebrow">
+						<span class="trust-eyebrow-dot"></span>
+						<span><?php echo esc_html( $s['heading'] ); ?></span>
+					</div>
+				<?php endif; ?>
+				<div class="wrap">
+					<?php foreach ( $s['items'] as $item ) : ?>
+						<div class="item">
+							<b><?php echo esc_html( $item['strong'] ); ?></b>
+							<span><?php echo esc_html( $item['text'] ); ?></span>
+						</div>
+					<?php endforeach; ?>
+				</div>
+			</div>
+		</div>
+		<?php
 	}
 }

@@ -3,6 +3,32 @@
 All notable changes to the ADDLAR theme. Keep the top version in sync with
 `Version:` in `style.css` — the updater reads it from there.
 
+## [1.22.0] — 2026-09-10
+
+### Added
+- **Interactive 3D Powertrain Chemistry Stage (`widgets/class-applications.php`)**:
+  - Upgraded "The chemistry inside every package" section with a central 3D wireframe car video (`wheels-spinning-car.mp4`) bundled directly into `assets/video/`.
+  - Solid pure black background (`#000000`) with seamless radial vignette and screen blend mode eliminating video container borders and box shadows.
+  - Sub-pixel calibrated hotspot pins on exact powertrain components (Differential, Wheel Bearings, Driveshaft, Valvetrain & Sump, Engine Block, Pistons & Crank, Transmission).
+  - All 7 text cards styled permanently as sharp red boxes (`border: 2px solid var(--adl-red); border-radius: 0;`) with red header/footer bars and high-contrast dark slate body.
+  - Dynamically computed SVG connector lines from card edges directly to dot centers with strict spatial ordering to guarantee zero line crossings.
+  - Interactive laser glow highlight on hover/focus without distracting auto-cycling flashes.
+  - Technical storytelling beats strip at the bottom.
+- **Specification Ribbon (`widgets/class-trust-strip.php`)**:
+  - Shifted down directly below the Tabbed Product Showcase, replacing the former package grid section.
+  - Added heading support with default text: *"Meets the following specifications"*.
+  - Removed the *"10,000 MT Annual Capacity"* item to focus strictly on lubricant performance standards (API, ACEA, ILSAC, JASO, UAE Manufactured).
+- **Global Theme Button & Component Styling (`assets/css/tokens.css`, `assets/css/theme.css`, `assets/css/widgets.css`, `style.css`)**:
+  - Replaced legacy `999px` pill border-radius with `border-radius: 4px !important;` across all global theme buttons (`.btn`, `.btn-red`, `.btn-primary`, `.btn-white`, `.btn-secondary`, `.btn-ghost`, `.btn-outline`, `.elementor-button`, `.wp-block-button__link`), navbar CTA, mobile nav CTA, contact form, product finder pills/options, chips, and pagination.
+  - Aligned elevation shadows, font sizing (14px Montserrat, weight 700, letter-spacing .02em), padding (14px 28px), and hover translateY(-1px) lift to strictly match the Product Range — Industrial Fluids showcase buttons site-wide.
+- **Numbers Section Dynamic Centering (`widgets/class-stat-band.php`, `assets/css/widgets.css`)**:
+  - Converted `.numgrid` to dynamic flexbox centering, ensuring 1, 2, 3, 4, or 5 statistics are always symmetrically centered on the page.
+- **Insights Section 3-Column Grid (`widgets/class-insights.php`, `assets/css/widgets.css`)**:
+  - Converted LinkedIn Insights from a 1-column vertical list to a modern 3-column horizontal card grid with top imagery, categorized tags, titles, and hover elevation.
+- **Homepage Section Order Restructuring (`inc/demo-import.php`)**:
+  - Reordered default seeder: Hero &rarr; Journey &rarr; Eight Reasons (`why-list`) &rarr; Tabbed Product Showcase (`product-grid`) &rarr; Specification Ribbon (`trust-strip`) &rarr; The Chemistry (`applications`) &rarr; Numbers (`stat-band`) &rarr; Product Finder &rarr; Insights.
+  - Removed About, Package Grid, and Closing CTA from the default homepage array while retaining their widget classes in the theme.
+
 ## [1.21.1] — 2026-09-10
 
 ### Fixed

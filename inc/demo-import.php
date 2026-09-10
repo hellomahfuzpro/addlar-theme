@@ -153,7 +153,8 @@ function addlar_image_slots() {
 function addlar_video_slots() {
 	return apply_filters( 'addlar_video_slots', array(
 		'hero-video' => 'hero-v3.mp4',
-		'app-video'  => 'hero.mp4',
+		'app-video'  => 'wheels-spinning-car.mp4',
+		'chem-video' => 'wheels-spinning-car.mp4',
 	) );
 }
 
@@ -529,6 +530,7 @@ function addlar_homepage_widgets() {
 	$white = addlar_seed_image( 'mark-white' );
 
 	return array(
+		// 1. Hero
 		array(
 			'type'     => 'addlar_hero',
 			'settings' => array(
@@ -536,19 +538,14 @@ function addlar_homepage_widgets() {
 				'video'  => addlar_seed_video( 'hero-video' ),
 			),
 		),
-		array( 'type' => 'addlar_trust_strip' ),
-		array(
-			'type'     => 'addlar_about',
-			'settings' => array(
-				'image' => addlar_seed_image( 'about' ),
-				'mark'  => $mark,
-			),
-		),
+		// 2. Journey (directly after Hero)
 		array( 'type' => 'addlar_journey' ),
+		// 3. Eight reasons formulators depend on us
 		array(
 			'type'     => 'addlar_why_list',
 			'settings' => array( 'rows' => addlar_rep( addlar_why_rows() ) ),
 		),
+		// 4. One partner. Every lubrication challenge. (Tabbed showcase slider)
 		array(
 			'type'     => 'addlar_product_grid',
 			'settings' => array(
@@ -556,27 +553,31 @@ function addlar_homepage_widgets() {
 				'mark'  => $mark,
 			),
 		),
-		array( 'type' => 'addlar_package_grid' ),
+		// 5. Specification Ribbon (shifted down, replacing the old package grid)
+		array(
+			'type'     => 'addlar_trust_strip',
+			'settings' => array(
+				'heading' => __( 'Meets the following specifications', 'addlar' ),
+			),
+		),
+		// 6. The chemistry inside every package (3D car wireframe video)
 		array(
 			'type'     => 'addlar_applications',
 			'settings' => array(
-				'poster' => addlar_seed_image( 'app-poster' ),
-				'video'  => addlar_seed_video( 'app-video' ),
-				'drop'   => $white,
+				'video' => addlar_seed_video( 'chem-video' ),
 			),
 		),
+		// 7. ADDLAR by the numbers (centered dynamically)
 		array(
 			'type'     => 'addlar_stat_band',
 			'settings' => array( 'bg' => addlar_seed_image( 'numbers-bg' ) ),
 		),
+		// 8. Find the right package
 		array( 'type' => 'addlar_product_finder' ),
+		// 9. Insights from the ADDLAR desk (3-column horizontal grid)
 		array(
 			'type'     => 'addlar_insights',
 			'settings' => array( 'posts' => addlar_rep( addlar_insight_rows() ) ),
-		),
-		array(
-			'type'     => 'addlar_closing_cta',
-			'settings' => array( 'bg' => addlar_seed_image( 'cta' ) ),
 		),
 	);
 }

@@ -32,14 +32,29 @@ html{scroll-behavior:smooth}
 .adl .center{text-align:center}
 .adl .center .eyebrow{justify-content:center}
 .adl .center .lead{margin-left:auto;margin-right:auto}
-/* buttons are the ONLY rounded elements */
-.adl .btn{display:inline-flex;align-items:center;gap:9px;font-family:var(--adl-font-body);font-weight:700;font-size:15px;padding:15px 26px;border-radius:999px;transition:.2s;cursor:pointer;border:1.5px solid transparent}
-.adl .btn-red{background:var(--adl-red);color:#fff}
-.adl .btn-red:hover{background:var(--adl-red-dark)}
-.adl .btn-ghost{background:transparent;color:var(--adl-ink);border-color:var(--adl-line)}
-.adl .btn-ghost:hover{border-color:var(--adl-ink);background:var(--adl-ink);color:#fff}
-.adl .btn-white{background:#fff;color:var(--adl-red)}
-.adl .btn-white:hover{background:var(--adl-ink);color:#fff}
+/* Global Theme Buttons — Modern industrial styling matching Product Showcase */
+.adl .btn,
+.adl button.btn,
+.adl a.btn,
+.adl input[type="submit"].btn,
+.adl .elementor-button,
+.adl .wp-block-button__link{display:inline-flex;align-items:center;justify-content:center;gap:8px;font-family:var(--adl-font-body,'Montserrat',sans-serif);font-weight:700;font-size:14px;letter-spacing:.02em;padding:14px 28px;border-radius:4px!important;transition:all .2s ease;cursor:pointer;border:1.5px solid transparent;text-decoration:none;box-sizing:border-box}
+.adl .btn-red,
+.adl .btn-primary,
+.adl .elementor-button,
+.adl .wp-block-button__link{background:var(--adl-red,#D32F2F)!important;color:#fff!important;border-color:transparent!important;box-shadow:0 8px 24px rgba(211,47,47,.35)!important}
+.adl .btn-red:hover,
+.adl .btn-primary:hover,
+.adl .elementor-button:hover,
+.adl .wp-block-button__link:hover{background:var(--adl-red-dark,#B71C1C)!important;border-color:transparent!important;color:#fff!important;transform:translateY(-1px);box-shadow:0 10px 28px rgba(211,47,47,.50)!important}
+.adl .btn-white,
+.adl .btn-secondary{background:#fff!important;color:#111315!important;border-color:rgba(0,0,0,.08)!important;box-shadow:0 4px 14px rgba(0,0,0,.15)!important}
+.adl .btn-white:hover,
+.adl .btn-secondary:hover{background:#F1F5F9!important;color:#111315!important;transform:translateY(-1px);box-shadow:0 6px 18px rgba(0,0,0,.20)!important}
+.adl .btn-ghost,
+.adl .btn-outline{background:transparent!important;color:var(--adl-ink,#1A1D20)!important;border-color:var(--adl-line,#DCDFE4)!important;box-shadow:none}
+.adl .btn-ghost:hover,
+.adl .btn-outline:hover{border-color:var(--adl-ink,#1A1D20)!important;background:var(--adl-ink,#1A1D20)!important;color:#fff!important;transform:translateY(-1px);box-shadow:0 4px 14px rgba(0,0,0,.15)}
 
 .js .adl .reveal{opacity:0;transform:translateY(26px);transition:opacity .7s ease,transform .7s ease}
 .js .adl .reveal.in{opacity:1;transform:none;}
@@ -102,7 +117,7 @@ html{scroll-behavior:smooth}
 .adl .mobnav.open{transform:translateY(0);visibility:visible}
 .adl .mobnav a{display:block;padding:13px 0;font-size:16px;font-weight:600;border-bottom:1px solid var(--adl-soft-2);color:var(--adl-ink-2)}
 /* outrank `.mobnav a`, which would otherwise strip the button's colour and padding */
-.adl .mobnav .btn{margin-top:18px;width:100%;display:inline-flex;justify-content:center;padding:15px 26px;color:#fff;border-bottom:0}
+.adl .mobnav .btn{margin-top:18px;width:100%;display:inline-flex;justify-content:center;padding:14px 28px;border-radius:4px!important;border-bottom:0}
 /* burger morphs to a close icon while the panel is open */
 .adl .burger.on span:nth-child(1){transform:translateY(7px) rotate(45deg)}
 .adl .burger.on span:nth-child(2){opacity:0}

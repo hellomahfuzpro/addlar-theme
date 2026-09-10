@@ -102,6 +102,7 @@ body { margin: 0; }
 	border: 1px solid var(--adl-line);
 	border-left: 3px solid var(--adl-red);
 	padding: 12px 18px;
+	border-radius: 4px;
 	transition: .2s;
 }
 .adl .chip-list .chip:hover { border-color: var(--adl-line); border-left-color: var(--adl-red); background: var(--adl-soft); }
@@ -374,6 +375,7 @@ body { margin: 0; }
 .adl .form-row textarea {
 	width: 100%;
 	border: 1.5px solid var(--adl-line);
+	border-radius: 4px;
 	padding: 13px 16px;
 	font-size: 15px;
 	font-family: var(--adl-sans);
@@ -522,6 +524,7 @@ body { margin: 0; }
 	padding: 11px 15px;
 	text-align: center;
 	border: 1px solid var(--adl-line);
+	border-radius: 4px;
 	font-size: 14px;
 	font-weight: 700;
 	color: var(--adl-ink-2);
