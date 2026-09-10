@@ -1488,7 +1488,7 @@ function addlar_seed_about_page() {
 			'type'     => 'addlar_icon_list',
 			'settings' => array(
 				'anchor'  => '',
-				'columns' => '1',
+				'columns' => '2',
 				'eyebrow' => __( 'The ADDLAR advantage', 'addlar' ),
 				'title'   => __( 'Comprehensive package. Complexity, simplified.', 'addlar' ),
 				'lede'    => __( 'All-in-one additive packages that integrate multiple critical chemical components into a single, perfectly balanced formulation.', 'addlar' ),

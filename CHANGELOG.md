@@ -3,6 +3,29 @@
 All notable changes to the ADDLAR theme. Keep the top version in sync with
 `Version:` in `style.css` — the updater reads it from there.
 
+## [1.24.1] — 2026-09-10
+
+### Fixed
+- **About Page "Comprehensive package. Complexity, simplified" (`assets/css/widgets.css`)**:
+  - Restored full dark obsidian styling (`.apps`, `.appwrap`, `.applist`, `.appitem`, `.aic`, `.beats`, `.beat`).
+  - Fixed unbounded SVG sizing inside `.aic` (was expanding to 1136px width, pushing section height to 5195px). Constrained to 42px flex box with 20px SVG.
+  - Added balanced 2-column grid layout for standalone icon lists on desktop.
+  - Restored high-contrast dark theme background and red glowing radial accents.
+- **Product Single Page Middle Section (`assets/css/widgets.css`)**:
+  - Fixed deformed "Product at a glance / by the numbers" section (`https://addlar-rc.com/product/engine-oil-additive/7706/`).
+  - Added 2-column grid layout for `.appwrap` containing the hexagon clip stage (`.appstage`, `.appvid`) and staged stats (`.numgrid-staged`).
+  - Constrained `.appvid` hexagon clip to 430px max-width, 1/1.06 aspect ratio, and centred the droplet logo mark (`.appdrop`).
+  - Reduced middle section height from 1637px down to a clean ~650px.
+
+### Changed
+- **Showcase Tabs & Dock Styling (`assets/css/widgets.css`)**:
+  - `.showcase-dock`: aligned to the right (`justify-content: flex-end`) with 20px padding.
+  - `.showcase-tab-bar`: removed border-radius, border, and box-shadow; set padding to 0px.
+  - `.showcase-tab-btn`: removed border-radius, set padding to 16px 16px, font-size 12px, font-weight 700.
+- **Trust Specification Ribbon Spacing (`assets/css/widgets.css`, `widgets/class-trust-strip.php`)**:
+  - Updated `.trust-spec-ribbon .wrap`: `margin-bottom: 0px !important; padding-bottom: 0px; padding-top: 10px;`.
+  - Removed hardcoded inline `margin-bottom: 22px;` from heading wrap in `class-trust-strip.php`.
+
 ## [1.24.0] — 2026-09-10
 
 ### Added
