@@ -360,6 +360,35 @@ body { margin: 0; }
 .adl a.contact-card .contact-value,
 .adl .contact-card a.contact-value:hover { color: var(--adl-red); }
 
+/* ===== HEX ICON BOXES (.phex) ===== */
+.adl .phex {
+	width: 48px;
+	height: 48px;
+	min-width: 48px;
+	border-radius: 8px;
+	background: rgba(211, 47, 47, 0.08);
+	border: 1px solid rgba(211, 47, 47, 0.2);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	margin-bottom: 16px;
+	transition: background .22s, border-color .22s;
+}
+.adl .phex svg {
+	width: 24px;
+	height: 24px;
+	stroke: var(--adl-red, #D32F2F);
+	flex-shrink: 0;
+	transition: stroke .22s;
+}
+.adl .pkg:hover .phex {
+	background: var(--adl-red, #D32F2F);
+	border-color: var(--adl-red, #D32F2F);
+}
+.adl .pkg:hover .phex svg {
+	stroke: #fff;
+}
+
 /* ===== CONTACT FORM ===== */
 .adl .contact-form { margin-top: 8px; }
 .adl .form-row { margin-bottom: 18px; }

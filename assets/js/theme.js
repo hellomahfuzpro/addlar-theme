@@ -224,6 +224,31 @@
 		window.addEventListener('resize', fitImgNums, { passive: true });
 	}
 
+	/* ----------------------------------------- #form → #contact redirect */
+	function initFormRedirect() {
+		// If URL hash is #form but no #form element exists, scroll to #contact
+		if (window.location.hash === '#form' && !document.getElementById('form')) {
+			var contact = document.getElementById('contact');
+			if (contact) {
+				setTimeout(function () {
+					contact.scrollIntoView({ behavior: 'smooth' });
+				}, 300);
+			}
+		}
+		// Intercept clicks on links targeting #form
+		document.addEventListener('click', function (e) {
+			var link = e.target.closest('a[href*="#form"]');
+			if (!link) return;
+			if (document.getElementById('form')) return; // real #form exists, no redirect
+			var contact = document.getElementById('contact');
+			if (contact) {
+				e.preventDefault();
+				contact.scrollIntoView({ behavior: 'smooth' });
+				history.replaceState(null, '', '#contact');
+			}
+		});
+	}
+
 	/* --------------------------------------------------------------- boot */
 	function init() {
 		initHeader();
@@ -232,6 +257,7 @@
 		initCounters();
 		initFinder();
 		initImgNumContainment();
+		initFormRedirect();
 	}
 
 	if (document.readyState === 'loading') {

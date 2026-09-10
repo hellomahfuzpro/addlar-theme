@@ -540,19 +540,19 @@ function addlar_homepage_widgets() {
 		),
 		// 2. Journey (directly after Hero)
 		array( 'type' => 'addlar_journey' ),
-		// 3. One partner. Every lubrication challenge. (Tabbed showcase slider)
+		// 3. Specification Ribbon (white section directly below Journey)
+		array(
+			'type'     => 'addlar_trust_strip',
+			'settings' => array(
+				'heading' => __( 'Meets the following specifications', 'addlar' ),
+			),
+		),
+		// 4. One partner. Every lubrication challenge. (Tabbed showcase slider)
 		array(
 			'type'     => 'addlar_product_grid',
 			'settings' => array(
 				'cards' => addlar_rep( addlar_product_cards() ),
 				'mark'  => $mark,
-			),
-		),
-		// 4. Specification Ribbon
-		array(
-			'type'     => 'addlar_trust_strip',
-			'settings' => array(
-				'heading' => __( 'Meets the following specifications', 'addlar' ),
 			),
 		),
 		// 5. Eight reasons formulators depend on us (above The Chemistry)
@@ -1569,7 +1569,7 @@ function addlar_seed_contact_page() {
 				'crumb_parent'      => '',
 				'crumb_parent_link' => array( 'url' => '' ),
 				'btn1_text'         => __( 'Send a message →', 'addlar' ),
-				'btn1_link'         => array( 'url' => '#form' ),
+				'btn1_link'         => array( 'url' => '#contact' ),
 				'btn2_text'         => __( 'Ask the expert', 'addlar' ),
 				'btn2_link'         => array( 'url' => '/ask-the-expert/' ),
 			),
@@ -1584,10 +1584,6 @@ function addlar_seed_contact_page() {
 					array( 'icon' => 'globe', 'label' => __( 'Parent company', 'addlar' ), 'value' => addlar_mod( 'addlar_website' ), 'link' => array( 'url' => addlar_mod( 'addlar_website' ) ) ),
 				) ),
 			),
-		),
-		array(
-			'type'     => 'addlar_contact_form',
-			'settings' => array( 'anchor' => 'form', 'preset' => 'contact', 'submit_label' => __( 'Send message →', 'addlar' ) ),
 		),
 		array(
 			'type'     => 'addlar_cta_bar',

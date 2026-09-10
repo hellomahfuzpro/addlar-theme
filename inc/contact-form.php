@@ -45,10 +45,8 @@ function addlar_contact_form_presets() {
 
 /**
  * Handle a contact/expert form submission: verify the nonce, drop obvious
- * bot traffic via honeypot, sanitize every field, email
- * addlar_mod('addlar_email') — never a value read from the submission
- * itself, so a tampered hidden field can't redirect the mail elsewhere —
- * then redirect back to the page with a plain success/error flag.
+ * bot traffic via honeypot, sanitize every field, store in DB, email
+ * configured recipients, then redirect back with a success/error flag.
  */
 function addlar_handle_contact_form() {
 	$redirect = isset( $_POST['redirect_to'] ) ? esc_url_raw( wp_unslash( $_POST['redirect_to'] ) ) : home_url( '/' );
@@ -74,6 +72,7 @@ function addlar_handle_contact_form() {
 	$fields  = $presets[ $preset ];
 
 	$lines    = array();
+	$data     = array();
 	$is_valid = true;
 	foreach ( $fields as $f ) {
 		$raw = isset( $_POST[ $f['name'] ] ) ? wp_unslash( $_POST[ $f['name'] ] ) : '';
@@ -86,6 +85,8 @@ function addlar_handle_contact_form() {
 			$is_valid = false;
 		}
 
+		$data[ $f['name'] ] = $val;
+
 		if ( '' !== trim( $val ) ) {
 			$lines[] = $f['label'] . ': ' . $val;
 		}
@@ -96,22 +97,60 @@ function addlar_handle_contact_form() {
 		exit;
 	}
 
-	$to      = addlar_mod( 'addlar_email' );
-	$subject = 'contact' === $preset
-		? __( 'New website enquiry — ADDLAR Contact Us', 'addlar' )
-		: __( 'New website enquiry — Ask the Expert', 'addlar' );
-	$body    = implode( "\n", $lines );
-
-	$headers     = array( 'Content-Type: text/plain; charset=UTF-8' );
-	$email_field = isset( $_POST['email'] ) ? sanitize_email( wp_unslash( $_POST['email'] ) ) : '';
-	if ( $email_field && is_email( $email_field ) ) {
-		$headers[] = 'Reply-To: ' . $email_field;
+	// Store submission in database.
+	if ( function_exists( 'addlar_insert_submission' ) ) {
+		addlar_insert_submission( array(
+			'preset'     => $preset,
+			'name'       => isset( $data['name'] ) ? $data['name'] : '',
+			'company'    => isset( $data['company'] ) ? $data['company'] : '',
+			'email'      => isset( $data['email'] ) ? $data['email'] : '',
+			'phone'      => isset( $data['phone'] ) ? $data['phone'] : '',
+			'country'    => isset( $data['country'] ) ? $data['country'] : '',
+			'product'    => isset( $data['product'] ) ? $data['product'] : '',
+			'message'    => isset( $data['message'] ) ? $data['message'] : ( isset( $data['question'] ) ? $data['question'] : '' ),
+			'ip_address' => isset( $_SERVER['REMOTE_ADDR'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ) ) : '',
+			'status'     => 'unread',
+		) );
 	}
 
-	wp_mail( $to, $subject, $body, $headers );
+	// Determine notification recipients.
+	$notify_enabled = get_option( 'addlar_notify_enabled', '1' );
+	if ( '1' === $notify_enabled ) {
+		$notify_emails = get_option( 'addlar_notify_emails', '' );
+		if ( ! empty( $notify_emails ) ) {
+			$to = array_map( 'trim', explode( ',', $notify_emails ) );
+		} else {
+			$to = addlar_mod( 'addlar_email' );
+			if ( empty( $to ) ) {
+				$to = get_option( 'admin_email' );
+			}
+		}
+
+		$prefix  = get_option( 'addlar_notify_subject_prefix', '[ADDLAR]' );
+		$subject = 'contact' === $preset
+			? $prefix . ' ' . __( 'New website enquiry — Contact Us', 'addlar' )
+			: $prefix . ' ' . __( 'New website enquiry — Ask the Expert', 'addlar' );
+		$body    = implode( "\n", $lines );
+
+		$headers     = array( 'Content-Type: text/plain; charset=UTF-8' );
+		$email_field = isset( $data['email'] ) ? $data['email'] : '';
+		if ( $email_field && is_email( $email_field ) ) {
+			$headers[] = 'Reply-To: ' . $email_field;
+		}
+
+		// Temporarily override From name/email.
+		add_filter( 'wp_mail_from', 'addlar_notification_mail_from' );
+		add_filter( 'wp_mail_from_name', 'addlar_notification_mail_from_name' );
+
+		wp_mail( $to, $subject, $body, $headers );
+
+		remove_filter( 'wp_mail_from', 'addlar_notification_mail_from' );
+		remove_filter( 'wp_mail_from_name', 'addlar_notification_mail_from_name' );
+	}
 
 	wp_safe_redirect( add_query_arg( 'addlar_sent', $preset, $redirect ) );
 	exit;
 }
 add_action( 'admin_post_addlar_contact_submit', 'addlar_handle_contact_form' );
 add_action( 'admin_post_nopriv_addlar_contact_submit', 'addlar_handle_contact_form' );
+

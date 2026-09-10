@@ -3,6 +3,38 @@
 All notable changes to the ADDLAR theme. Keep the top version in sync with
 `Version:` in `style.css` — the updater reads it from there.
 
+## [1.24.0] — 2026-09-10
+
+### Added
+- **Form Submissions Dashboard (`inc/admin-submissions.php`, `functions.php`)**:
+  - Custom database table `wp_addlar_submissions` auto-installed on theme load.
+  - "Inquiries" admin menu with dynamic unread badge counter.
+  - Submissions list table with status/preset filters, keyword search, pagination.
+  - Detail view modal with full inquiry data and one-click email reply.
+  - CSV export of all submissions.
+  - "Notification Settings" sub-page: configurable recipient emails, sender name/email, subject prefix, and notification toggle.
+- **Contact Form DB Storage (`inc/contact-form.php`)**:
+  - Every Contact Us and Ask the Expert submission is now persisted to the database before sending email notifications.
+  - Email notifications respect the admin-configured recipients, sender, and subject prefix.
+
+### Changed
+- **Specification Ribbon → White Section (`assets/css/widgets.css`, `inc/demo-import.php`)**:
+  - Moved "Meets the following specifications" directly below Journey (Hero → Journey → Specs → Tabbed Showcase).
+  - Restyled from dark charcoal (`#0B0C10`) to crisp white (`#FFFFFF`) with light borders, dark specification pills, and brand red accents.
+- **Closing CTA → Dark Obsidian (`assets/css/widgets.css`)**:
+  - Transformed from red gradient overlay to sleek dark obsidian industrial section (`#0D0F12` with desaturated photo, dark gradient, frosted glass spec chips).
+  - Eliminates red-on-red collision with the Stitch contact banner footer.
+- **Contact Us Page Streamlined (`inc/demo-import.php`, `assets/js/theme.js`)**:
+  - Removed duplicate `addlar_contact_form` widget from Contact Us page body.
+  - Hero "Send a message" button now links to `#contact` (footer banner).
+  - Added `#form` → `#contact` smooth scroll fallback for backward compatibility.
+
+### Fixed
+- **Giant 306px SVG Icons (`assets/css/theme.css`)**:
+  - Added explicit `.adl .phex` sizing (48px container, 24px SVG) preventing SVGs from stretching to fill their unconstrained parent.
+  - Fixes blown-up icons on About Us, Contact Us, and Ask the Expert pages.
+  - Added red-fill hover state when parent `.pkg` card is hovered.
+
 ## [1.23.0] — 2026-09-10
 
 ### Added
