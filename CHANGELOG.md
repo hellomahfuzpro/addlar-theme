@@ -3,6 +3,28 @@
 All notable changes to the ADDLAR theme. Keep the top version in sync with
 `Version:` in `style.css` — the updater reads it from there.
 
+## [1.17.0] — 2026-09-10
+
+### Changed
+- **Landing Page 2-Color Red & Black Gradient Divide**: Divided the landing page hero into 2 distinct colors per the brief (`Homepage/images/image5.png`, `image8.png`): crisp Clean White (`#FFFFFF`) on the left and a rich High-Octane Red to Deep Charcoal gradient (`#D32F2F` to `#1A1D20`) on the right across an authentic diagonal angle cut.
+- **Site-Wide Industrial Precision Color Palette**: Implemented the client's official color palette across the entire theme and site:
+  - Primary Accent: High-Octane Red (`#D32F2F`)
+  - Core Base: Deep Charcoal / Off-Black (`#1A1D20`)
+  - Supporting Neutral: Technical Slate (`#4A5568`)
+  - Background Tint: Fluid Light Grey (`#F8F9FA`)
+  - Primary Canvas: Clean White (`#FFFFFF`)
+- **Site-Wide Typography (Quattrocento & Montserrat)**: Enqueued Google Fonts and updated typography enforcement:
+  - Headings & Display: `Quattrocento`, serif (bold, elegant technical editorial)
+  - Body & UI: `Montserrat`, sans-serif (clean geometric legibility)
+- **Journey Widget 3-Band Angle Wave Row Update**: Strictly updated only the journey row inside the section:
+  - Equal-height milestone cards (`175px`) with flex layout absorbing text length variations.
+  - Direct 42px vertical stems connecting cards to hexagons without gaps.
+  - 8 double-layered clip-path hexagons with centered icons positioned with a `116px` vertical wave delta ($\approx 31.4^\circ$ angle).
+  - Unbroken dashed polyline (`#CBD5E1`, `stroke-dasharray: 7 5`) directly connecting the mathematical centers of all 8 hexagons.
+  - Dark Charcoal year pills (`#1A1D20`) with white text.
+  - Milestone 07 updated to `2025` ("ADDLAR is launched") and cleanly unified with neutral palette (no highlighted milestone).
+  - Section wrapper, heading, and container untouched.
+
 ## [1.16.0] — 2026-09-10
 
 ### Changed

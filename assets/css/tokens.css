@@ -5,31 +5,35 @@
  * so nothing collides with Elementor container vars or plugin CSS.
  */
 
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300..900;1,300..900&family=Quattrocento:wght@400;700&display=swap');
+
 :root{
- --adl-red:#E2231A; --adl-red-dark:#A81810; --adl-ink:#141412; --adl-ink-2:#3a3a37;
- --adl-grey:#6d6a65; --adl-grey-2:#9a968f; --adl-line:#e7e4df; --adl-bg:#ffffff;
- --adl-soft:#f6f5f3; --adl-soft-2:#efede9; --adl-gold:#D8A54A;
- --adl-sans:'Helvetica Neue',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Arial,sans-serif;
+ --adl-red:#D32F2F; --adl-red-dark:#B71C1C; --adl-ink:#1A1D20; --adl-ink-2:#2D3748;
+ --adl-slate:#4A5568; --adl-grey:#4A5568; --adl-grey-2:#718096; --adl-line:#E2E8F0; --adl-bg:#FFFFFF;
+ --adl-soft:#F8F9FA; --adl-soft-2:#EDF2F7; --adl-gold:#D8A54A;
+ --adl-font-heading:'Quattrocento', Georgia, serif;
+ --adl-font-body:'Montserrat', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+ --adl-sans:var(--adl-font-body);
  --adl-maxw:1200px;
 }
 .adl *{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth}
-.adl{font-family:var(--adl-sans);color:var(--adl-ink);background:var(--adl-bg);line-height:1.6;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+.adl{font-family:var(--adl-font-body);color:var(--adl-ink);background:var(--adl-bg);line-height:1.6;-webkit-font-smoothing:antialiased;overflow-x:hidden}
 .adl img{max-width:100%;display:block}
 .adl a{color:inherit;text-decoration:none}
 .adl .wrap{max-width:var(--adl-maxw);margin:0 auto;padding:0 32px}
-.adl .eyebrow{font-size:13px;font-weight:800;letter-spacing:.18em;text-transform:uppercase;color:var(--adl-red);display:inline-flex;align-items:center;gap:12px}
+.adl .eyebrow{font-family:var(--adl-font-body);font-size:13px;font-weight:800;letter-spacing:.18em;text-transform:uppercase;color:var(--adl-red);display:inline-flex;align-items:center;gap:12px}
 .adl .eyebrow::before{content:'';width:28px;height:2px;background:var(--adl-red);display:inline-block}
-.adl h1,.adl h2,.adl h3{line-height:1.05;letter-spacing:-.02em;font-weight:800}
+.adl h1,.adl h2,.adl h3,.adl h4,.adl h5,.adl h6{font-family:var(--adl-font-heading);line-height:1.15;letter-spacing:-.01em;font-weight:700}
 .adl h2.title{font-size:clamp(30px,4.4vw,52px);color:var(--adl-ink);margin:18px 0 14px}
-.adl .lead{font-size:18px;color:var(--adl-grey);max-width:620px}
+.adl .lead{font-size:18px;color:var(--adl-slate);max-width:620px}
 .adl .section{padding:104px 0}
 .adl .section.soft{background:var(--adl-soft)}
 .adl .center{text-align:center}
 .adl .center .eyebrow{justify-content:center}
 .adl .center .lead{margin-left:auto;margin-right:auto}
 /* buttons are the ONLY rounded elements */
-.adl .btn{display:inline-flex;align-items:center;gap:9px;font-weight:700;font-size:15px;padding:15px 26px;border-radius:999px;transition:.2s;cursor:pointer;border:1.5px solid transparent}
+.adl .btn{display:inline-flex;align-items:center;gap:9px;font-family:var(--adl-font-body);font-weight:700;font-size:15px;padding:15px 26px;border-radius:999px;transition:.2s;cursor:pointer;border:1.5px solid transparent}
 .adl .btn-red{background:var(--adl-red);color:#fff}
 .adl .btn-red:hover{background:var(--adl-red-dark)}
 .adl .btn-ghost{background:transparent;color:var(--adl-ink);border-color:var(--adl-line)}
@@ -40,7 +44,7 @@ html{scroll-behavior:smooth}
 .js .adl .reveal{opacity:0;transform:translateY(26px);transition:opacity .7s ease,transform .7s ease}
 .js .adl .reveal.in{opacity:1;transform:none;}
 .adl #packages  .reveal.in{
-    border-top: 3px solid #E2231A!important;
+    border-top: 3px solid var(--adl-red)!important;
 }
 @media(prefers-reduced-motion:reduce){.js .adl .reveal{opacity:1!important;transform:none!important}}
 
@@ -50,6 +54,10 @@ html{scroll-behavior:smooth}
 /* ===== HEADER ===== */
 .adl header{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(255,255,255,.94);backdrop-filter:blur(12px);border-bottom:1px solid transparent;transition:.3s}
 .adl header.scrolled{border-bottom-color:var(--adl-line);box-shadow:0 6px 24px rgba(0,0,0,.05)}
+body.home .adl header:not(.scrolled){background:transparent;backdrop-filter:none;border-bottom-color:transparent}
+body.home .adl header:not(.scrolled) .navlinks a{color:#ffffff}
+body.home .adl header:not(.scrolled) .navlinks a:hover{color:var(--adl-red)}
+body.home .adl header:not(.scrolled) .navdrop>a::after{color:rgba(255,255,255,.7)}
 .adl .nav{display:flex;align-items:center;justify-content:space-between;height:78px}
 .adl .brand img{height:34px;width:auto}
 .adl .navlinks{display:flex;align-items:center;gap:30px}
