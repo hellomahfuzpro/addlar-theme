@@ -126,7 +126,6 @@ class Addlar_Widget_Hero extends Addlar_Base_Widget {
 
 		$this->open_section( 'hero', ! empty( $s['anchor'] ) ? $s['anchor'] : '' );
 		?>
-		<div class="hero-bg-split" aria-hidden="true"></div>
 		<div class="hero-visual"<?php echo 'yes' !== $s['scrim'] ? ' data-noscrim="1"' : ''; ?>>
 			<?php if ( $video ) : ?>
 				<video autoplay muted loop playsinline<?php echo $post ? ' poster="' . esc_url( $post ) . '"' : ''; ?>

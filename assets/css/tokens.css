@@ -54,10 +54,6 @@ html{scroll-behavior:smooth}
 /* ===== HEADER ===== */
 .adl header{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(255,255,255,.94);backdrop-filter:blur(12px);border-bottom:1px solid transparent;transition:.3s}
 .adl header.scrolled{border-bottom-color:var(--adl-line);box-shadow:0 6px 24px rgba(0,0,0,.05)}
-body.home .adl header:not(.scrolled){background:transparent;backdrop-filter:none;border-bottom-color:transparent}
-body.home .adl header:not(.scrolled) .navlinks a{color:#ffffff}
-body.home .adl header:not(.scrolled) .navlinks a:hover{color:var(--adl-red)}
-body.home .adl header:not(.scrolled) .navdrop>a::after{color:rgba(255,255,255,.7)}
 .adl .nav{display:flex;align-items:center;justify-content:space-between;height:78px}
 .adl .brand img{height:34px;width:auto}
 .adl .navlinks{display:flex;align-items:center;gap:30px}
