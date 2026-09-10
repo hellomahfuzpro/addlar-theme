@@ -3,6 +3,15 @@
 All notable changes to the ADDLAR theme. Keep the top version in sync with
 `Version:` in `style.css` — the updater reads it from there.
 
+## [1.21.1] — 2026-09-10
+
+### Fixed
+- **Tabbed Product Showcase Scoping & Resilience**:
+  - Added `<div class="adl">` container wrapping around the tabbed slider showcase section in `widgets/class-product-grid.php`.
+  - Added dual-scoping to all showcase slider selectors in `assets/css/widgets.css` (`.adl .prod-slider-showcase, .prod-slider-showcase` and `.adl .showcase-*, .showcase-*`) ensuring proper styling is applied in all Elementor container configurations.
+  - Added explicit font-family fallbacks (`Quattrocento, Georgia, serif` and `Montserrat, sans-serif`) to ensure typography stays consistent even if inherited variables are undefined.
+  - Added `padding: 0;` override to `.prod-slider-showcase` to prevent theme default section padding interference.
+
 ## [1.21.0] — 2026-09-10
 
 ### Added

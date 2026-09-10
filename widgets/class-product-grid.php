@@ -450,7 +450,8 @@ class Addlar_Widget_ProductGrid extends Addlar_Base_Widget {
 
 		$first = ! empty( $slides_data[0] ) ? $slides_data[0] : array();
 		?>
-		<section class="section prod-slider-showcase" id="<?php echo esc_attr( $anchor_id ); ?>" data-widget-id="<?php echo esc_attr( $unique_id ); ?>">
+		<div class="adl">
+			<section class="section prod-slider-showcase" id="<?php echo esc_attr( $anchor_id ); ?>" data-widget-id="<?php echo esc_attr( $unique_id ); ?>">
 			<!-- Cinematic Background Slide -->
 			<div class="showcase-bg-layer">
 				<img id="<?php echo esc_attr( $unique_id ); ?>-bg-img" class="showcase-bg-img" src="<?php echo esc_url( $first['bgImage'] ); ?>" alt="<?php echo esc_attr( $first['title'] ); ?>">
@@ -555,6 +556,7 @@ class Addlar_Widget_ProductGrid extends Addlar_Base_Widget {
 				</nav>
 			</div>
 		</section>
+		</div>
 
 		<script>
 		(function() {
