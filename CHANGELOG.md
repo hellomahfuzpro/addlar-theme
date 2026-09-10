@@ -3,6 +3,24 @@
 All notable changes to the ADDLAR theme. Keep the top version in sync with
 `Version:` in `style.css` — the updater reads it from there.
 
+## [1.23.0] — 2026-09-10
+
+### Added
+- **Stitch Contact & Footer Section (`footer.php`, `assets/css/widgets.css`)**:
+  - Implemented the full Stitch design for the site footer, featuring a vibrant red gradient contact banner (`background: linear-gradient(135deg, #E52D27 0%, #B31217 50%, #7E0A0E 100%)`) with direct technical phone, e-mail inquiries, Sharjah Al Hamriyah Free Zone address, and a translucent glass message form with interactive reCAPTCHA box and black action button.
+  - Integrated deep dark industrial footer (`#0B0D0F`) with hexagon gear watermark, white ADDLAR logo, ISO 9001:2015 and UAE Blending Facility badges, Quick Links, Contact Details, round social media buttons, and the ADDLAR Catalogue download guide card.
+  - Fully wired to WordPress `admin_post_addlar_contact_submit` with anti-spam honeypot and nonce protection.
+
+### Changed
+- **Section Starting Texts / Eyebrows Unified (`widgets/class-trust-strip.php`, `widgets/class-applications.php`, `widgets/class-product-grid.php`, `assets/css/widgets.css`)**:
+  - Unified section starter texts (*Meets the following specifications*, *Technical Architecture • Seven Families*, *Product Range — Six Additive Families*) with theme standard `.eyebrow` styling (`color: var(--adl-red); font-size: 13px; font-weight: 800; letter-spacing: .18em; text-transform: uppercase;`).
+  - Standardized the horizontal 28px × 2px red indicator bar `::before` while removing pill capsules, rounded borders, and dots.
+- **Homepage Section Order Restructured (`inc/demo-import.php`)**:
+  - Shifted *"Eight reasons formulators depend on us"* (`addlar_why_list`) down to sit immediately above *"The chemistry inside every package"* (`addlar_applications`).
+  - Updated homepage section sequence: Hero &rarr; Journey &rarr; Tabbed Product Showcase &rarr; Specification Ribbon &rarr; Eight Reasons &rarr; The Chemistry &rarr; Numbers &rarr; Product Finder &rarr; Insights.
+- **Dynamic Font Size Containment for Large Numerals (`widgets/class-why-list.php`, `assets/css/widgets.css`)**:
+  - Wrapped `.imgnum` in `.imgnum-wrap` with container queries (`container-type: inline-size`) and responsive clamp sizing (`min(350px, 66cqw)`), guaranteeing numerals never clip or break out of their container on any screen width or viewport ratio.
+
 ## [1.22.0] — 2026-09-10
 
 ### Added

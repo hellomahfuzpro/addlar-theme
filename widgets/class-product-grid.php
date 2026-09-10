@@ -464,9 +464,8 @@ class Addlar_Widget_ProductGrid extends Addlar_Base_Widget {
 			<div class="showcase-main-body">
 				<!-- Left Column: Primary Content -->
 				<div class="showcase-left">
-					<div class="showcase-eyebrow-pill">
-						<span class="showcase-eyebrow-dot"></span>
-						<span id="<?php echo esc_attr( $unique_id ); ?>-eyebrow" class="showcase-eyebrow-text"><?php echo esc_html( $first['eyebrow'] ); ?></span>
+					<div class="showcase-eyebrow-wrap" style="margin-bottom: 20px;">
+						<span class="eyebrow" id="<?php echo esc_attr( $unique_id ); ?>-eyebrow"><?php echo esc_html( $first['eyebrow'] ); ?></span>
 					</div>
 
 					<h2 id="<?php echo esc_attr( $unique_id ); ?>-title" class="showcase-headline"><?php echo esc_html( $first['title'] ); ?></h2>

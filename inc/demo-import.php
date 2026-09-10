@@ -540,12 +540,7 @@ function addlar_homepage_widgets() {
 		),
 		// 2. Journey (directly after Hero)
 		array( 'type' => 'addlar_journey' ),
-		// 3. Eight reasons formulators depend on us
-		array(
-			'type'     => 'addlar_why_list',
-			'settings' => array( 'rows' => addlar_rep( addlar_why_rows() ) ),
-		),
-		// 4. One partner. Every lubrication challenge. (Tabbed showcase slider)
+		// 3. One partner. Every lubrication challenge. (Tabbed showcase slider)
 		array(
 			'type'     => 'addlar_product_grid',
 			'settings' => array(
@@ -553,12 +548,17 @@ function addlar_homepage_widgets() {
 				'mark'  => $mark,
 			),
 		),
-		// 5. Specification Ribbon (shifted down, replacing the old package grid)
+		// 4. Specification Ribbon
 		array(
 			'type'     => 'addlar_trust_strip',
 			'settings' => array(
 				'heading' => __( 'Meets the following specifications', 'addlar' ),
 			),
+		),
+		// 5. Eight reasons formulators depend on us (above The Chemistry)
+		array(
+			'type'     => 'addlar_why_list',
+			'settings' => array( 'rows' => addlar_rep( addlar_why_rows() ) ),
 		),
 		// 6. The chemistry inside every package (3D car wireframe video)
 		array(

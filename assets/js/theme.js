@@ -201,6 +201,29 @@
 		});
 	}
 
+	/* -------------------------------------------------- imgnum containment */
+	function fitImgNums() {
+		var wraps = document.querySelectorAll('.adl .imgnum-wrap');
+		wraps.forEach(function (wrap) {
+			var el = wrap.querySelector('.imgnum');
+			if (!el) { return; }
+			el.style.transform = 'none';
+			var wrapW = wrap.clientWidth;
+			var elW = el.offsetWidth || el.scrollWidth;
+			if (wrapW > 0 && elW > wrapW) {
+				var scale = Math.floor((wrapW / elW) * 1000) / 1000;
+				el.style.transform = 'scale(' + scale + ')';
+				var isRev = Boolean(wrap.closest('.rev'));
+				el.style.transformOrigin = isRev ? 'left center' : 'right center';
+			}
+		});
+	}
+
+	function initImgNumContainment() {
+		fitImgNums();
+		window.addEventListener('resize', fitImgNums, { passive: true });
+	}
+
 	/* --------------------------------------------------------------- boot */
 	function init() {
 		initHeader();
@@ -208,6 +231,7 @@
 		initReveal();
 		initCounters();
 		initFinder();
+		initImgNumContainment();
 	}
 
 	if (document.readyState === 'loading') {

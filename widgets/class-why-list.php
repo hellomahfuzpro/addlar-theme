@@ -129,7 +129,9 @@ class Addlar_Widget_WhyList extends Addlar_Base_Widget {
 					$style = $img ? sprintf( "background-image:url('%s')", esc_url( $img ) ) : '';
 					?>
 					<div class="wrow<?php echo esc_attr( $rev ); ?> reveal">
-						<div class="imgnum"<?php echo $style ? ' style="' . esc_attr( $style ) . '"' : ''; ?>><?php echo esc_html( $num ); ?></div>
+						<div class="imgnum-wrap">
+							<div class="imgnum"<?php echo $style ? ' style="' . esc_attr( $style ) . '"' : ''; ?>><?php echo esc_html( $num ); ?></div>
+						</div>
 						<div class="wtxt">
 							<div class="lbl"><?php echo esc_html( $row['lbl'] ); ?></div>
 							<h3><?php echo esc_html( $row['title'] ); ?></h3>

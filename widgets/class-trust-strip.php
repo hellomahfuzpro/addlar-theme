@@ -75,9 +75,8 @@ class Addlar_Widget_TrustStrip extends Addlar_Base_Widget {
 		<div class="adl">
 			<div class="trust trust-spec-ribbon">
 				<?php if ( ! empty( $s['heading'] ) ) : ?>
-					<div class="trust-eyebrow">
-						<span class="trust-eyebrow-dot"></span>
-						<span><?php echo esc_html( $s['heading'] ); ?></span>
+					<div class="wrap center" style="margin-bottom: 22px;">
+						<span class="eyebrow"><?php echo esc_html( $s['heading'] ); ?></span>
 					</div>
 				<?php endif; ?>
 				<div class="wrap">

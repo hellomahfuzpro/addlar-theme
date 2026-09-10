@@ -27,8 +27,9 @@ function addlar_contact_form_presets() {
 	return array(
 		'contact' => array(
 			array( 'name' => 'name', 'label' => __( 'Name', 'addlar' ), 'type' => 'text', 'required' => true ),
-			array( 'name' => 'email', 'label' => __( 'Business Email', 'addlar' ), 'type' => 'email', 'required' => true ),
 			array( 'name' => 'company', 'label' => __( 'Company Name', 'addlar' ), 'type' => 'text', 'required' => false ),
+			array( 'name' => 'email', 'label' => __( 'Email Address', 'addlar' ), 'type' => 'email', 'required' => true ),
+			array( 'name' => 'phone', 'label' => __( 'Phone Number', 'addlar' ), 'type' => 'text', 'required' => false ),
 			array( 'name' => 'country', 'label' => __( 'Country / Shipping Location', 'addlar' ), 'type' => 'text', 'required' => false ),
 			array( 'name' => 'product', 'label' => __( 'Product / Sample Requested', 'addlar' ), 'type' => 'text', 'required' => false ),
 			array( 'name' => 'message', 'label' => __( 'Message', 'addlar' ), 'type' => 'textarea', 'required' => false ),

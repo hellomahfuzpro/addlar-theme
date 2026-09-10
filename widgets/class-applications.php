@@ -213,10 +213,7 @@ class Addlar_Widget_Applications extends Addlar_Base_Widget {
 					<!-- Header -->
 					<div class="chem-head">
 						<?php if ( ! empty( $s['eyebrow'] ) ) : ?>
-							<div class="chem-eyebrow">
-								<span class="chem-eyebrow-dot"></span>
-								<span><?php echo esc_html( $s['eyebrow'] ); ?></span>
-							</div>
+							<div style="margin-bottom: 16px;"><span class="eyebrow"><?php echo esc_html( $s['eyebrow'] ); ?></span></div>
 						<?php endif; ?>
 						<?php if ( ! empty( $s['title'] ) ) : ?>
 							<h2 class="chem-title"><?php echo wp_kses_post( $s['title'] ); ?></h2>
