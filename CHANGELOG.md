@@ -3,6 +3,18 @@
 All notable changes to the ADDLAR theme. Keep the top version in sync with
 `Version:` in `style.css` — the updater reads it from there.
 
+## [1.18.0] — 2026-09-10
+
+### Changed
+- **Journey Hexagon Colors to Red**:
+  - Double-layered clip-path hexagons styled with High-Octane Red (`var(--adl-red, #D32F2F)`) border and matching red icons (`stroke: var(--adl-red, #D32F2F)`).
+  - Inner core plate set to soft red tint (`#FFF5F5`) with crisp white separator gap.
+- **Removed Box Shadows & Border Radius**:
+  - Removed all `box-shadow` and `border-radius` from milestone cards, kicker badges, and year tags, adhering strictly to the brand architectural precision rule ("buttons are the ONLY rounded elements").
+  - Removed drop-shadow filter from journey hexagons.
+- **Strictly Limited Scope**:
+  - Ensured hero section, header navigation, and all other sections remain completely in their original default state.
+
 ## [1.17.0] — 2026-09-10
 
 ### Changed

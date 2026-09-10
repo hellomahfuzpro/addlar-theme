@@ -100,29 +100,29 @@
 /* Direct Vertical Stems: exactly 42px connecting card and hexagon */
 .adl .stem-line{width:2px;height:42px;background:#CBD5E1;flex-shrink:0}
 
-/* Double-Layered Clip-Path Hexagons */
+/* Double-Layered Clip-Path Hexagons: High-Octane Red, No Drop Shadow */
 .adl .jh-track-angle .jhexwrap{position:relative;z-index:10;display:flex;align-items:center;justify-content:center;flex-shrink:0}
-.adl .jh-track-angle .jhex{position:relative;width:102px;height:116px;display:flex;align-items:center;justify-content:center;flex:none;transition:transform .25s cubic-bezier(.16,1,.3,1),filter .25s ease;filter:drop-shadow(0 4px 12px rgba(15,23,42,.05));cursor:pointer}
-.adl .jh-track-angle .jhex:hover{transform:scale(1.08);filter:drop-shadow(0 8px 20px rgba(15,23,42,.12))}
-.adl .jh-track-angle .jhex::before{content:'';position:absolute;inset:0;background:#CBD5E1;clip-path:polygon(50% 0,100% 25%,100% 75%,50% 100%,0 75%,0 25%);transition:background .25s ease}
-.adl .jh-track-angle .jhex:hover::before{background:var(--adl-red,#D32F2F)}
+.adl .jh-track-angle .jhex{position:relative;width:102px;height:116px;display:flex;align-items:center;justify-content:center;flex:none;transition:transform .25s cubic-bezier(.16,1,.3,1);filter:none;cursor:pointer}
+.adl .jh-track-angle .jhex:hover{transform:scale(1.08);filter:none}
+.adl .jh-track-angle .jhex::before{content:'';position:absolute;inset:0;background:var(--adl-red,#D32F2F);clip-path:polygon(50% 0,100% 25%,100% 75%,50% 100%,0 75%,0 25%);transition:background .25s ease}
 .adl .jh-track-angle .jhex::after{content:'';position:absolute;inset:3px;background:#fff;clip-path:polygon(50% 0,100% 25%,100% 75%,50% 100%,0 75%,0 25%)}
-.adl .jh-track-angle .jhin{position:relative;z-index:2;width:76px;height:86px;display:flex;align-items:center;justify-content:center;background:var(--adl-soft,#F8F9FA);clip-path:polygon(50% 0,100% 25%,100% 75%,50% 100%,0 75%,0 25%);transition:background .25s ease}
-.adl .jh-track-angle .jhin svg{width:32px;height:32px;stroke:#8FA2B4;fill:none;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round;display:block;transition:transform .25s ease,stroke .25s ease}
-.adl .jh-track-angle .jhex:hover .jhin svg{transform:scale(1.1);stroke:var(--adl-red,#D32F2F)}
+.adl .jh-track-angle .jhin{position:relative;z-index:2;width:76px;height:86px;display:flex;align-items:center;justify-content:center;background:#FFF5F5;clip-path:polygon(50% 0,100% 25%,100% 75%,50% 100%,0 75%,0 25%);transition:background .25s ease}
+.adl .jh-track-angle .jhin svg{width:32px;height:32px;stroke:var(--adl-red,#D32F2F);fill:none;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round;display:block;transition:transform .25s ease}
+.adl .jh-track-angle .jhex:hover .jhin{background:#FEE2E2}
+.adl .jh-track-angle .jhex:hover .jhin svg{transform:scale(1.1)}
 
-/* Equal Height Milestone Cards (175px) */
+/* Equal Height Milestone Cards (175px) - Zero Radius, Zero Box Shadow */
 .adl .card-wrap{width:100%;max-width:215px;display:flex;flex-direction:column;align-items:center}
-.adl .milestone-card{width:100%;height:175px;background:#FFFFFF;border:1px solid var(--adl-line,#E2E8F0);border-radius:14px;padding:18px 16px 14px;box-shadow:0 4px 18px rgba(15,23,42,0.05);transition:all .3s cubic-bezier(.16,1,.3,1);display:flex;flex-direction:column;justify-content:flex-start;box-sizing:border-box;text-align:center}
-.adl .milestone-card:hover{box-shadow:0 10px 26px rgba(15,23,42,0.1);transform:translateY(-2px);border-color:#CBD5E1}
-.adl .milestone-kicker{display:inline-block;font-family:var(--adl-font-body);font-size:10.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--adl-slate,#4A5568);background:#F1F5F9;padding:3.5px 13px;border-radius:9999px;margin:0 auto 10px}
+.adl .milestone-card{width:100%;height:175px;background:#FFFFFF;border:1px solid var(--adl-line,#E2E8F0);border-radius:0;padding:18px 16px 14px;box-shadow:none;transition:border-color .25s ease;display:flex;flex-direction:column;justify-content:flex-start;box-sizing:border-box;text-align:center}
+.adl .milestone-card:hover{box-shadow:none;border-color:var(--adl-red,#D32F2F)}
+.adl .milestone-kicker{display:inline-block;font-family:var(--adl-font-body);font-size:10.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--adl-slate,#4A5568);background:#F1F5F9;padding:3.5px 13px;border-radius:0;margin:0 auto 10px}
 .adl .milestone-title{font-family:var(--adl-font-heading);font-size:14px;font-weight:700;color:var(--adl-ink,#1A1D20);line-height:1.35;margin:0 0 6px}
 .adl .milestone-text{font-family:var(--adl-font-body);font-size:11.5px;color:var(--adl-slate,#4A5568);line-height:1.5;margin:0;flex:1;display:flex;align-items:center;justify-content:center}
 .adl .milestone-phase{font-family:var(--adl-font-body);font-size:10.5px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#94A3B8;text-align:center;margin-top:8px;margin-bottom:2px;white-space:nowrap}
 
-/* Year Pills */
+/* Year Tags - Zero Radius, Zero Box Shadow */
 .adl .year-pill-wrap{display:flex;justify-content:center;width:100%}
-.adl .year-pill{display:inline-block;background:var(--adl-ink,#1A1D20);color:#FFFFFF;font-family:var(--adl-font-body);font-size:12px;font-weight:700;letter-spacing:.05em;padding:5px 16px;border-radius:9999px;box-shadow:0 2px 6px rgba(0,0,0,.14);white-space:nowrap}
+.adl .year-pill{display:inline-block;background:var(--adl-ink,#1A1D20);color:#FFFFFF;font-family:var(--adl-font-body);font-size:12px;font-weight:700;letter-spacing:.05em;padding:5px 16px;border-radius:0;box-shadow:none;white-space:nowrap}
 
 /* Column Spacers to create 116px vertical wave delta */
 .adl .col-spacer-t{height:95px}
