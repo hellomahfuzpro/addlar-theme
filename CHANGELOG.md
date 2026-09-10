@@ -3,6 +3,18 @@
 All notable changes to the ADDLAR theme. Keep the top version in sync with
 `Version:` in `style.css` — the updater reads it from there.
 
+## [1.16.0] — 2026-09-10
+
+### Changed
+- **Preserved Exact Legacy Design for Our Journey**: Adapted the signature brand design (double-layer clip-path hexagons with outline rings and inner tints, bracket rules with open ring terminals, uppercase tracking, bold colored year typography) seamlessly into horizontal layouts without generic cards or dots.
+- **Three Core Layouts**:
+  - `Horizontal: Alternating Wave`: Milestones alternate above and below the central track line with layered hexagons in the center axis.
+  - `Horizontal: Linear`: Milestones consistently aligned with year meta above, layered hexagon on central axis, and heading/description below.
+  - `Vertical: Interlocking Chain`: 100% original legacy interlocking vertical hexagon chain with alternating left/right layout.
+- **Container Width Options**: Boxed (1240px centered) and Full Width (100% edge-to-edge).
+- **Draggable / Grid Mode**: Toggle between a draggable horizontal track (with smooth mouse-drag and chevron nav controls) and a multi-row centered grid (dividing into 3, 4, 5, or 6 items per row).
+- **Milestone 07 Year Fixed**: Maintained date `2025` for "ADDLAR is launched".
+
 ## [1.15.0] — 2026-09-06
 
 ### Added
