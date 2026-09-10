@@ -66,6 +66,7 @@
 	justify-content: space-between;
 	box-sizing: border-box;
 	padding: 0;
+	scroll-margin-top: 80px;
 }
 
 /* Background Layers */
@@ -536,6 +537,11 @@
 	}
 }
 @media (max-width: 640px) {
+	.adl .showcase-main-body,
+	.showcase-main-body {
+		padding: 40px 18px 28px;
+		gap: 24px;
+	}
 	.adl .showcase-headline,
 	.showcase-headline {
 		font-size: 28px;
