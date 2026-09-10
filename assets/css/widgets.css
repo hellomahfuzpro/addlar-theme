@@ -70,15 +70,22 @@
 .adl .app-card h4{font-size:16px;margin-bottom:4px}
 .adl .app-card p{font-size:13px;color:var(--adl-grey)}
 
-/* ===== WHY LIST (photo inside giant numeral) ===== */
+/* ===== WHY LIST (photo inside giant numeral, 350px Montserrat) ===== */
 .adl .why2{margin-top:52px;display:flex;flex-direction:column}
-.adl .wrow{display:grid;grid-template-columns:minmax(0,.62fr) minmax(0,1fr);align-items:center;gap:40px;padding:26px 0;border-top:1px solid var(--adl-line)}
+.adl .wrow{
+	display:grid;
+	grid-template-columns:minmax(0,0.7fr) minmax(0,1fr);
+	align-items:center;
+	gap:40px;
+	padding:26px 0;
+	border-top:1px solid var(--adl-line);
+}
 .adl .wrow:last-child{border-bottom:1px solid var(--adl-line)}
 .adl .imgnum{
-	font-size:clamp(74px,8.4vw,124px)!important;
+	font-size:350px!important;
 	font-weight:900!important;
 	line-height:.82!important;
-	letter-spacing:-.055em;
+	letter-spacing:-.030em!important;
 	background-size:cover;
 	background-position:center;
 	background-color:var(--adl-ink,#1A1D20);
@@ -86,7 +93,7 @@
 	background-clip:text!important;
 	-webkit-text-fill-color:transparent!important;
 	color:transparent!important;
-	font-family:var(--adl-font-heading),'Montserrat',sans-serif!important;
+	font-family:'Montserrat',sans-serif!important;
 	user-select:none;
 	text-align:right;
 	display:block;
@@ -96,62 +103,249 @@
 .adl .wrow.rev .imgnum{text-align:left}
 .adl .wrow.rev .wtxt{text-align:right}
 .adl .wrow.rev .wtxt p{margin-left:auto}
-.adl .wtxt .lbl{font-family:var(--adl-font-body);font-size:11.5px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--adl-red);margin-bottom:7px}
-.adl .wtxt h3{font-family:var(--adl-font-heading);font-size:22px;margin-bottom:7px;color:var(--adl-ink)}
-.adl .wtxt p{font-family:var(--adl-font-body);font-size:14.5px;color:var(--adl-slate);max-width:520px}
+.adl .wtxt .lbl{font-family:var(--adl-font-body);font-size:12px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--adl-red);margin-bottom:8px}
+.adl .wtxt h3{font-family:var(--adl-font-heading);font-size:26px;margin-bottom:10px;color:var(--adl-ink);line-height:1.25}
+.adl .wtxt p{font-family:var(--adl-font-body);font-size:15px;color:var(--adl-slate);max-width:540px;line-height:1.6}
 
 /* ===== JOURNEY (Industrial Precision Angle Wave & 3-Band Timeline) ===== */
 .adl .jrny{position:relative;margin:48px auto 0;padding:16px 0;max-width:850px}
 .adl .jrny-wrap-boxed{max-width:1380px;margin:0 auto;width:100%;padding:0 20px;box-sizing:border-box}
 .adl .jrny-wrap-full{max-width:100%;margin:0;width:100%;padding:0 30px;box-sizing:border-box}
-.adl .jrny-h-outer{position:relative;width:100%;margin:20px auto 0}
-.adl .jrny-nav-arrow{position:absolute;top:50%;transform:translateY(-50%);z-index:25;width:46px;height:46px;border-radius:50%;border:1.5px solid var(--adl-line,#E2E8F0);background:#fff;color:var(--adl-ink,#1A1D20);font-size:26px;line-height:1;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .2s ease;box-shadow:0 4px 16px rgba(15,23,42,.12)}
-.adl .jrny-nav-arrow.prev{left:-10px}
-.adl .jrny-nav-arrow.next{right:-10px}
-.adl .jrny-nav-arrow:hover{background:var(--adl-red,#D32F2F);border-color:var(--adl-red,#D32F2F);color:#fff;transform:translateY(-50%) scale(1.08);box-shadow:0 6px 20px rgba(211,47,47,.28)}
-.adl .jrny-h{position:relative;width:100%;overflow-x:auto;overflow-y:hidden;padding:26px 10px 36px;scrollbar-width:thin;scrollbar-color:var(--adl-red,#D32F2F) var(--adl-soft,#F8F9FA);box-sizing:border-box}
-.adl .jrny-h::-webkit-scrollbar{height:7px}
-.adl .jrny-h::-webkit-scrollbar-track{background:var(--adl-soft,#F8F9FA);border-radius:999px}
-.adl .jrny-h::-webkit-scrollbar-thumb{background:#CBD5E1;border-radius:999px}
-.adl .jrny-h::-webkit-scrollbar-thumb:hover{background:var(--adl-slate,#4A5568)}
+.adl .jrny-h-outer{position:relative;width:100%;margin:15px auto 0;display:flex;flex-direction:column}
+.adl .jrny-h-outer .jrny-h{order:2}
 
-/* 3-Band Wave Track & Grid */
-.adl .jh-track-angle{position:relative;min-width:1560px;padding:12px 10px;margin:0 auto}
-.adl .jrny-cols-8,.adl .jrny-cols-grid{display:grid;grid-template-columns:repeat(8,minmax(0,1fr));gap:20px;position:relative;z-index:10;width:100%}
-.adl .milestone-col{display:flex;flex-direction:column;align-items:center;width:100%;min-width:185px;position:relative}
+/* Top-Right Arrow Cluster */
+.adl .jrny-h-outer.arrows-top_right .jrny-nav-cluster{order:1;display:flex;justify-content:flex-end;align-items:center;gap:10px;margin-bottom:16px;padding-right:6px}
+.adl .jrny-h-outer.arrows-top_right .jrny-nav-arrow{position:static;transform:none}
+.adl .jrny-h-outer.arrows-top_right .jrny-nav-arrow:hover{transform:scale(1.08)}
 
-/* Direct Vertical Stems: exactly 42px connecting card and hexagon */
-.adl .stem-line{width:2px;height:42px;background:#CBD5E1;flex-shrink:0}
+/* Middle Arrow Cluster */
+.adl .jrny-h-outer.arrows-middle .jrny-nav-cluster{display:contents}
+.adl .jrny-h-outer.arrows-middle .jrny-nav-arrow{position:absolute;top:50%;transform:translateY(-50%);z-index:25}
+.adl .jrny-h-outer.arrows-middle .jrny-nav-arrow.prev{left:-12px}
+.adl .jrny-h-outer.arrows-middle .jrny-nav-arrow.next{right:-12px}
+.adl .jrny-h-outer.arrows-middle .jrny-nav-arrow:hover{transform:translateY(-50%) scale(1.08)}
 
-/* Double-Layered Clip-Path Hexagons: High-Octane Red, No Drop Shadow */
+/* Top-Bottom (Bottom Center) Arrow Cluster */
+.adl .jrny-h-outer.arrows-top_bottom .jrny-nav-cluster{order:3;display:flex;justify-content:center;align-items:center;gap:14px;margin-top:24px}
+.adl .jrny-h-outer.arrows-top_bottom .jrny-nav-arrow{position:static;transform:none}
+.adl .jrny-h-outer.arrows-top_bottom .jrny-nav-arrow:hover{transform:scale(1.08)}
+
+/* Hidden Arrows */
+.adl .jrny-h-outer.arrows-none .jrny-nav-cluster{display:none}
+
+/* Arrow Buttons */
+.adl .jrny-nav-arrow{
+	width:42px;
+	height:42px;
+	border-radius:50%;
+	border:1.5px solid var(--adl-line,#E2E8F0);
+	background:var(--jrny-arrow-bg,#FFFFFF);
+	color:var(--jrny-arrow-color,var(--adl-ink,#1A1D20));
+	font-size:24px;
+	line-height:1;
+	display:inline-flex;
+	align-items:center;
+	justify-content:center;
+	cursor:pointer;
+	transition:all .2s ease;
+	box-shadow:0 2px 8px rgba(15,23,42,.08);
+}
+.adl .jrny-nav-arrow:hover{
+	background:var(--jrny-arrow-hover-bg,var(--adl-red,#D32F2F));
+	border-color:var(--jrny-arrow-hover-bg,var(--adl-red,#D32F2F));
+	color:var(--jrny-arrow-hover-color,#FFFFFF);
+	box-shadow:0 4px 14px rgba(211,47,47,.25);
+}
+
+/* Track container - no draggable scrollbar */
+.adl .jrny-h{
+	position:relative;
+	width:100%;
+	overflow-x:auto;
+	overflow-y:hidden;
+	padding:24px 0 30px;
+	scrollbar-width:none;
+	-ms-overflow-style:none;
+	box-sizing:border-box;
+}
+.adl .jrny-h::-webkit-scrollbar{
+	display:none!important;
+	width:0!important;
+	height:0!important;
+}
+
+/* 3-Band Wave Track & Fitted Grid */
+.adl .jh-track-angle{
+	position:relative;
+	width:100%;
+	min-width:0;
+	padding:10px 0;
+	margin:0 auto;
+	box-sizing:border-box;
+}
+.adl .jrny-cols-8,.adl .jrny-cols-grid{
+	display:grid;
+	grid-auto-flow:column;
+	grid-auto-columns:calc((100% - (var(--jrny-visible-cols,8) - 1) * var(--jrny-col-gap,12px)) / var(--jrny-visible-cols,8));
+	gap:var(--jrny-col-gap,12px);
+	position:relative;
+	z-index:10;
+	width:100%;
+	box-sizing:border-box;
+}
+.adl .milestone-col{
+	display:flex;
+	flex-direction:column;
+	align-items:center;
+	width:100%;
+	min-width:0;
+	position:relative;
+	box-sizing:border-box;
+}
+
+/* Direct Vertical Stems: exactly 36px connecting card and hexagon */
+.adl .stem-line{width:2px;height:36px;background:var(--jrny-line-color,#CBD5E1);flex-shrink:0}
+
+/* Double-Layered Clip-Path Hexagons: High-Octane Red, Scaled cleanly */
 .adl .jh-track-angle .jhexwrap{position:relative;z-index:10;display:flex;align-items:center;justify-content:center;flex-shrink:0}
-.adl .jh-track-angle .jhex{position:relative;width:102px;height:116px;display:flex;align-items:center;justify-content:center;flex:none;transition:transform .25s cubic-bezier(.16,1,.3,1);filter:none;cursor:pointer}
-.adl .jh-track-angle .jhex:hover{transform:scale(1.08);filter:none}
-.adl .jh-track-angle .jhex::before{content:'';position:absolute;inset:0;background:var(--adl-red,#D32F2F);clip-path:polygon(50% 0,100% 25%,100% 75%,50% 100%,0 75%,0 25%);transition:background .25s ease}
-.adl .jh-track-angle .jhex::after{content:'';position:absolute;inset:3px;background:#fff;clip-path:polygon(50% 0,100% 25%,100% 75%,50% 100%,0 75%,0 25%)}
-.adl .jh-track-angle .jhin{position:relative;z-index:2;width:76px;height:86px;display:flex;align-items:center;justify-content:center;background:#FFF5F5;clip-path:polygon(50% 0,100% 25%,100% 75%,50% 100%,0 75%,0 25%);transition:background .25s ease}
-.adl .jh-track-angle .jhin svg{width:32px;height:32px;stroke:var(--adl-red,#D32F2F);fill:none;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round;display:block;transition:transform .25s ease}
+.adl .jh-track-angle .jhex{
+	position:relative;
+	width:var(--jrny-hex-size,82px);
+	height:calc(var(--jrny-hex-size,82px)*1.14);
+	display:flex;
+	align-items:center;
+	justify-content:center;
+	flex:none;
+	transition:transform .25s cubic-bezier(.16,1,.3,1);
+	filter:none;
+	cursor:pointer;
+}
+.adl .jh-track-angle .jhex:hover{transform:scale(1.08)}
+.adl .jh-track-angle .jhex::before{
+	content:'';
+	position:absolute;
+	inset:0;
+	background:var(--jrny-hex-color,var(--adl-red,#D32F2F));
+	clip-path:polygon(50% 0,100% 25%,100% 75%,50% 100%,0 75%,0 25%);
+	transition:background .25s ease;
+}
+.adl .jh-track-angle .jhex::after{
+	content:'';
+	position:absolute;
+	inset:2.5px;
+	background:#fff;
+	clip-path:polygon(50% 0,100% 25%,100% 75%,50% 100%,0 75%,0 25%);
+}
+.adl .jh-track-angle .jhin{
+	position:relative;
+	z-index:2;
+	width:calc(var(--jrny-hex-size,82px)*0.74);
+	height:calc(var(--jrny-hex-size,82px)*0.84);
+	display:flex;
+	align-items:center;
+	justify-content:center;
+	background:var(--jrny-hex-bg,#FFF5F5);
+	clip-path:polygon(50% 0,100% 25%,100% 75%,50% 100%,0 75%,0 25%);
+	transition:background .25s ease;
+}
+.adl .jh-track-angle .jhin svg{
+	width:24px;
+	height:24px;
+	stroke:var(--jrny-hex-color,var(--adl-red,#D32F2F));
+	fill:none;
+	stroke-width:1.5;
+	stroke-linecap:round;
+	stroke-linejoin:round;
+	display:block;
+}
 .adl .jh-track-angle .jhex:hover .jhin{background:#FEE2E2}
-.adl .jh-track-angle .jhex:hover .jhin svg{transform:scale(1.1)}
 
-/* Equal Height Milestone Cards (175px) - Zero Radius, Zero Box Shadow */
-.adl .card-wrap{width:100%;max-width:215px;display:flex;flex-direction:column;align-items:center}
-.adl .milestone-card{width:100%;height:175px;background:#FFFFFF;border:1px solid var(--adl-line,#E2E8F0);border-radius:0;padding:18px 16px 14px;box-shadow:none;transition:border-color .25s ease;display:flex;flex-direction:column;justify-content:flex-start;box-sizing:border-box;text-align:center}
-.adl .milestone-card:hover{box-shadow:none;border-color:var(--adl-red,#D32F2F)}
-.adl .milestone-kicker{display:inline-block;font-family:var(--adl-font-body);font-size:10.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--adl-slate,#4A5568);background:#F1F5F9;padding:3.5px 13px;border-radius:0;margin:0 auto 10px}
-.adl .milestone-title{font-family:var(--adl-font-heading);font-size:14px;font-weight:700;color:var(--adl-ink,#1A1D20);line-height:1.35;margin:0 0 6px}
-.adl .milestone-text{font-family:var(--adl-font-body);font-size:11.5px;color:var(--adl-slate,#4A5568);line-height:1.5;margin:0;flex:1;display:flex;align-items:center;justify-content:center}
-.adl .milestone-phase{font-family:var(--adl-font-body);font-size:10.5px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#94A3B8;text-align:center;margin-top:8px;margin-bottom:2px;white-space:nowrap}
+/* Equal Height Milestone Cards - Fits Cleanly without Overlapping */
+.adl .card-wrap{width:100%;max-width:100%;display:flex;flex-direction:column;align-items:center;box-sizing:border-box}
+.adl .milestone-card{
+	width:100%;
+	height:var(--jrny-card-height,175px);
+	background:var(--jrny-card-bg,#FFFFFF);
+	border:1px solid var(--jrny-card-border,#E2E8F0);
+	border-radius:var(--jrny-card-radius,0);
+	padding:14px 10px 12px;
+	box-shadow:none;
+	transition:border-color .25s ease;
+	display:flex;
+	flex-direction:column;
+	justify-content:flex-start;
+	box-sizing:border-box;
+	text-align:center;
+}
+.adl .milestone-card:hover{border-color:var(--adl-red,#D32F2F)}
+.adl .milestone-kicker{
+	display:inline-block;
+	font-family:var(--adl-font-body);
+	font-size:9.5px;
+	font-weight:700;
+	letter-spacing:.08em;
+	text-transform:uppercase;
+	color:var(--adl-slate,#4A5568);
+	background:#F1F5F9;
+	padding:3px 8px;
+	border-radius:var(--jrny-card-radius,0);
+	margin:0 auto 8px;
+	white-space:nowrap;
+}
+.adl .milestone-title{
+	font-family:var(--adl-font-heading);
+	font-size:13px;
+	font-weight:700;
+	color:var(--adl-ink,#1A1D20);
+	line-height:1.3;
+	margin:0 0 4px;
+}
+.adl .milestone-text{
+	font-family:var(--adl-font-body);
+	font-size:11px;
+	color:var(--adl-slate,#4A5568);
+	line-height:1.45;
+	margin:0;
+	flex:1;
+	display:flex;
+	align-items:center;
+	justify-content:center;
+}
+.adl .milestone-phase{
+	font-family:var(--adl-font-body);
+	font-size:9.5px;
+	font-weight:700;
+	letter-spacing:.12em;
+	text-transform:uppercase;
+	color:#94A3B8;
+	text-align:center;
+	margin-top:6px;
+	margin-bottom:2px;
+	white-space:nowrap;
+}
 
-/* Year Tags - 4px border radius, clear 14px space to hexagon */
+/* Year Tags - 8px Border Radius ("more radius to year box"), 16px Clear Space */
 .adl .year-pill-wrap{display:flex;justify-content:center;width:100%}
-.adl .year-pill-wrap.mt-2,.adl .year-pill-wrap.year-below{margin-top:14px!important}
-.adl .year-pill-wrap.mb-2,.adl .year-pill-wrap.year-above{margin-bottom:14px!important}
-.adl .year-pill{display:inline-block;background:var(--adl-ink,#1A1D20);color:#FFFFFF;font-family:var(--adl-font-body);font-size:12px;font-weight:700;letter-spacing:.05em;padding:5px 16px;border-radius:4px;box-shadow:none;white-space:nowrap}
+.adl .year-pill-wrap.year-below{margin-top:var(--jrny-year-spacing,16px)!important}
+.adl .year-pill-wrap.year-above{margin-bottom:var(--jrny-year-spacing,16px)!important}
+.adl .year-pill{
+	display:inline-block;
+	background:var(--jrny-year-bg,var(--adl-ink,#1A1D20));
+	color:var(--jrny-year-color,#FFFFFF);
+	font-family:var(--adl-font-body);
+	font-size:12px;
+	font-weight:700;
+	letter-spacing:.05em;
+	padding:5px 14px;
+	border-radius:var(--jrny-year-radius,8px);
+	box-shadow:none;
+	white-space:nowrap;
+}
 
-/* Column Spacers to create 116px vertical wave delta */
-.adl .col-spacer-t{height:95px}
-.adl .col-spacer-b{height:105px}
+/* Column Spacers for Wave Height */
+.adl .col-spacer-t{height:80px}
+.adl .col-spacer-b{height:90px}
 
 /* Legacy vertical styles */
 .adl .jhex{position:relative;width:150px;height:168px;display:flex;align-items:center;justify-content:center;flex:none}

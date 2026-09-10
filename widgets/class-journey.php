@@ -82,7 +82,7 @@ class Addlar_Widget_Journey extends Addlar_Base_Widget {
 
 		$this->add_responsive_control( 'items_per_row', array(
 			'label'           => __( 'Items per row / view', 'addlar' ),
-			'description'     => __( 'Number of milestones visible across device breakpoints.', 'addlar' ),
+			'description'     => __( 'Number of milestones visible across the row without wrapping.', 'addlar' ),
 			'type'            => Controls_Manager::SELECT,
 			'options'         => array(
 				'2' => __( '2 Milestones', 'addlar' ),
@@ -90,6 +90,7 @@ class Addlar_Widget_Journey extends Addlar_Base_Widget {
 				'4' => __( '4 Milestones', 'addlar' ),
 				'5' => __( '5 Milestones', 'addlar' ),
 				'6' => __( '6 Milestones', 'addlar' ),
+				'7' => __( '7 Milestones', 'addlar' ),
 				'8' => __( '8 Milestones', 'addlar' ),
 			),
 			'desktop_default' => '8',
@@ -99,7 +100,22 @@ class Addlar_Widget_Journey extends Addlar_Base_Widget {
 				'layout_style!' => 'vertical',
 			),
 			'selectors'       => array(
-				'{{WRAPPER}} .jrny-cols-grid' => 'grid-template-columns: repeat({{VALUE}}, minmax(185px, 1fr)) !important;',
+				'{{WRAPPER}} .jh-track-angle' => '--jrny-visible-cols: {{VALUE}};',
+			),
+		) );
+
+		$this->add_control( 'arrow_position', array(
+			'label'     => __( 'Arrow Position', 'addlar' ),
+			'type'      => Controls_Manager::SELECT,
+			'options'   => array(
+				'top_right'   => __( 'Top Right', 'addlar' ),
+				'middle'      => __( 'Middle Left & Right', 'addlar' ),
+				'top_bottom'  => __( 'Bottom Center', 'addlar' ),
+				'none'        => __( 'Hidden', 'addlar' ),
+			),
+			'default'   => 'top_right',
+			'condition' => array(
+				'layout_style!' => 'vertical',
 			),
 		) );
 
@@ -132,12 +148,12 @@ class Addlar_Widget_Journey extends Addlar_Base_Widget {
 		$rep->add_control( 'accent', array(
 			'label'   => __( 'Accent colour', 'addlar' ),
 			'type'    => Controls_Manager::COLOR,
-			'default' => '#E2231A',
+			'default' => '#D32F2F',
 		) );
 		$rep->add_control( 'tint', array(
 			'label'       => __( 'Hexagon fill', 'addlar' ),
 			'type'        => Controls_Manager::COLOR,
-			'default'     => '#FBE4E2',
+			'default'     => '#FFF5F5',
 			'description' => __( 'A pale version of the accent colour.', 'addlar' ),
 		) );
 		$rep->add_control( 'ph', array(
@@ -173,6 +189,218 @@ class Addlar_Widget_Journey extends Addlar_Base_Widget {
 			'fields'      => $rep->get_controls(),
 			'title_field' => '{{{ num }}} — {{{ title }}}',
 			'default'     => $this->default_rows(),
+		) );
+
+		$this->end_controls_section();
+
+		/* -------------------------------------------------------------------------
+		 * Style: Hexagons & Line
+		 * ---------------------------------------------------------------------- */
+		$this->start_controls_section( 'style_hex_section', array(
+			'label' => __( 'Hexagons & Line', 'addlar' ),
+			'tab'   => Controls_Manager::TAB_STYLE,
+		) );
+
+		$this->add_control( 'hex_color', array(
+			'label'     => __( 'Hexagon & Icon Color', 'addlar' ),
+			'type'      => Controls_Manager::COLOR,
+			'default'   => '#D32F2F',
+			'selectors' => array(
+				'{{WRAPPER}} .jh-track-angle' => '--jrny-hex-color: {{VALUE}};',
+			),
+		) );
+
+		$this->add_control( 'hex_bg', array(
+			'label'     => __( 'Hexagon Inner Plate Background', 'addlar' ),
+			'type'      => Controls_Manager::COLOR,
+			'default'   => '#FFF5F5',
+			'selectors' => array(
+				'{{WRAPPER}} .jh-track-angle' => '--jrny-hex-bg: {{VALUE}};',
+			),
+		) );
+
+		$this->add_responsive_control( 'hex_size', array(
+			'label'      => __( 'Hexagon Size (px)', 'addlar' ),
+			'type'       => Controls_Manager::SLIDER,
+			'size_units' => array( 'px' ),
+			'range'      => array(
+				'px' => array( 'min' => 60, 'max' => 120 ),
+			),
+			'default'    => array( 'unit' => 'px', 'size' => 82 ),
+			'selectors'  => array(
+				'{{WRAPPER}} .jh-track-angle' => '--jrny-hex-size: {{SIZE}}{{UNIT}};',
+			),
+		) );
+
+		$this->add_control( 'line_color', array(
+			'label'     => __( 'Connecting Dash Line Color', 'addlar' ),
+			'type'      => Controls_Manager::COLOR,
+			'default'   => '#CBD5E1',
+			'selectors' => array(
+				'{{WRAPPER}} #poly-main'     => 'stroke: {{VALUE}} !important;',
+				'{{WRAPPER}} .stem-line'     => 'background: {{VALUE}} !important;',
+				'{{WRAPPER}} .jh-track-angle' => '--jrny-line-color: {{VALUE}};',
+			),
+		) );
+
+		$this->end_controls_section();
+
+		/* -------------------------------------------------------------------------
+		 * Style: Year Badges
+		 * ---------------------------------------------------------------------- */
+		$this->start_controls_section( 'style_year_section', array(
+			'label' => __( 'Year Badges', 'addlar' ),
+			'tab'   => Controls_Manager::TAB_STYLE,
+		) );
+
+		$this->add_responsive_control( 'year_radius', array(
+			'label'      => __( 'Border Radius (px)', 'addlar' ),
+			'type'       => Controls_Manager::SLIDER,
+			'size_units' => array( 'px' ),
+			'range'      => array(
+				'px' => array( 'min' => 0, 'max' => 30 ),
+			),
+			'default'    => array( 'unit' => 'px', 'size' => 8 ),
+			'selectors'  => array(
+				'{{WRAPPER}} .year-pill' => 'border-radius: {{SIZE}}{{UNIT}} !important;',
+			),
+		) );
+
+		$this->add_responsive_control( 'year_spacing', array(
+			'label'      => __( 'Spacing to Hexagon (px)', 'addlar' ),
+			'type'       => Controls_Manager::SLIDER,
+			'size_units' => array( 'px' ),
+			'range'      => array(
+				'px' => array( 'min' => 6, 'max' => 35 ),
+			),
+			'default'    => array( 'unit' => 'px', 'size' => 16 ),
+			'selectors'  => array(
+				'{{WRAPPER}} .year-pill-wrap.year-below' => 'margin-top: {{SIZE}}{{UNIT}} !important;',
+				'{{WRAPPER}} .year-pill-wrap.year-above' => 'margin-bottom: {{SIZE}}{{UNIT}} !important;',
+			),
+		) );
+
+		$this->add_control( 'year_bg', array(
+			'label'     => __( 'Background Color', 'addlar' ),
+			'type'      => Controls_Manager::COLOR,
+			'default'   => '#1A1D20',
+			'selectors' => array(
+				'{{WRAPPER}} .year-pill' => 'background-color: {{VALUE}} !important;',
+			),
+		) );
+
+		$this->add_control( 'year_color', array(
+			'label'     => __( 'Text Color', 'addlar' ),
+			'type'      => Controls_Manager::COLOR,
+			'default'   => '#FFFFFF',
+			'selectors' => array(
+				'{{WRAPPER}} .year-pill' => 'color: {{VALUE}} !important;',
+			),
+		) );
+
+		$this->end_controls_section();
+
+		/* -------------------------------------------------------------------------
+		 * Style: Milestone Cards
+		 * ---------------------------------------------------------------------- */
+		$this->start_controls_section( 'style_card_section', array(
+			'label' => __( 'Milestone Cards', 'addlar' ),
+			'tab'   => Controls_Manager::TAB_STYLE,
+		) );
+
+		$this->add_responsive_control( 'card_radius', array(
+			'label'      => __( 'Card Border Radius (px)', 'addlar' ),
+			'type'       => Controls_Manager::SLIDER,
+			'size_units' => array( 'px' ),
+			'range'      => array(
+				'px' => array( 'min' => 0, 'max' => 30 ),
+			),
+			'default'    => array( 'unit' => 'px', 'size' => 0 ),
+			'selectors'  => array(
+				'{{WRAPPER}} .milestone-card'   => 'border-radius: {{SIZE}}{{UNIT}} !important;',
+				'{{WRAPPER}} .milestone-kicker' => 'border-radius: {{SIZE}}{{UNIT}} !important;',
+			),
+		) );
+
+		$this->add_responsive_control( 'card_height', array(
+			'label'      => __( 'Card Height (px)', 'addlar' ),
+			'type'       => Controls_Manager::SLIDER,
+			'size_units' => array( 'px' ),
+			'range'      => array(
+				'px' => array( 'min' => 140, 'max' => 260 ),
+			),
+			'default'    => array( 'unit' => 'px', 'size' => 175 ),
+			'selectors'  => array(
+				'{{WRAPPER}} .milestone-card' => 'height: {{SIZE}}{{UNIT}} !important;',
+			),
+		) );
+
+		$this->add_control( 'card_bg', array(
+			'label'     => __( 'Card Background', 'addlar' ),
+			'type'      => Controls_Manager::COLOR,
+			'default'   => '#FFFFFF',
+			'selectors' => array(
+				'{{WRAPPER}} .milestone-card' => 'background-color: {{VALUE}} !important;',
+			),
+		) );
+
+		$this->add_control( 'card_border_color', array(
+			'label'     => __( 'Card Border Color', 'addlar' ),
+			'type'      => Controls_Manager::COLOR,
+			'default'   => '#E2E8F0',
+			'selectors' => array(
+				'{{WRAPPER}} .milestone-card' => 'border-color: {{VALUE}} !important;',
+			),
+		) );
+
+		$this->end_controls_section();
+
+		/* -------------------------------------------------------------------------
+		 * Style: Navigation Arrows
+		 * ---------------------------------------------------------------------- */
+		$this->start_controls_section( 'style_arrow_section', array(
+			'label'     => __( 'Navigation Arrows', 'addlar' ),
+			'tab'       => Controls_Manager::TAB_STYLE,
+			'condition' => array(
+				'layout_style!'   => 'vertical',
+				'arrow_position!' => 'none',
+			),
+		) );
+
+		$this->add_control( 'arrow_bg', array(
+			'label'     => __( 'Arrow Background', 'addlar' ),
+			'type'      => Controls_Manager::COLOR,
+			'default'   => '#FFFFFF',
+			'selectors' => array(
+				'{{WRAPPER}} .jrny-nav-arrow' => 'background-color: {{VALUE}} !important;',
+			),
+		) );
+
+		$this->add_control( 'arrow_color', array(
+			'label'     => __( 'Arrow Icon Color', 'addlar' ),
+			'type'      => Controls_Manager::COLOR,
+			'default'   => '#1A1D20',
+			'selectors' => array(
+				'{{WRAPPER}} .jrny-nav-arrow' => 'color: {{VALUE}} !important;',
+			),
+		) );
+
+		$this->add_control( 'arrow_hover_bg', array(
+			'label'     => __( 'Arrow Hover Background', 'addlar' ),
+			'type'      => Controls_Manager::COLOR,
+			'default'   => '#D32F2F',
+			'selectors' => array(
+				'{{WRAPPER}} .jrny-nav-arrow:hover' => 'background-color: {{VALUE}} !important; border-color: {{VALUE}} !important;',
+			),
+		) );
+
+		$this->add_control( 'arrow_hover_color', array(
+			'label'     => __( 'Arrow Hover Icon Color', 'addlar' ),
+			'type'      => Controls_Manager::COLOR,
+			'default'   => '#FFFFFF',
+			'selectors' => array(
+				'{{WRAPPER}} .jrny-nav-arrow:hover' => 'color: {{VALUE}} !important;',
+			),
 		) );
 
 		$this->end_controls_section();
@@ -234,6 +462,8 @@ class Addlar_Widget_Journey extends Addlar_Base_Widget {
 
 		$is_vertical = ( 'vertical' === $style );
 		$is_full     = ( 'full' === ( isset( $s['container_width'] ) ? $s['container_width'] : 'boxed' ) );
+		$arrow_pos   = ! empty( $s['arrow_position'] ) ? $s['arrow_position'] : 'top_right';
+		$arrow_class = 'arrows-' . esc_attr( $arrow_pos );
 
 		$this->open_section(
 			'yes' === $s['soft'] ? 'section soft' : 'section',
@@ -245,11 +475,15 @@ class Addlar_Widget_Journey extends Addlar_Base_Widget {
 		</div>
 		<div class="wrap <?php echo $is_full ? 'jrny-wrap-full wrap-full' : 'jrny-wrap-boxed'; ?>">
 			<?php if ( ! $is_vertical ) : ?>
-				<div class="jrny-h-outer <?php echo $is_full ? 'is-full' : 'is-boxed'; ?>">
-					<button type="button" class="jrny-nav-arrow prev" aria-label="<?php esc_attr_e( 'Previous', 'addlar' ); ?>">&#8249;</button>
-					<button type="button" class="jrny-nav-arrow next" aria-label="<?php esc_attr_e( 'Next', 'addlar' ); ?>">&#8250;</button>
+				<div class="jrny-h-outer <?php echo $is_full ? 'is-full' : 'is-boxed'; ?> <?php echo esc_attr( $arrow_class ); ?>">
+					<?php if ( 'none' !== $arrow_pos ) : ?>
+						<div class="jrny-nav-cluster">
+							<button type="button" class="jrny-nav-arrow prev" aria-label="<?php esc_attr_e( 'Previous', 'addlar' ); ?>">&#8249;</button>
+							<button type="button" class="jrny-nav-arrow next" aria-label="<?php esc_attr_e( 'Next', 'addlar' ); ?>">&#8250;</button>
+						</div>
+					<?php endif; ?>
 					<div class="jrny-h">
-						<div id="timeline-track" class="jh-track-angle min-w-[1560px] relative">
+						<div id="timeline-track" class="jh-track-angle relative">
 							<!-- Dynamic Zig-Zag Dashed SVG Line -->
 							<svg id="poly-svg" class="angle-border-svg pointer-events-none" style="position:absolute;inset:0;width:100%;height:100%;z-index:1;">
 								<polyline id="poly-main" points="" fill="none" stroke="#CBD5E1" stroke-dasharray="7 5" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"></polyline>
@@ -365,12 +599,12 @@ class Addlar_Widget_Journey extends Addlar_Base_Widget {
 							var btnNext = parent.querySelector('.jrny-nav-arrow.next');
 							if(btnPrev){
 								btnPrev.addEventListener('click', function(){
-									scroller.scrollBy({ left: -340, behavior: 'smooth' });
+									scroller.scrollBy({ left: -Math.max(280, Math.round(scroller.clientWidth * 0.75)), behavior: 'smooth' });
 								});
 							}
 							if(btnNext){
 								btnNext.addEventListener('click', function(){
-									scroller.scrollBy({ left: 340, behavior: 'smooth' });
+									scroller.scrollBy({ left: Math.max(280, Math.round(scroller.clientWidth * 0.75)), behavior: 'smooth' });
 								});
 							}
 						}

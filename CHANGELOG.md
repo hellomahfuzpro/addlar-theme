@@ -3,6 +3,23 @@
 All notable changes to the ADDLAR theme. Keep the top version in sync with
 `Version:` in `style.css` — the updater reads it from there.
 
+## [1.20.0] — 2026-09-10
+
+### Changed
+- **Why List Number Section Fix**:
+  - `.adl .wrow`: updated grid layout to `grid-template-columns: minmax(0, 0.7fr) minmax(0, 1fr)`.
+  - `.adl .imgnum`: enlarged numerals to 350px in `Montserrat` with `font-weight: 900 !important;`, `line-height: .82 !important;`, `letter-spacing: -.030em !important;`, masked photo fill via `-webkit-background-clip: text` and `-webkit-text-fill-color: transparent`.
+- **Fitted Journey Row & Removed Scrollbar**:
+  - Removed bottom draggable scrollbar track and drag gestures completely.
+  - Sized track so milestones fit cleanly in a single horizontal row (`width: 100%; min-width: 0;` with `grid-auto-flow: column;` and dynamic column sizing) without getting cut off at the edge and without wrapping to a second row.
+  - Added Arrow Position control with options for Top Right, Bottom Center, Middle Left/Right, or Hidden.
+  - Year box styling: added `border-radius: 8px` ("more radius to year box") and clean 16px vertical spacing to hexagons.
+- **Elementor Style Controls Added**:
+  - Hexagons & Line: Hexagon color, plate background, size (slider 60–120px), connecting line color.
+  - Year Badges: Border radius (slider 0–30px), spacing to hexagon (slider 6–35px), background color, text color.
+  - Milestone Cards: Card border radius, height (slider 140–260px), background color, border color.
+  - Navigation Arrows: Background, icon color, hover background, hover icon color.
+
 ## [1.19.0] — 2026-09-10
 
 ### Changed
