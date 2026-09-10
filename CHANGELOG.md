@@ -3,6 +3,24 @@
 All notable changes to the ADDLAR theme. Keep the top version in sync with
 `Version:` in `style.css` — the updater reads it from there.
 
+## [1.21.0] — 2026-09-10
+
+### Added
+- **Tabbed Product Showcase Slider (Stitch Design)**:
+  - Integrated the full-width tabbed slider showcase designed in Stitch (**Addlar - Tabbed Product Showcase: One Partner, Every Lubrication Challenge**, screen `e684c9114a5a4c42acc33a8d60a323a7`) into `widgets/class-product-grid.php`.
+  - Added `layout_style` control: choose between **Full-Width Tabbed Slider (Stitch Design)** (default) and **Classic 6-Card Grid**.
+  - Six rich category slide presets with high-res machinery photography, technical specs, dual CTAs, and performance metrics:
+    1. **Automotive Engine Oils** (`API CK-4 / SP`, `ACEA E11/E9/C5`, `ILSAC GF-6`, `JASO MA2`, `0W-16 to 15W-40`).
+    2. **Driveline & Transmission Additives** (`API GL-5`, `TO-4`, `Off-Road`, `Heavy Axle`, `FZG Stage 12+`).
+    3. **Marine Cylinder & System Lubricants** (`BN 20 to 140`, `Slow-speed 2-stroke`, `Bunker fuel`).
+    4. **Industrial Hydraulic & Circulating Fluids** (`DIN 51524`, `ISO 11158`, `Parker Denison HF-0`).
+    5. **Metalworking Fluids & Neat Oils** (`Chlorine-free EP`, `Biostable emulsions`, `Up to +40% tool life`).
+    6. **Specialty Components & VI Improvers** (`OCP Polymer SSI 22/35`, `PIB`, `400 TBN Sulfonates`).
+  - Full-width dark carbon background (`#111315`) with cinematic gradient overlays and subtle technical grid pattern.
+  - Floating bottom glass dock with 6 category tabs and custom SVG icons, highlighted by a high-octane red active pill.
+  - Interactive controls: smooth background cross-fade, next/prev circular arrows, and 3 clickable mini machinery thumbnails.
+  - Responsive layout for desktop, tablet, and mobile with horizontally scrollable dock.
+
 ## [1.20.0] — 2026-09-10
 
 ### Changed
