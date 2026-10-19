@@ -227,7 +227,17 @@ class Addlar_Widget_ProductHero extends Addlar_Base_Widget {
 
 				<div class="prod-hero-btns">
 					<?php
-					$this->render_button( $s['btn1_text'], $s['btn1_link'], 'btn-red' );
+					$btn1_text = ! empty( $s['btn1_text'] ) ? $s['btn1_text'] : '';
+					if ( false !== stripos( $btn1_text, 'data sheet' ) || false !== stripos( $btn1_text, 'tds' ) ) {
+						printf(
+							'<a href="#request-data-sheet" class="btn btn-red request-tds-btn" data-tds-product="%s" onclick="if(window.addlarOpenTds){window.addlarOpenTds(%s);return false;}">%s</a>',
+							esc_attr( $title ),
+							wp_json_encode( $title ),
+							esc_html( $btn1_text )
+						);
+					} else {
+						$this->render_button( $s['btn1_text'], $s['btn1_link'], 'btn-red' );
+					}
 					$this->render_button( $s['btn2_text'], $s['btn2_link'], 'btn-white' );
 					?>
 				</div>

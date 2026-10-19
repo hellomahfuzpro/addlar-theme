@@ -31,14 +31,14 @@ class Addlar_Widget_WhyList extends Addlar_Base_Widget {
 
 	private function default_rows() {
 		return array(
-			array( 'lbl' => 'Legacy',      'title' => '20+ Years of Proven Industry Legacy',  'text' => 'Headquartered in the UAE, Rchemie brings two decades of market stability, financial reliability and trusted global supply-chain partnerships.' ),
-			array( 'lbl' => 'Range',       'title' => 'Broader Spectrum of Products',          'text' => 'Beyond our core automotive line, a comprehensive portfolio spans industrial, marine and specialised fluids — consolidating your supply chain under one manufacturer.' ),
-			array( 'lbl' => 'Efficiency',  'title' => 'Cascading Viscometry Versatility',      'text' => '“One fits many” — a single ADDLAR package cascades across multiple viscosity grades, maximising raw material utility and simplifying blending inventory.' ),
-			array( 'lbl' => 'Modern Oils', 'title' => 'Optimized for Lighter Products',        'text' => "As the industry shifts to 0W-16, 0W-20 and 5W-20, ADDLAR's lighter packages maintain film strength and boundary lubrication in thin fluid regimes." ),
-			array( 'lbl' => 'Value',       'title' => 'Distinct Treat Rate Advantage',         'text' => 'Optimal performance at lower treat rates — directly lowering blending cost per tonne without compromising finished oil performance or OEM specifications.' ),
-			array( 'lbl' => 'Quality',     'title' => 'Unwavering Product Consistency',        'text' => 'Strict quality-control protocols ensure absolute batch-to-batch consistency, physical-chemical stability and predictable performance.' ),
-			array( 'lbl' => 'Compliance',  'title' => 'Strict Adherence to Global Standards',  'text' => 'Application-specific packages precision-engineered to meet or exceed API, ACEA, ILSAC and JASO benchmarks.' ),
-			array( 'lbl' => 'Logistics',   'title' => 'Strategic Global Logistics Hub',        'text' => "Operating from one of the world's premier shipping crossroads — agile supply chain management, minimised lead times and dependable delivery." ),
+			array( 'lbl' => 'Legacy',                 'title' => '20+ Years of Proven Industry Legacy',          'text' => 'Headquartered in the UAE, Rchemie brings two decades of market stability, financial reliability and trusted global supply-chain partnerships.' ),
+			array( 'lbl' => 'Quality (Our USP)',      'title' => 'Unwavering Quality Delivered Consistently',     'text' => 'Strict quality-control protocols ensure absolute batch-to-batch consistency, physical-chemical stability and predictable performance across every blend.' ),
+			array( 'lbl' => 'Range & Customization',  'title' => 'Broader Spectrum & Customized Products',       'text' => 'Beyond our core automotive line, a comprehensive portfolio spans industrial, marine, and fully customized additive packages engineered specifically to meet your proprietary formulation requirements.' ),
+			array( 'lbl' => 'Efficiency',             'title' => 'Cascading Viscometry Versatility',              'text' => '“One fits many” — a single ADDLAR package cascades across multiple viscosity grades, maximising raw material utility and simplifying blending inventory.' ),
+			array( 'lbl' => 'Modern Oils',            'title' => 'Optimized for Lighter Products',                'text' => "As the industry shifts to 0W-16, 0W-20 and 5W-20, ADDLAR's lighter packages maintain film strength and boundary lubrication in thin fluid regimes." ),
+			array( 'lbl' => 'Value',                  'title' => 'Distinct Treat Rate Advantage',                 'text' => 'Optimal performance at lower treat rates — directly lowering blending cost per tonne without compromising finished oil performance or OEM specifications.' ),
+			array( 'lbl' => 'Compliance',             'title' => 'Strict Adherence to Global Standards',          'text' => 'Application-specific packages precision-engineered to meet or exceed API, ACEA, ILSAC and JASO benchmarks.' ),
+			array( 'lbl' => 'Logistics',              'title' => 'Strategic Global Logistics Hub',                'text' => "Operating from one of the world's premier shipping crossroads — agile supply chain management, minimised lead times and dependable delivery." ),
 		);
 	}
 
@@ -133,7 +133,12 @@ class Addlar_Widget_WhyList extends Addlar_Base_Widget {
 							<div class="imgnum"<?php echo $style ? ' style="' . esc_attr( $style ) . '"' : ''; ?>><?php echo esc_html( $num ); ?></div>
 						</div>
 						<div class="wtxt">
-							<div class="lbl"><?php echo esc_html( $row['lbl'] ); ?></div>
+							<div class="lbl">
+								<?php echo esc_html( $row['lbl'] ); ?>
+								<?php if ( '02' === $num || false !== stripos( $row['lbl'], 'Quality' ) || false !== stripos( $row['lbl'], 'USP' ) ) : ?>
+									<span class="why-usp-badge"><?php esc_html_e( 'Our USP', 'addlar' ); ?></span>
+								<?php endif; ?>
+							</div>
 							<h3><?php echo esc_html( $row['title'] ); ?></h3>
 							<p><?php echo esc_html( $row['text'] ); ?></p>
 						</div>

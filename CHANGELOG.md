@@ -3,6 +3,49 @@
 All notable changes to the ADDLAR theme. Keep the top version in sync with
 `Version:` in `style.css` — the updater reads it from there.
 
+## [1.26.0] — 2026-10-19
+
+### Added
+- **Global Technical Data Sheet (TDS) Dedicated Modal (`footer.php`, `assets/css/widgets.css`, `widgets/class-product-hero.php`, `taxonomy-addlar_product_category.php`, `widgets/class-related-products.php`)**:
+  - Direct pop-up modal bypassing generic contact form when clicking any "Request Data Sheet" link.
+  - Automatically captures and pre-populates the product name from the requesting card or hero.
+  - Saves submissions directly to DB `wp_addlar_submissions` with preset `tds` and category `tds`.
+- **Question Category Selector in Footer Contact Form (`footer.php`, `inc/contact-form.php`, `inc/admin-submissions.php`)**:
+  - Added dropdown with categories: Request a Product Catalog, Speak with an Engineer, Contact Our Dubai Office Today, Customised Product Requirement, Request Technical Data Sheet, and General Inquiry.
+  - Added `category` column to `wp_addlar_submissions` database table (schema v1.1).
+  - Added category filtering and display modal in WP Admin Inquiries dashboard.
+- **Partner Pathways on About Us Page (`widgets/class-closing-cta.php`, `inc/demo-import.php`)**:
+  - 3 action cards: "Looking for specific formulations?", "Need technical support?", "Ready to partner?".
+  - Direct smooth scroll and auto-selection of corresponding category in the contact form.
+- **Customised Product Requirement CTA in Product Finder (`widgets/class-product-finder.php`)**:
+  - Direct action button to request custom formulations with pre-selected category in contact form.
+
+### Changed
+- **Contact Banner Background Color (`assets/css/widgets.css`)**:
+  - Replaced bright red background with neutral hero gradient (`linear-gradient(115deg, #0F1215 0%, #15181C 45%, #230E10 100%)`) with red accent submit button.
+- **Homepage Subtext Removal (`widgets/class-base-widget.php`, `assets/css/widgets.css`, `inc/demo-import.php`)**:
+  - Removed all subtexts/ledes from all homepage sections except Hero.
+- **Homepage Section Order (`inc/demo-import.php`)**:
+  - Product Range -> Milestone Journey -> Meets the following specifications -> Choose Addlar -> Components inside ADDLAR -> Find your Addlar Package -> Scale you can formulate against -> Insights -> Footer Contact.
+- **Product Range Showcase Dock (`assets/css/widgets.css`, `widgets/class-product-grid.php`)**:
+  - Shifted product category selection tabs to the top and centered.
+- **Milestone Journey Section (`widgets/class-journey.php`)**:
+  - Updated timeline dates: 2008–2012 Establishing Lines, 2012 Turkey Plant, 2015 Toll Blending for TOTAL, 2019 Expanding Portfolio, 2026 and Beyond.
+  - Added dynamic broken/dashed SVG line beyond 2025 (`#poly-beyond` and `#poly-future`).
+- **Trust Strip / Specifications (`widgets/class-trust-strip.php`)**:
+  - Removed "UAE Manufactured".
+- **Choose Addlar Section (`widgets/class-why-list.php`)**:
+  - Rearranged reasons: product-specific reasons first (01 Legacy, 06 shifted to 02 as Primary USP with badge, 03 Broader Spectrum & Customized Products), then company-specific reasons.
+- **Applications / Chemistry Section (`widgets/class-applications.php`, `assets/css/widgets.css`)**:
+  - Updated title to "Performance Boosting in ADDLAR Done By" / "Components inside ADDLAR • Seven Families".
+  - Cleaned and aligned cards using hexagonal chamfer styling.
+- **Product Finder (`inc/finder-data.php`)**:
+  - Renamed "Complementary" category to "Antifreeze / Brake Fluids".
+- **Stat Band (`widgets/class-stat-band.php`)**:
+  - Changed title to "Global Scale. Proven Formulation Power.".
+- **Products Page & Category Archives (`taxonomy-addlar_product_category.php`, `widgets/class-related-products.php`)**:
+  - Removed thumbnail images entirely, keeping typography, specs, and direct Request TDS buttons.
+
 ## [1.25.0] — 2026-09-11
 
 ### Changed

@@ -126,9 +126,9 @@ class Addlar_Widget_Applications extends Addlar_Base_Widget {
 		) );
 
 		$this->add_heading_controls(
-			__( 'Technical Architecture • Seven Families', 'addlar' ),
-			__( 'The chemistry inside every package.', 'addlar' ),
-			__( 'Seven families of advanced additive chemistry engineered into a unified package, creating an unbreakable molecular shield across every moving powertrain component.', 'addlar' )
+			__( 'Components inside ADDLAR • Seven Families', 'addlar' ),
+			__( 'Performance Boosting in ADDLAR Done By', 'addlar' ),
+			''
 		);
 
 		$this->end_controls_section();
@@ -211,14 +211,25 @@ class Addlar_Widget_Applications extends Addlar_Base_Widget {
 			<section class="chem-section" id="<?php echo esc_attr( $anchor_id ); ?>" data-widget-id="<?php echo esc_attr( $unique_id ); ?>">
 				<div class="chem-wrap">
 					<!-- Header -->
+					<?php
+					$app_title = ! empty( $s['title'] ) ? $s['title'] : '';
+					if ( stripos( $app_title, 'chemistry inside' ) !== false ) {
+						$app_title = __( 'Performance Boosting in ADDLAR Done By', 'addlar' );
+					}
+					$app_eyebrow = ! empty( $s['eyebrow'] ) ? $s['eyebrow'] : '';
+					if ( stripos( $app_eyebrow, 'Technical Architecture' ) !== false ) {
+						$app_eyebrow = __( 'Components inside ADDLAR • Seven Families', 'addlar' );
+					}
+					$is_home_context = is_front_page() || is_home() || ( function_exists( 'get_the_ID' ) && (int) get_the_ID() === (int) get_option( 'page_on_front' ) );
+					?>
 					<div class="chem-head">
-						<?php if ( ! empty( $s['eyebrow'] ) ) : ?>
-							<div style="margin-bottom: 16px;"><span class="eyebrow"><?php echo esc_html( $s['eyebrow'] ); ?></span></div>
+						<?php if ( ! empty( $app_eyebrow ) ) : ?>
+							<div style="margin-bottom: 16px;"><span class="eyebrow"><?php echo esc_html( $app_eyebrow ); ?></span></div>
 						<?php endif; ?>
-						<?php if ( ! empty( $s['title'] ) ) : ?>
-							<h2 class="chem-title"><?php echo wp_kses_post( $s['title'] ); ?></h2>
+						<?php if ( ! empty( $app_title ) ) : ?>
+							<h2 class="chem-title"><?php echo wp_kses_post( $app_title ); ?></h2>
 						<?php endif; ?>
-						<?php if ( ! empty( $s['lede'] ) ) : ?>
+						<?php if ( ! empty( $s['lede'] ) && ! $is_home_context ) : ?>
 							<p class="chem-lead"><?php echo wp_kses_post( $s['lede'] ); ?></p>
 						<?php endif; ?>
 					</div>

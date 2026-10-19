@@ -33,14 +33,14 @@ class Addlar_Widget_Journey extends Addlar_Base_Widget {
 	/** The approved eight milestones, with their colour progression. */
 	private function default_rows() {
 		return array(
-			array( 'icon' => 'building', 'accent' => '#D32F2F', 'tint' => '#F8F9FA', 'ph' => 'Milestone 01', 'num' => '2006',    'sub' => 'The Beginning', 'title' => 'Founded in Sharjah, UAE',            'text' => 'Rchemie International begins as a chemical raw materials distributor.' ),
-			array( 'icon' => 'droplet',  'accent' => '#D32F2F', 'tint' => '#F8F9FA', 'ph' => 'Milestone 02', 'num' => '2008–12', 'sub' => 'Coatings Era',  'title' => 'Paints, coatings & construction',  'text' => 'Expansion into paints, coatings and construction chemicals.' ),
-			array( 'icon' => 'globe',    'accent' => '#D32F2F', 'tint' => '#F8F9FA', 'ph' => 'Milestone 03', 'num' => '2012–15', 'sub' => 'Going Global',  'title' => 'Türkiye & USA, plus plastics',     'text' => 'Territorial expansion and entry into the plastics additive market.' ),
-			array( 'icon' => 'flask',    'accent' => '#D32F2F', 'tint' => '#F8F9FA', 'ph' => 'Milestone 04', 'num' => '2015',    'sub' => 'New Plant',     'title' => 'UAE adhesives plant',              'text' => 'A dedicated adhesives & hot-melt manufacturing plant opens in the UAE.' ),
-			array( 'icon' => 'factory',  'accent' => '#D32F2F', 'tint' => '#F8F9FA', 'ph' => 'Milestone 05', 'num' => '2019',    'sub' => 'Scaling Up',    'title' => 'Türkiye manufacturing',            'text' => 'A new plant scales regional production capacity.' ),
-			array( 'icon' => 'gear',     'accent' => '#D32F2F', 'tint' => '#F8F9FA', 'ph' => 'Milestone 06', 'num' => '2019–22', 'sub' => 'Foundation',    'title' => 'Rubber & lubricant additives',     'text' => 'The portfolio widens into rubber additives and lubricant additives.' ),
-			array( 'icon' => 'spark',    'accent' => '#D32F2F', 'tint' => '#F8F9FA', 'ph' => 'Milestone 07', 'num' => '2025',    'sub' => 'ADDLAR',        'title' => 'ADDLAR is launched',               'text' => "Rchemie formulates and launches ADDLAR's groundbreaking technology." ),
-			array( 'icon' => 'globe',    'accent' => '#D32F2F', 'tint' => '#F8F9FA', 'ph' => 'Milestone 08', 'num' => '2026',    'sub' => 'Worldwide',     'title' => 'Serving formulators globally',     'text' => 'ADDLAR now serves lubricant formulators across the globe.' ),
+			array( 'icon' => 'building', 'accent' => '#D32F2F', 'tint' => '#F8F9FA', 'ph' => 'Milestone 01', 'num' => '2006',            'sub' => 'The Beginning',        'title' => 'Founded in Sharjah, UAE',                        'text' => 'Rchemie International begins as a chemical raw materials distributor.' ),
+			array( 'icon' => 'droplet',  'accent' => '#D32F2F', 'tint' => '#F8F9FA', 'ph' => 'Milestone 02', 'num' => '2008–12',         'sub' => 'Establishing Lines',   'title' => 'Establishing Product Lines',                     'text' => 'Establishing Product lines (Paints, Coatings and Construction Chemicals).' ),
+			array( 'icon' => 'factory',  'accent' => '#D32F2F', 'tint' => '#F8F9FA', 'ph' => 'Milestone 03', 'num' => '2012',            'sub' => 'Turkey Plant',          'title' => 'Turkey Plant',                                   'text' => 'Commissioning dedicated manufacturing operations in Turkey.' ),
+			array( 'icon' => 'gear',     'accent' => '#D32F2F', 'tint' => '#F8F9FA', 'ph' => 'Milestone 04', 'num' => '2015',            'sub' => 'Toll Blending',        'title' => 'Toll Blending for TOTAL',                        'text' => 'Commissioned for high-tier toll blending operations for TOTAL.' ),
+			array( 'icon' => 'flask',    'accent' => '#D32F2F', 'tint' => '#F8F9FA', 'ph' => 'Milestone 05', 'num' => '2019',            'sub' => 'Expanding Portfolio',  'title' => 'Expanding Portfolio',                            'text' => 'Adding Product lines to our portfolio (Rubber, Plastics Oils and Additives).' ),
+			array( 'icon' => 'spark',    'accent' => '#D32F2F', 'tint' => '#F8F9FA', 'ph' => 'Milestone 06', 'num' => '2019–22',         'sub' => 'Additive R&D',         'title' => 'Advanced Additive Technology',                   'text' => 'Consolidating chemical formulations and scalable additive packages.' ),
+			array( 'icon' => 'spark',    'accent' => '#D32F2F', 'tint' => '#F8F9FA', 'ph' => 'Milestone 07', 'num' => '2025',            'sub' => 'ADDLAR Launch',        'title' => 'ADDLAR is Launched',                             'text' => "Rchemie formulates and launches ADDLAR's groundbreaking technology." ),
+			array( 'icon' => 'globe',    'accent' => '#D32F2F', 'tint' => '#F8F9FA', 'ph' => 'Milestone 08', 'num' => '2026 and Beyond', 'sub' => 'Worldwide',            'title' => 'Serving Formulators Globally',                   'text' => 'ADDLAR now serves lubricant formulators across the globe.' ),
 		);
 	}
 
@@ -485,8 +485,10 @@ class Addlar_Widget_Journey extends Addlar_Base_Widget {
 					<div class="jrny-h">
 						<div id="timeline-track" class="jh-track-angle relative">
 							<!-- Dynamic Zig-Zag Dashed SVG Line -->
-							<svg id="poly-svg" class="angle-border-svg pointer-events-none" style="position:absolute;inset:0;width:100%;height:100%;z-index:1;">
+							<svg id="poly-svg" class="angle-border-svg pointer-events-none" style="position:absolute;inset:0;width:100%;height:100%;z-index:1;overflow:visible;">
 								<polyline id="poly-main" points="" fill="none" stroke="#CBD5E1" stroke-dasharray="7 5" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"></polyline>
+								<polyline id="poly-beyond" points="" fill="none" stroke="#D32F2F" stroke-dasharray="6 6" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"></polyline>
+								<line id="poly-future" x1="0" y1="0" x2="0" y2="0" stroke="#D32F2F" stroke-dasharray="6 6" stroke-linecap="round" stroke-width="2.5"></line>
 							</svg>
 
 							<!-- Milestone Columns Grid -->
@@ -572,18 +574,54 @@ class Addlar_Widget_Journey extends Addlar_Base_Widget {
 					function calibrateAngleBorder(){
 						var track = document.getElementById('timeline-track');
 						var poly = document.getElementById('poly-main');
+						var polyBeyond = document.getElementById('poly-beyond');
+						var polyFuture = document.getElementById('poly-future');
 						if(!track || !poly) return;
 						var hexes = track.querySelectorAll('.jhex');
 						if(hexes.length < 2) return;
 						var trackRect = track.getBoundingClientRect();
 						var coords = [];
+						var rawCoords = [];
 						hexes.forEach(function(hex){
 							var r = hex.getBoundingClientRect();
 							var cx = Math.round((r.left + r.width / 2) - trackRect.left);
 							var cy = Math.round((r.top + r.height / 2) - trackRect.top);
 							coords.push(cx + ',' + cy);
+							rawCoords.push({x: cx, y: cy});
 						});
-						poly.setAttribute('points', coords.join(' '));
+
+						var splitIdx = 6;
+						var cols = track.querySelectorAll('.milestone-col');
+						cols.forEach(function(col, idx){
+							var yr = col.querySelector('.year-pill');
+							if(yr && yr.textContent.trim().indexOf('2025') !== -1){
+								splitIdx = idx;
+							}
+						});
+						if(splitIdx >= rawCoords.length) splitIdx = Math.max(0, rawCoords.length - 2);
+
+						var mainCoords = coords.slice(0, splitIdx + 1);
+						poly.setAttribute('points', mainCoords.join(' '));
+
+						if(polyBeyond && splitIdx < coords.length - 1){
+							var beyondCoords = coords.slice(splitIdx);
+							polyBeyond.setAttribute('points', beyondCoords.join(' '));
+						}
+
+						if(polyFuture && rawCoords.length >= 2){
+							var last = rawCoords[rawCoords.length - 1];
+							var prev = rawCoords[rawCoords.length - 2];
+							var dx = last.x - prev.x;
+							var dy = last.y - prev.y;
+							var len = Math.sqrt(dx * dx + dy * dy) || 1;
+							var extLen = 70;
+							var xEnd = Math.round(last.x + (dx / len) * extLen);
+							var yEnd = Math.round(last.y + (dy / len) * extLen);
+							polyFuture.setAttribute('x1', last.x);
+							polyFuture.setAttribute('y1', last.y);
+							polyFuture.setAttribute('x2', xEnd);
+							polyFuture.setAttribute('y2', yEnd);
+						}
 					}
 					document.addEventListener('DOMContentLoaded', calibrateAngleBorder);
 					window.addEventListener('load', calibrateAngleBorder);

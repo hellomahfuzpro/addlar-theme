@@ -31,6 +31,7 @@ function addlar_contact_form_presets() {
 			array( 'name' => 'email', 'label' => __( 'Email Address', 'addlar' ), 'type' => 'email', 'required' => true ),
 			array( 'name' => 'phone', 'label' => __( 'Phone Number', 'addlar' ), 'type' => 'text', 'required' => false ),
 			array( 'name' => 'country', 'label' => __( 'Country / Shipping Location', 'addlar' ), 'type' => 'text', 'required' => false ),
+			array( 'name' => 'question_category', 'label' => __( 'Question Category', 'addlar' ), 'type' => 'text', 'required' => false ),
 			array( 'name' => 'product', 'label' => __( 'Product / Sample Requested', 'addlar' ), 'type' => 'text', 'required' => false ),
 			array( 'name' => 'message', 'label' => __( 'Message', 'addlar' ), 'type' => 'textarea', 'required' => false ),
 		),
@@ -40,11 +41,19 @@ function addlar_contact_form_presets() {
 			array( 'name' => 'company', 'label' => __( 'Company Name', 'addlar' ), 'type' => 'text', 'required' => false ),
 			array( 'name' => 'question', 'label' => __( 'Your Question', 'addlar' ), 'type' => 'textarea', 'required' => true ),
 		),
+		'tds'     => array(
+			array( 'name' => 'product', 'label' => __( 'Target Product TDS', 'addlar' ), 'type' => 'text', 'required' => true ),
+			array( 'name' => 'name', 'label' => __( 'Name', 'addlar' ), 'type' => 'text', 'required' => true ),
+			array( 'name' => 'email', 'label' => __( 'Corporate Email', 'addlar' ), 'type' => 'email', 'required' => true ),
+			array( 'name' => 'company', 'label' => __( 'Company Name', 'addlar' ), 'type' => 'text', 'required' => false ),
+			array( 'name' => 'phone', 'label' => __( 'Phone Number', 'addlar' ), 'type' => 'text', 'required' => false ),
+			array( 'name' => 'message', 'label' => __( 'Specific Requirements / Notes', 'addlar' ), 'type' => 'textarea', 'required' => false ),
+		),
 	);
 }
 
 /**
- * Handle a contact/expert form submission: verify the nonce, drop obvious
+ * Handle a contact/expert/tds form submission: verify the nonce, drop obvious
  * bot traffic via honeypot, sanitize every field, store in DB, email
  * configured recipients, then redirect back with a success/error flag.
  */
@@ -97,6 +106,8 @@ function addlar_handle_contact_form() {
 		exit;
 	}
 
+	$category = ! empty( $data['question_category'] ) ? $data['question_category'] : ( 'tds' === $preset ? 'Technical Data Sheet (TDS) Request' : '' );
+
 	// Store submission in database.
 	if ( function_exists( 'addlar_insert_submission' ) ) {
 		addlar_insert_submission( array(
@@ -106,7 +117,8 @@ function addlar_handle_contact_form() {
 			'email'      => isset( $data['email'] ) ? $data['email'] : '',
 			'phone'      => isset( $data['phone'] ) ? $data['phone'] : '',
 			'country'    => isset( $data['country'] ) ? $data['country'] : '',
-			'product'    => isset( $data['product'] ) ? $data['product'] : '',
+			'product'    => isset( $data['product'] ) ? $data['product'] : ( $category ? '[' . $category . ']' : '' ),
+			'category'   => $category,
 			'message'    => isset( $data['message'] ) ? $data['message'] : ( isset( $data['question'] ) ? $data['question'] : '' ),
 			'ip_address' => isset( $_SERVER['REMOTE_ADDR'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ) ) : '',
 			'status'     => 'unread',
@@ -126,11 +138,16 @@ function addlar_handle_contact_form() {
 			}
 		}
 
-		$prefix  = get_option( 'addlar_notify_subject_prefix', '[ADDLAR]' );
-		$subject = 'contact' === $preset
-			? $prefix . ' ' . __( 'New website enquiry — Contact Us', 'addlar' )
-			: $prefix . ' ' . __( 'New website enquiry — Ask the Expert', 'addlar' );
-		$body    = implode( "\n", $lines );
+		$prefix = get_option( 'addlar_notify_subject_prefix', '[ADDLAR]' );
+		if ( 'tds' === $preset ) {
+			$subject = $prefix . ' ' . sprintf( __( 'New TDS Request — %s', 'addlar' ), ! empty( $data['product'] ) ? $data['product'] : 'Additive' );
+		} elseif ( 'expert' === $preset ) {
+			$subject = $prefix . ' ' . __( 'New website enquiry — Ask the Expert', 'addlar' );
+		} else {
+			$cat_suffix = ! empty( $category ) ? ' [' . $category . ']' : '';
+			$subject    = $prefix . ' ' . __( 'New website enquiry — Contact Us', 'addlar' ) . $cat_suffix;
+		}
+		$body = implode( "\n", $lines );
 
 		$headers     = array( 'Content-Type: text/plain; charset=UTF-8' );
 		$email_field = isset( $data['email'] ) ? $data['email'] : '';

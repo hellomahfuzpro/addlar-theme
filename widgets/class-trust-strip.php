@@ -59,7 +59,6 @@ class Addlar_Widget_TrustStrip extends Addlar_Base_Widget {
 				array( 'strong' => 'ACEA', 'text' => __( 'Full Spectrum Performance', 'addlar' ) ),
 				array( 'strong' => 'ILSAC', 'text' => 'GF-5 / GF-6' ),
 				array( 'strong' => 'JASO', 'text' => 'MA / MA2' ),
-				array( 'strong' => 'UAE', 'text' => __( 'Manufactured', 'addlar' ) ),
 			),
 		) );
 
@@ -80,7 +79,12 @@ class Addlar_Widget_TrustStrip extends Addlar_Base_Widget {
 					</div>
 				<?php endif; ?>
 				<div class="wrap">
-					<?php foreach ( $s['items'] as $item ) : ?>
+					<?php foreach ( $s['items'] as $item ) :
+						$combined = trim( ( isset( $item['strong'] ) ? $item['strong'] : '' ) . ' ' . ( isset( $item['text'] ) ? $item['text'] : '' ) );
+						if ( stripos( $combined, 'UAE' ) !== false ) {
+							continue;
+						}
+					?>
 						<div class="item">
 							<b><?php echo esc_html( $item['strong'] ); ?></b>
 							<span><?php echo esc_html( $item['text'] ); ?></span>

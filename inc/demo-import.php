@@ -362,14 +362,14 @@ function addlar_seed_image( $slot ) {
 function addlar_why_rows() {
 	$imgs = array( 'engine-oil', 'driveline', 'industrial', 'metalworking', 'components', 'marine', 'about', 'cta' );
 	$rows = array(
-		array( 'lbl' => 'Legacy',      'title' => '20+ Years of Proven Industry Legacy', 'text' => 'Headquartered in the UAE, Rchemie brings two decades of market stability, financial reliability and trusted global supply-chain partnerships.' ),
-		array( 'lbl' => 'Range',       'title' => 'Broader Spectrum of Products',         'text' => 'Beyond our core automotive line, a comprehensive portfolio spans industrial, marine and specialised fluids — consolidating your supply chain under one manufacturer.' ),
-		array( 'lbl' => 'Efficiency',  'title' => 'Cascading Viscometry Versatility',     'text' => '“One fits many” — a single ADDLAR package cascades across multiple viscosity grades, maximising raw material utility and simplifying blending inventory.' ),
-		array( 'lbl' => 'Modern Oils', 'title' => 'Optimized for Lighter Products',       'text' => "As the industry shifts to 0W-16, 0W-20 and 5W-20, ADDLAR's lighter packages maintain film strength and boundary lubrication in thin fluid regimes." ),
-		array( 'lbl' => 'Value',       'title' => 'Distinct Treat Rate Advantage',        'text' => 'Optimal performance at lower treat rates — directly lowering blending cost per tonne without compromising finished oil performance or OEM specifications.' ),
-		array( 'lbl' => 'Quality',     'title' => 'Unwavering Product Consistency',       'text' => 'Strict quality-control protocols ensure absolute batch-to-batch consistency, physical-chemical stability and predictable performance.' ),
-		array( 'lbl' => 'Compliance',  'title' => 'Strict Adherence to Global Standards', 'text' => 'Application-specific packages precision-engineered to meet or exceed API, ACEA, ILSAC and JASO benchmarks.' ),
-		array( 'lbl' => 'Logistics',   'title' => 'Strategic Global Logistics Hub',       'text' => "Operating from one of the world's premier shipping crossroads — agile supply chain management, minimised lead times and dependable delivery." ),
+		array( 'lbl' => 'Legacy',                 'title' => '20+ Years of Proven Industry Legacy',          'text' => 'Headquartered in the UAE, Rchemie brings two decades of market stability, financial reliability and trusted global supply-chain partnerships.' ),
+		array( 'lbl' => 'Quality (Our USP)',      'title' => 'Unwavering Quality Delivered Consistently',     'text' => 'Strict quality-control protocols ensure absolute batch-to-batch consistency, physical-chemical stability and predictable performance across every blend.' ),
+		array( 'lbl' => 'Range & Customization',  'title' => 'Broader Spectrum & Customized Products',       'text' => 'Beyond our core automotive line, a comprehensive portfolio spans industrial, marine, and fully customized additive packages engineered specifically to meet your proprietary formulation requirements.' ),
+		array( 'lbl' => 'Efficiency',             'title' => 'Cascading Viscometry Versatility',              'text' => '“One fits many” — a single ADDLAR package cascades across multiple viscosity grades, maximising raw material utility and simplifying blending inventory.' ),
+		array( 'lbl' => 'Modern Oils',            'title' => 'Optimized for Lighter Products',                'text' => "As the industry shifts to 0W-16, 0W-20 and 5W-20, ADDLAR's lighter packages maintain film strength and boundary lubrication in thin fluid regimes." ),
+		array( 'lbl' => 'Value',                  'title' => 'Distinct Treat Rate Advantage',                 'text' => 'Optimal performance at lower treat rates — directly lowering blending cost per tonne without compromising finished oil performance or OEM specifications.' ),
+		array( 'lbl' => 'Compliance',             'title' => 'Strict Adherence to Global Standards',          'text' => 'Application-specific packages precision-engineered to meet or exceed API, ACEA, ILSAC and JASO benchmarks.' ),
+		array( 'lbl' => 'Logistics',              'title' => 'Strategic Global Logistics Hub',                'text' => "Operating from one of the world's premier shipping crossroads — agile supply chain management, minimised lead times and dependable delivery." ),
 	);
 	foreach ( $rows as $i => $row ) {
 		$rows[ $i ]['image'] = addlar_seed_image( $imgs[ $i ] );
@@ -538,46 +538,67 @@ function addlar_homepage_widgets() {
 				'video'  => addlar_seed_video( 'hero-video' ),
 			),
 		),
-		// 2. Journey (directly after Hero)
-		array( 'type' => 'addlar_journey' ),
-		// 3. Specification Ribbon (white section directly below Journey)
+		// 2. Product Range (Tabbed showcase slider - buttons centered on top)
+		array(
+			'type'     => 'addlar_product_grid',
+			'settings' => array(
+				'cards' => addlar_rep( addlar_product_cards() ),
+				'mark'  => $mark,
+				'lede'  => '',
+			),
+		),
+		// 3. Milestone Journey Section
+		array(
+			'type'     => 'addlar_journey',
+			'settings' => array(
+				'lede' => '',
+			),
+		),
+		// 4. Meets the following specifications
 		array(
 			'type'     => 'addlar_trust_strip',
 			'settings' => array(
 				'heading' => __( 'Meets the following specifications', 'addlar' ),
 			),
 		),
-		// 4. One partner. Every lubrication challenge. (Tabbed showcase slider)
-		array(
-			'type'     => 'addlar_product_grid',
-			'settings' => array(
-				'cards' => addlar_rep( addlar_product_cards() ),
-				'mark'  => $mark,
-			),
-		),
-		// 5. Eight reasons formulators depend on us (above The Chemistry)
+		// 5. Choose Addlar section
 		array(
 			'type'     => 'addlar_why_list',
-			'settings' => array( 'rows' => addlar_rep( addlar_why_rows() ) ),
+			'settings' => array(
+				'rows' => addlar_rep( addlar_why_rows() ),
+				'lede' => '',
+			),
 		),
-		// 6. The chemistry inside every package (3D car wireframe video)
+		// 6. Chemistry inside every package / Components inside ADDLAR
 		array(
 			'type'     => 'addlar_applications',
 			'settings' => array(
 				'video' => addlar_seed_video( 'chem-video' ),
+				'lede'  => '',
 			),
 		),
-		// 7. ADDLAR by the numbers (centered dynamically)
+		// 7. Find your Addlar Package section
+		array(
+			'type'     => 'addlar_product_finder',
+			'settings' => array(
+				'lede' => '',
+			),
+		),
+		// 8. Scale you can formulate against (Global Scale. Proven Formulation Power.)
 		array(
 			'type'     => 'addlar_stat_band',
-			'settings' => array( 'bg' => addlar_seed_image( 'numbers-bg' ) ),
+			'settings' => array(
+				'bg'    => addlar_seed_image( 'numbers-bg' ),
+				'title' => __( 'Global Scale. Proven Formulation Power.', 'addlar' ),
+			),
 		),
-		// 8. Find the right package
-		array( 'type' => 'addlar_product_finder' ),
-		// 9. Insights from the ADDLAR desk (3-column horizontal grid)
+		// 9. Insights from the ADDLAR desk
 		array(
 			'type'     => 'addlar_insights',
-			'settings' => array( 'posts' => addlar_rep( addlar_insight_rows() ) ),
+			'settings' => array(
+				'posts' => addlar_rep( addlar_insight_rows() ),
+				'lede'  => '',
+			),
 		),
 	);
 }

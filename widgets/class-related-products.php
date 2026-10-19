@@ -134,23 +134,18 @@ class Addlar_Widget_RelatedProducts extends Addlar_Base_Widget {
 					$query->the_post();
 					$sub = get_post_meta( get_the_ID(), '_addlar_subcategory', true );
 					?>
-					<a class="pcard reveal" href="<?php the_permalink(); ?>">
-						<?php if ( has_post_thumbnail() ) : ?>
-							<div class="imgwrap">
-								<?php the_post_thumbnail( 'medium' ); ?>
-								<?php if ( $mark ) : ?>
-									<img class="cmark" src="<?php echo esc_url( $mark ); ?>" alt="">
-								<?php endif; ?>
-							</div>
-						<?php endif; ?>
+					<div class="pcard pcard-clean reveal">
 						<div class="body">
 							<?php if ( $sub ) : ?>
 								<span class="cat"><?php echo esc_html( $sub ); ?></span>
 							<?php endif; ?>
-							<h3><?php the_title(); ?></h3>
-							<div class="foot"><span class="arw">&rarr;</span></div>
+							<h3><a href="<?php the_permalink(); ?>"><?php the_title(); ?></a></h3>
+							<div class="foot" style="display:flex;justify-content:space-between;align-items:center;margin-top:14px;padding-top:12px;border-top:1px solid var(--adl-line);">
+								<button type="button" class="btn-link request-tds-btn" data-tds-product="<?php echo esc_attr( get_the_title() ); ?>" onclick="if(window.addlarOpenTds){window.addlarOpenTds(this.getAttribute('data-tds-product'));}" style="font-size:12.5px;font-weight:700;color:var(--adl-red);background:none;border:none;cursor:pointer;padding:0;">Request Data Sheet &rarr;</button>
+								<a href="<?php the_permalink(); ?>" class="arr" aria-label="<?php esc_attr_e( 'View Product', 'addlar' ); ?>">&rarr;</a>
+							</div>
 						</div>
-					</a>
+					</div>
 					<?php
 				endwhile;
 				?>

@@ -130,7 +130,33 @@ class Addlar_Widget_ClosingCta extends Addlar_Base_Widget {
 				<?php if ( ! empty( $s['text'] ) ) : ?>
 					<p><?php echo wp_kses_post( $s['text'] ); ?></p>
 				<?php endif; ?>
-				<?php $this->render_button( $s['btn_text'], $s['btn_link'], 'btn-white' ); ?>
+				<?php if ( ( ! empty( $s['anchor'] ) && 'partner' === $s['anchor'] ) || ( ! empty( $s['title'] ) && stripos( $s['title'], 'partner' ) !== false ) ) : ?>
+					<div class="cta-pathways" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:20px;margin-top:32px;">
+						<div class="cta-pathway-card" style="background:rgba(255,255,255,0.08);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,0.18);border-radius:10px;padding:22px;display:flex;flex-direction:column;justify-content:space-between;">
+							<div>
+								<div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:rgba(255,255,255,0.7);margin-bottom:8px;"><?php esc_html_e( 'Formulations', 'addlar' ); ?></div>
+								<h3 style="color:#fff;font-size:18px;font-weight:700;margin:0 0 10px 0;line-height:1.3;"><?php esc_html_e( 'Looking for specific formulations?', 'addlar' ); ?></h3>
+							</div>
+							<a href="#contact" class="btn btn-white" style="margin-top:16px;align-self:flex-start;" onclick="if(window.addlarSelectCategory){window.addlarSelectCategory('catalog');}"><?php esc_html_e( 'Request a Product Catalog', 'addlar' ); ?> &rarr;</a>
+						</div>
+						<div class="cta-pathway-card" style="background:rgba(255,255,255,0.08);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,0.18);border-radius:10px;padding:22px;display:flex;flex-direction:column;justify-content:space-between;">
+							<div>
+								<div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:rgba(255,255,255,0.7);margin-bottom:8px;"><?php esc_html_e( 'Technical Support', 'addlar' ); ?></div>
+								<h3 style="color:#fff;font-size:18px;font-weight:700;margin:0 0 10px 0;line-height:1.3;"><?php esc_html_e( 'Need technical support?', 'addlar' ); ?></h3>
+							</div>
+							<a href="#contact" class="btn btn-white" style="margin-top:16px;align-self:flex-start;" onclick="if(window.addlarSelectCategory){window.addlarSelectCategory('engineer');}"><?php esc_html_e( 'Speak with an Engineer', 'addlar' ); ?> &rarr;</a>
+						</div>
+						<div class="cta-pathway-card" style="background:rgba(255,255,255,0.08);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,0.18);border-radius:10px;padding:22px;display:flex;flex-direction:column;justify-content:space-between;">
+							<div>
+								<div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:rgba(255,255,255,0.7);margin-bottom:8px;"><?php esc_html_e( 'Partnership', 'addlar' ); ?></div>
+								<h3 style="color:#fff;font-size:18px;font-weight:700;margin:0 0 10px 0;line-height:1.3;"><?php esc_html_e( 'Ready to partner?', 'addlar' ); ?></h3>
+							</div>
+							<a href="#contact" class="btn btn-white" style="margin-top:16px;align-self:flex-start;" onclick="if(window.addlarSelectCategory){window.addlarSelectCategory('dubai_office');}"><?php esc_html_e( 'Contact Our Dubai Office Today', 'addlar' ); ?> &rarr;</a>
+						</div>
+					</div>
+				<?php else : ?>
+					<?php $this->render_button( $s['btn_text'], $s['btn_link'], 'btn-white' ); ?>
+				<?php endif; ?>
 			</div>
 
 			<?php if ( ! empty( $s['maps'] ) ) : ?>

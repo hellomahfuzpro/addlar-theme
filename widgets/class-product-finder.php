@@ -139,6 +139,16 @@ class Addlar_Widget_ProductFinder extends Addlar_Base_Widget {
 					</div>
 				</div>
 			</div>
+
+			<div class="finder-custom-bar" style="margin-top:28px;text-align:center;padding:18px 24px;background:rgba(211,47,47,0.04);border:1px dashed var(--adl-primary);border-radius:10px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:14px;">
+				<div style="text-align:left;">
+					<span style="display:block;font-weight:700;font-size:15px;color:var(--adl-text);"><?php esc_html_e( 'Need a tailored formulation or custom additive solution?', 'addlar' ); ?></span>
+					<span style="font-size:13px;color:var(--adl-text-muted);"><?php esc_html_e( 'Our chemical synthesis laboratory formulates proprietary packages to your exact target specifications.', 'addlar' ); ?></span>
+				</div>
+				<a href="#contact" class="btn btn-primary" onclick="if(window.addlarSelectCategory){window.addlarSelectCategory('customised');}">
+					<?php esc_html_e( 'Request Customised Product', 'addlar' ); ?> &rarr;
+				</a>
+			</div>
 		</div>
 		<?php
 		$this->close_section();

@@ -55,7 +55,9 @@ abstract class Addlar_Base_Widget extends Widget_Base {
 		if ( $title ) {
 			printf( '<h2 class="title">%s</h2>', wp_kses_post( $title ) );
 		}
-		if ( $lede ) {
+		// Client instruction: Remove all subtext/lede from homepage sections except hero.
+		$is_home_context = is_front_page() || is_home() || ( function_exists( 'get_the_ID' ) && (int) get_the_ID() === (int) get_option( 'page_on_front' ) );
+		if ( $lede && ! $is_home_context ) {
 			printf( '<p class="lead">%s</p>', wp_kses_post( $lede ) );
 		}
 	}

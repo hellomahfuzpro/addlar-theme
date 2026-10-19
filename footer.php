@@ -128,6 +128,18 @@ if ( empty( $mark ) ) {
 							</div>
 
 							<div class="cf-field">
+								<label for="cf-category"><?php esc_html_e( 'Question Category', 'addlar' ); ?></label>
+								<select id="cf-category" name="question_category" class="cf-select">
+									<option value="General Inquiry"><?php esc_html_e( 'General Inquiry', 'addlar' ); ?></option>
+									<option value="Customised Product Requirement"><?php esc_html_e( 'Customised Product Requirement', 'addlar' ); ?></option>
+									<option value="Request a Product Catalog"><?php esc_html_e( 'Request a Product Catalog', 'addlar' ); ?></option>
+									<option value="Speak with an Engineer"><?php esc_html_e( 'Speak with an Engineer', 'addlar' ); ?></option>
+									<option value="Contact Our Dubai Office Today"><?php esc_html_e( 'Contact Our Dubai Office Today', 'addlar' ); ?></option>
+									<option value="Technical Data Sheet (TDS) Request"><?php esc_html_e( 'Technical Data Sheet (TDS) Request', 'addlar' ); ?></option>
+								</select>
+							</div>
+
+							<div class="cf-field">
 								<label for="cf-message"><?php esc_html_e( 'Your Message', 'addlar' ); ?></label>
 								<textarea id="cf-message" name="message" rows="4" placeholder="<?php esc_attr_e( 'Specify your desired product grade (e.g., Heavy Duty Engine Oil, Driveline, Treat Rates, or TDS inquiry)...', 'addlar' ); ?>" class="cf-input cf-textarea"></textarea>
 							</div>
@@ -307,6 +319,162 @@ if ( empty( $mark ) ) {
 		</div>
 	</footer>
 </div>
+
+<!-- =========================================================================
+     GLOBAL TECHNICAL DATA SHEET (TDS) MODAL
+     ====================================================================== -->
+<div id="addlar-tds-modal" class="tds-modal-backdrop" aria-hidden="true" role="dialog" aria-modal="true">
+	<div class="tds-modal-window">
+		<div class="tds-modal-header">
+			<span class="tds-modal-eyebrow"><?php esc_html_e( 'Direct Technical Documentation', 'addlar' ); ?></span>
+			<h3 class="tds-modal-title"><?php esc_html_e( 'Request Technical Data Sheet', 'addlar' ); ?></h3>
+			<p class="tds-modal-subtitle"><?php esc_html_e( 'Official formulation parameters, treat rate curves & OEM specifications sent to your inbox.', 'addlar' ); ?></p>
+			<button type="button" class="tds-modal-close" onclick="window.addlarCloseTds()" aria-label="<?php esc_attr_e( 'Close', 'addlar' ); ?>">&times;</button>
+		</div>
+
+		<div class="tds-modal-body">
+			<form action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" method="post" class="tds-form">
+				<?php wp_nonce_field( 'addlar_contact_form', 'addlar_contact_nonce' ); ?>
+				<input type="hidden" name="action" value="addlar_contact_submit">
+				<input type="hidden" name="preset" value="tds">
+				<input type="hidden" name="redirect_to" value="<?php echo esc_url( ( get_permalink() ? get_permalink() : home_url( '/' ) ) . '?addlar_sent=tds' ); ?>">
+				<input type="text" name="addlar_hp" value="" style="display:none;" tabindex="-1" autocomplete="off">
+				<input type="hidden" id="tds-hidden-product" name="product" value="">
+
+				<!-- Auto-populated Product Banner -->
+				<div class="tds-product-banner">
+					<div>
+						<div class="tds-product-lbl"><?php esc_html_e( 'Target Formulation / Package', 'addlar' ); ?></div>
+						<div id="tds-display-product" class="tds-product-val">ADDLAR 7750</div>
+					</div>
+					<span class="tds-product-badge"><?php esc_html_e( 'Direct TDS', 'addlar' ); ?></span>
+				</div>
+
+				<div class="tds-form-row">
+					<div class="tds-form-group">
+						<label for="tds-name"><?php esc_html_e( 'Your Name', 'addlar' ); ?> *</label>
+						<input type="text" id="tds-name" name="name" class="tds-input" placeholder="John Doe" required>
+					</div>
+					<div class="tds-form-group">
+						<label for="tds-company"><?php esc_html_e( 'Company Name', 'addlar' ); ?></label>
+						<input type="text" id="tds-company" name="company" class="tds-input" placeholder="Lubricant Formulators Inc.">
+					</div>
+				</div>
+
+				<div class="tds-form-row">
+					<div class="tds-form-group">
+						<label for="tds-email"><?php esc_html_e( 'Corporate Email', 'addlar' ); ?> *</label>
+						<input type="email" id="tds-email" name="email" class="tds-input" placeholder="john@company.com" required>
+					</div>
+					<div class="tds-form-group">
+						<label for="tds-phone"><?php esc_html_e( 'Phone / WhatsApp', 'addlar' ); ?></label>
+						<input type="tel" id="tds-phone" name="phone" class="tds-input" placeholder="+1 (555) 000-0000">
+					</div>
+				</div>
+
+				<div class="tds-form-group">
+					<label for="tds-message"><?php esc_html_e( 'Specific Requirements / Target Specs', 'addlar' ); ?></label>
+					<textarea id="tds-message" name="message" class="tds-input tds-textarea" placeholder="<?php esc_attr_e( 'Specify base oil group, treat rate targets, or viscosity grades if known...', 'addlar' ); ?>" rows="3"></textarea>
+				</div>
+
+				<button type="submit" class="tds-submit-btn">
+					<span><?php esc_html_e( 'Submit Data Sheet Request', 'addlar' ); ?></span>
+					<svg fill="none" stroke="currentColor" viewBox="0 0 24 24" width="16" height="16"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+				</button>
+			</form>
+		</div>
+	</div>
+</div>
+
+<script>
+(function() {
+	// Category Switcher
+	window.addlarSelectCategory = function(catKey) {
+		var select = document.getElementById('cf-category');
+		if (!select) return;
+
+		var map = {
+			'customised': 'Customised Product Requirement',
+			'catalog': 'Request a Product Catalog',
+			'engineer': 'Speak with an Engineer',
+			'dubai_office': 'Contact Our Dubai Office Today',
+			'tds': 'Technical Data Sheet (TDS) Request',
+			'general': 'General Inquiry'
+		};
+
+		var targetVal = map[catKey] || catKey;
+		for (var i = 0; i < select.options.length; i++) {
+			if (select.options[i].value === targetVal || select.options[i].text.indexOf(targetVal) !== -1) {
+				select.selectedIndex = i;
+				break;
+			}
+		}
+
+		var contactSec = document.getElementById('contact');
+		if (contactSec) {
+			contactSec.scrollIntoView({ behavior: 'smooth' });
+			setTimeout(function() {
+				select.focus();
+				select.style.boxShadow = '0 0 0 4px rgba(211, 47, 47, 0.4)';
+				setTimeout(function() { select.style.boxShadow = ''; }, 1800);
+			}, 600);
+		}
+	};
+
+	// TDS Modal Controls
+	var modal = document.getElementById('addlar-tds-modal');
+	var hiddenInput = document.getElementById('tds-hidden-product');
+	var displayLabel = document.getElementById('tds-display-product');
+
+	window.addlarOpenTds = function(productName) {
+		if (!modal) return;
+		var name = productName || 'ADDLAR Technical Formulation';
+		if (hiddenInput) hiddenInput.value = name;
+		if (displayLabel) displayLabel.textContent = name;
+		modal.classList.add('open');
+		modal.setAttribute('aria-hidden', 'false');
+		document.body.style.overflow = 'hidden';
+	};
+
+	window.addlarCloseTds = function() {
+		if (!modal) return;
+		modal.classList.remove('open');
+		modal.setAttribute('aria-hidden', 'true');
+		document.body.style.overflow = '';
+	};
+
+	if (modal) {
+		modal.addEventListener('click', function(e) {
+			if (e.target === modal) {
+				window.addlarCloseTds();
+			}
+		});
+	}
+
+	document.addEventListener('keydown', function(e) {
+		if (e.key === 'Escape' && modal && modal.classList.contains('open')) {
+			window.addlarCloseTds();
+		}
+	});
+
+	// Global delegation for TDS buttons
+	document.addEventListener('click', function(e) {
+		var btn = e.target.closest('.addlar-open-tds, [data-tds-product], a[href*="request-data-sheet"], a[href*="request-tds"]');
+		if (btn) {
+			e.preventDefault();
+			var prod = btn.getAttribute('data-tds-product') || btn.getAttribute('data-product') || '';
+			if (!prod) {
+				var card = btn.closest('.pcard, .pcard-clean, tr, .product');
+				if (card) {
+					var h = card.querySelector('h3, h4, .title, .pcard-title');
+					if (h) prod = h.textContent.trim();
+				}
+			}
+			window.addlarOpenTds(prod || 'ADDLAR Additive Package');
+		}
+	});
+})();
+</script>
 
 <?php wp_footer(); ?>
 </body>

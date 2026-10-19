@@ -58,7 +58,7 @@ class Addlar_Widget_StatBand extends Addlar_Base_Widget {
 		$this->add_control( 'title', array(
 			'label'   => __( 'Title', 'addlar' ),
 			'type'    => Controls_Manager::TEXT,
-			'default' => __( 'Scale you can formulate against.', 'addlar' ),
+			'default' => __( 'Global Scale. Proven Formulation Power.', 'addlar' ),
 		) );
 
 		$this->add_control( 'bg', array(
@@ -144,13 +144,17 @@ class Addlar_Widget_StatBand extends Addlar_Base_Widget {
 		if ( $bg ) {
 			printf( '<img class="nbg" src="%s" alt="">', esc_url( $bg ) );
 		}
+		$stat_title = ! empty( $s['title'] ) ? $s['title'] : '';
+		if ( false !== stripos( $stat_title, 'Scale you can formulate' ) ) {
+			$stat_title = __( 'Global Scale. Proven Formulation Power.', 'addlar' );
+		}
 		?>
 		<div class="wrap center">
 			<?php if ( ! empty( $s['eyebrow'] ) ) : ?>
 				<span class="eyebrow" style="color:#fff"><?php echo esc_html( $s['eyebrow'] ); ?></span>
 			<?php endif; ?>
-			<?php if ( ! empty( $s['title'] ) ) : ?>
-				<h2 style="margin-top:16px"><?php echo esc_html( $s['title'] ); ?></h2>
+			<?php if ( ! empty( $stat_title ) ) : ?>
+				<h2 style="margin-top:16px"><?php echo esc_html( $stat_title ); ?></h2>
 			<?php endif; ?>
 		</div>
 		<?php

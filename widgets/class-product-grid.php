@@ -460,6 +460,18 @@ class Addlar_Widget_ProductGrid extends Addlar_Base_Widget {
 				<div class="showcase-grid-pattern"></div>
 			</div>
 
+			<!-- Top Centered Product Selection Buttons (Client Requirement) -->
+			<div class="showcase-dock">
+				<nav class="showcase-tab-bar" aria-label="<?php esc_attr_e( 'Additive Categories', 'addlar' ); ?>">
+					<?php foreach ( $slides_data as $btn_idx => $tab_item ) : ?>
+						<button type="button" class="showcase-tab-btn <?php echo ( 0 === $btn_idx ) ? 'active' : ''; ?>" data-slide-index="<?php echo esc_attr( $btn_idx ); ?>">
+							<?php $this->render_tab_svg( $tab_item['icon'] ); ?>
+							<span><?php echo esc_html( $tab_item['cat'] ); ?></span>
+						</button>
+					<?php endforeach; ?>
+				</nav>
+			</div>
+
 			<!-- Main Showcase Grid Content -->
 			<div class="showcase-main-body">
 				<!-- Left Column: Primary Content -->
@@ -469,8 +481,6 @@ class Addlar_Widget_ProductGrid extends Addlar_Base_Widget {
 					</div>
 
 					<h2 id="<?php echo esc_attr( $unique_id ); ?>-title" class="showcase-headline"><?php echo esc_html( $first['title'] ); ?></h2>
-
-					<p id="<?php echo esc_attr( $unique_id ); ?>-desc" class="showcase-desc"><?php echo esc_html( $first['desc'] ); ?></p>
 
 					<div id="<?php echo esc_attr( $unique_id ); ?>-specs" class="showcase-specs">
 						<?php foreach ( (array) $first['specs'] as $spec_idx => $spec_item ) : ?>
@@ -511,7 +521,6 @@ class Addlar_Widget_ProductGrid extends Addlar_Base_Widget {
 					<div>
 						<div id="<?php echo esc_attr( $unique_id ); ?>-counter" class="showcase-counter"><?php echo esc_html( $first['counter'] ); ?></div>
 						<h3 id="<?php echo esc_attr( $unique_id ); ?>-cat-name" class="showcase-cat-name"><?php echo esc_html( $first['catName'] ); ?></h3>
-						<p id="<?php echo esc_attr( $unique_id ); ?>-cat-desc" class="showcase-cat-desc"><?php echo esc_html( $first['catDesc'] ); ?></p>
 					</div>
 
 					<div class="showcase-arrows">
@@ -541,18 +550,6 @@ class Addlar_Widget_ProductGrid extends Addlar_Base_Widget {
 						?>
 					</div>
 				</div>
-			</div>
-
-			<!-- Bottom Floating Dock Tab Bar -->
-			<div class="showcase-dock">
-				<nav class="showcase-tab-bar" aria-label="<?php esc_attr_e( 'Additive Categories', 'addlar' ); ?>">
-					<?php foreach ( $slides_data as $btn_idx => $tab_item ) : ?>
-						<button type="button" class="showcase-tab-btn <?php echo ( 0 === $btn_idx ) ? 'active' : ''; ?>" data-slide-index="<?php echo esc_attr( $btn_idx ); ?>">
-							<?php $this->render_tab_svg( $tab_item['icon'] ); ?>
-							<span><?php echo esc_html( $tab_item['cat'] ); ?></span>
-						</button>
-					<?php endforeach; ?>
-				</nav>
 			</div>
 		</section>
 		</div>

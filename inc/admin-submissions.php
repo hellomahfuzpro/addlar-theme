@@ -32,6 +32,7 @@ function addlar_submissions_create_table() {
 		email        VARCHAR(255) NOT NULL DEFAULT '',
 		phone        VARCHAR(100) NOT NULL DEFAULT '',
 		country      VARCHAR(255) NOT NULL DEFAULT '',
+		category     VARCHAR(255) NOT NULL DEFAULT '',
 		product      VARCHAR(255) NOT NULL DEFAULT '',
 		message      TEXT NOT NULL,
 		ip_address   VARCHAR(100) NOT NULL DEFAULT '',
@@ -46,14 +47,14 @@ function addlar_submissions_create_table() {
 	dbDelta( $sql );
 
 	// Store installed DB version.
-	update_option( 'addlar_submissions_db_version', '1.0' );
+	update_option( 'addlar_submissions_db_version', '1.1' );
 }
 
 /**
  * Auto-install table on theme load if not already present.
  */
 function addlar_submissions_maybe_install() {
-	if ( get_option( 'addlar_submissions_db_version' ) !== '1.0' ) {
+	if ( get_option( 'addlar_submissions_db_version' ) !== '1.1' ) {
 		addlar_submissions_create_table();
 	}
 }
@@ -80,6 +81,7 @@ function addlar_insert_submission( $data ) {
 		'email'      => '',
 		'phone'      => '',
 		'country'    => '',
+		'category'   => '',
 		'product'    => '',
 		'message'    => '',
 		'ip_address' => '',
@@ -97,12 +99,13 @@ function addlar_insert_submission( $data ) {
 			'email'      => sanitize_email( $row['email'] ),
 			'phone'      => sanitize_text_field( $row['phone'] ),
 			'country'    => sanitize_text_field( $row['country'] ),
+			'category'   => sanitize_text_field( $row['category'] ),
 			'product'    => sanitize_text_field( $row['product'] ),
 			'message'    => sanitize_textarea_field( $row['message'] ),
 			'ip_address' => sanitize_text_field( $row['ip_address'] ),
 			'status'     => sanitize_text_field( $row['status'] ),
 		),
-		array( '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s' )
+		array( '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s' )
 	);
 
 	return $inserted ? $wpdb->insert_id : false;
@@ -241,6 +244,7 @@ function addlar_render_submissions_page() {
 					<option value=""><?php esc_html_e( 'All forms', 'addlar' ); ?></option>
 					<option value="contact" <?php selected( $preset_filter, 'contact' ); ?>><?php esc_html_e( 'Contact Us', 'addlar' ); ?></option>
 					<option value="expert" <?php selected( $preset_filter, 'expert' ); ?>><?php esc_html_e( 'Ask the Expert', 'addlar' ); ?></option>
+					<option value="tds" <?php selected( $preset_filter, 'tds' ); ?>><?php esc_html_e( 'Technical Data Sheet (TDS)', 'addlar' ); ?></option>
 				</select>
 				<input type="search" name="s" value="<?php echo esc_attr( $search ); ?>" placeholder="<?php esc_attr_e( 'Search name, email, company…', 'addlar' ); ?>" style="width:220px;">
 				<button class="button"><?php esc_html_e( 'Filter', 'addlar' ); ?></button>
@@ -292,7 +296,7 @@ function addlar_render_submissions_page() {
 								$toggle     = 'unread' === $row->status ? 'mark_read' : 'mark_unread';
 								$toggle_url = wp_nonce_url( add_query_arg( array( 'action' => $toggle, 'id' => $row->id ), $base_url ), 'addlar_sub_action' );
 								?>
-								<a href="#" class="addlar-view-sub" data-id="<?php echo esc_attr( $row->id ); ?>" data-name="<?php echo esc_attr( $row->name ); ?>" data-email="<?php echo esc_attr( $row->email ); ?>" data-company="<?php echo esc_attr( $row->company ); ?>" data-phone="<?php echo esc_attr( $row->phone ); ?>" data-country="<?php echo esc_attr( $row->country ); ?>" data-product="<?php echo esc_attr( $row->product ); ?>" data-message="<?php echo esc_attr( $row->message ); ?>" data-date="<?php echo esc_attr( wp_date( 'F j, Y g:i a', strtotime( $row->created_at ) ) ); ?>" data-preset="<?php echo esc_attr( $row->preset ); ?>" data-ip="<?php echo esc_attr( $row->ip_address ); ?>" title="<?php esc_attr_e( 'View details', 'addlar' ); ?>"><?php esc_html_e( 'View', 'addlar' ); ?></a> |
+								<a href="#" class="addlar-view-sub" data-id="<?php echo esc_attr( $row->id ); ?>" data-name="<?php echo esc_attr( $row->name ); ?>" data-email="<?php echo esc_attr( $row->email ); ?>" data-company="<?php echo esc_attr( $row->company ); ?>" data-phone="<?php echo esc_attr( $row->phone ); ?>" data-country="<?php echo esc_attr( $row->country ); ?>" data-category="<?php echo esc_attr( isset( $row->category ) ? $row->category : '' ); ?>" data-product="<?php echo esc_attr( $row->product ); ?>" data-message="<?php echo esc_attr( $row->message ); ?>" data-date="<?php echo esc_attr( wp_date( 'F j, Y g:i a', strtotime( $row->created_at ) ) ); ?>" data-preset="<?php echo esc_attr( $row->preset ); ?>" data-ip="<?php echo esc_attr( $row->ip_address ); ?>" title="<?php esc_attr_e( 'View details', 'addlar' ); ?>"><?php esc_html_e( 'View', 'addlar' ); ?></a> |
 								<a href="<?php echo esc_url( $toggle_url ); ?>"><?php echo 'unread' === $row->status ? esc_html__( 'Read', 'addlar' ) : esc_html__( 'Unread', 'addlar' ); ?></a> |
 								<a href="<?php echo esc_url( $delete_url ); ?>" onclick="return confirm('<?php esc_attr_e( 'Delete this submission?', 'addlar' ); ?>');" style="color:#a00;"><?php esc_html_e( 'Delete', 'addlar' ); ?></a>
 							</td>
@@ -329,6 +333,7 @@ function addlar_render_submissions_page() {
 				<tr><th><?php esc_html_e( 'Company', 'addlar' ); ?></th><td id="addlar-sub-modal-company"></td></tr>
 				<tr><th><?php esc_html_e( 'Phone', 'addlar' ); ?></th><td id="addlar-sub-modal-phone"></td></tr>
 				<tr><th><?php esc_html_e( 'Country', 'addlar' ); ?></th><td id="addlar-sub-modal-country"></td></tr>
+				<tr><th><?php esc_html_e( 'Category', 'addlar' ); ?></th><td id="addlar-sub-modal-category"></td></tr>
 				<tr><th><?php esc_html_e( 'Product', 'addlar' ); ?></th><td id="addlar-sub-modal-product"></td></tr>
 				<tr><th><?php esc_html_e( 'Message', 'addlar' ); ?></th><td id="addlar-sub-modal-message" style="white-space:pre-wrap;"></td></tr>
 				<tr><th><?php esc_html_e( 'IP Address', 'addlar' ); ?></th><td id="addlar-sub-modal-ip" style="color:#999;font-size:12px;"></td></tr>
@@ -351,6 +356,7 @@ function addlar_render_submissions_page() {
 				document.getElementById('addlar-sub-modal-company').textContent = d.company || '—';
 				document.getElementById('addlar-sub-modal-phone').textContent = d.phone || '—';
 				document.getElementById('addlar-sub-modal-country').textContent = d.country || '—';
+				document.getElementById('addlar-sub-modal-category').textContent = d.category || '—';
 				document.getElementById('addlar-sub-modal-product').textContent = d.product || '—';
 				document.getElementById('addlar-sub-modal-message').textContent = d.message || '—';
 				document.getElementById('addlar-sub-modal-ip').textContent = d.ip || '—';
