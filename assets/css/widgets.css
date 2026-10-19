@@ -1671,12 +1671,12 @@
 /* ===== STITCH CONTACT BANNER ===== */
 .adl .contact-banner {
 	width: 100%;
-	background: linear-gradient(135deg, #E52D27 0%, #B31217 50%, #7E0A0E 100%);
+	background: linear-gradient(135deg, #991b1e 0%, #681114 45%, #340608 100%);
 	color: #FFFFFF;
 	padding: 84px 24px;
 	position: relative;
 	overflow: hidden;
-	border-bottom: 1px solid rgba(126, 10, 14, 0.4);
+	border-bottom: 1px solid rgba(52, 6, 8, 0.6);
 	box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25);
 }
 .adl .contact-watermark {
@@ -2300,6 +2300,604 @@
 		align-items: center;
 		text-align: center;
 		gap: 14px;
+	}
+}
+
+/* ==========================================================================
+   APPROVED OCTOBER UPDATES: STEP-BY-STEP REFINED STYLES
+   ========================================================================== */
+
+/* 1. HERO SEARCH CIRCLE LENS & CONNECTED HANDLE */
+.hero-visual .hud-stage {
+	position: absolute;
+	inset: 0;
+	width: 100%;
+	height: 100%;
+	z-index: 25;
+	pointer-events: none;
+}
+.search-circle-unit {
+	position: absolute;
+	top: 50%;
+	right: 18%;
+	transform: translate(50%, -50%);
+	width: 250px;
+	height: 250px;
+	pointer-events: auto;
+	user-select: none;
+	transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.4s ease;
+}
+.lens-outer-ring {
+	position: absolute;
+	inset: 4px;
+	border-radius: 50%;
+	border: 1.5px dashed rgba(255, 255, 255, 0.4);
+	animation: rotateRing 32s linear infinite;
+}
+@keyframes rotateRing {
+	from { transform: rotate(0deg); }
+	to   { transform: rotate(360deg); }
+}
+.lens-inner-ring {
+	position: absolute;
+	inset: 16px;
+	border-radius: 50%;
+	border: 3px solid rgba(255, 255, 255, 0.85);
+	background: radial-gradient(circle at center, rgba(255, 255, 255, 0.08) 0%, rgba(0, 0, 0, 0.3) 70%, rgba(0, 0, 0, 0.6) 100%);
+	box-shadow: 0 0 25px rgba(0, 0, 0, 0.6), 0 0 15px rgba(255, 255, 255, 0.2), inset 0 0 24px rgba(255, 255, 255, 0.15);
+	backdrop-filter: blur(0.5px);
+	-webkit-backdrop-filter: blur(0.5px);
+	transition: all 0.4s ease;
+	z-index: 2;
+}
+.search-circle-unit.mode-red-glow .lens-inner-ring {
+	border-color: rgba(211, 47, 47, 0.9);
+	box-shadow: 0 0 35px rgba(211, 47, 47, 0.6), inset 0 0 25px rgba(211, 47, 47, 0.35);
+}
+.lens-crosshair {
+	position: absolute;
+	inset: 0;
+	pointer-events: none;
+	z-index: 2;
+}
+.lens-crosshair::before,
+.lens-crosshair::after {
+	content: '';
+	position: absolute;
+	background: rgba(255, 255, 255, 0.35);
+}
+.lens-crosshair::before {
+	top: 50%;
+	left: 20px;
+	right: 20px;
+	height: 1px;
+	transform: translateY(-50%);
+}
+.lens-crosshair::after {
+	left: 50%;
+	top: 20px;
+	bottom: 20px;
+	width: 1px;
+	transform: translateX(-50%);
+}
+.lens-handle-wrap {
+	position: absolute;
+	left: 200px;
+	top: 200px;
+	width: 120px;
+	height: 24px;
+	transform-origin: 0% 50%;
+	transform: translateY(-50%) rotate(45deg);
+	z-index: 10;
+	pointer-events: none;
+}
+.lens-handle-collar {
+	position: absolute;
+	left: -3px;
+	top: 50%;
+	transform: translateY(-50%);
+	width: 14px;
+	height: 22px;
+	border-radius: 3px;
+	background: linear-gradient(180deg, #FFFFFF 0%, #D1D5DB 45%, #9CA3AF 100%);
+	box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4), inset 0 1px 1px rgba(255, 255, 255, 0.8);
+	border: 1px solid rgba(255, 255, 255, 0.7);
+	border-left: none;
+}
+.lens-handle-shaft {
+	position: absolute;
+	left: 9px;
+	top: 50%;
+	transform: translateY(-50%);
+	width: 95px;
+	height: 18px;
+	border-radius: 0 10px 10px 0;
+	background: linear-gradient(180deg, rgba(255, 255, 255, 0.95) 0%, rgba(229, 231, 235, 0.9) 25%, rgba(156, 163, 175, 0.9) 65%, rgba(75, 85, 99, 0.95) 100%);
+	box-shadow: 0 8px 20px rgba(0, 0, 0, 0.65), inset 0 1px 2px rgba(255, 255, 255, 0.9), inset 0 -1px 2px rgba(0, 0, 0, 0.5);
+	border: 1px solid rgba(255, 255, 255, 0.6);
+}
+.lens-handle-shaft::before {
+	content: '';
+	position: absolute;
+	left: 18px;
+	top: 2px;
+	bottom: 2px;
+	width: 32px;
+	background: repeating-linear-gradient(90deg, rgba(0, 0, 0, 0.25) 0px, rgba(0, 0, 0, 0.25) 2px, transparent 2px, transparent 6px);
+	border-radius: 2px;
+}
+.lens-handle-shaft::after {
+	content: '';
+	position: absolute;
+	right: 0px;
+	top: 0px;
+	bottom: 0px;
+	width: 14px;
+	border-radius: 0 9px 9px 0;
+	background: linear-gradient(180deg, #FFFFFF 0%, #CBD5E1 50%, #64748B 100%);
+	box-shadow: inset 1px 0 2px rgba(0, 0, 0, 0.3);
+}
+.search-circle-unit.mode-red-glow .lens-handle-shaft {
+	background: linear-gradient(180deg, #ef4444 0%, #dc2626 30%, #991b1b 70%, #450a0a 100%);
+	border-color: rgba(255, 100, 100, 0.6);
+}
+.search-circle-unit.mode-red-glow .lens-handle-collar {
+	background: linear-gradient(180deg, #dc2626 0%, #991b1b 100%);
+	border-color: rgba(255, 100, 100, 0.6);
+}
+.center-plus-wrap {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	width: 90px;
+	height: 90px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	z-index: 5;
+	pointer-events: none;
+}
+.center-plus-img {
+	width: 100%;
+	height: 100%;
+	object-fit: contain;
+	animation: gentleBreathing 4s ease-in-out infinite alternate;
+}
+@keyframes gentleBreathing {
+	0%   { transform: scale(0.96); }
+	100% { transform: scale(1.04); }
+}
+.plus-style-white {
+	filter: brightness(0) invert(1) drop-shadow(0 0 16px rgba(255, 255, 255, 0.7));
+	opacity: 0.75;
+}
+.plus-style-original {
+	filter: drop-shadow(0 0 18px rgba(211, 47, 47, 0.85));
+	opacity: 0.85;
+}
+.center-aperture {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	width: 110px;
+	height: 110px;
+	border-radius: 50%;
+	border: 1px dashed rgba(255, 255, 255, 0.3);
+	background: rgba(0, 0, 0, 0.15);
+	backdrop-filter: blur(1px);
+	z-index: 3;
+}
+
+/* 2. CHEMISTRY 3D CAR STAGE & DUAL-STRAND THREAD BRACKETS */
+.adl .chem-section {
+	position: relative;
+	background: radial-gradient(circle at 50% 55%, #141720 0%, #08090C 65%, #040406 100%);
+	color: #FFFFFF;
+	padding: 70px 24px 60px;
+	overflow: hidden;
+}
+.adl .chem-video-box {
+	position: relative;
+	width: 900px;
+	max-width: 65vw;
+	aspect-ratio: 16 / 9;
+	border-radius: 0;
+	overflow: visible;
+	background: transparent !important;
+	box-shadow: none !important;
+	z-index: 6;
+	margin: 0 auto;
+}
+.adl .chem-video {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	mix-blend-mode: screen;
+	-webkit-mask-image: radial-gradient(ellipse 70% 68% at 50% 50%, #000000 40%, transparent 92%);
+	mask-image: radial-gradient(ellipse 70% 68% at 50% 50%, #000000 40%, transparent 92%);
+}
+.adl .chem-hotspot.invisible-anchor {
+	position: absolute;
+	width: 2px;
+	height: 2px;
+	transform: translate(-50%, -50%);
+	opacity: 0;
+	pointer-events: none;
+	z-index: 5;
+}
+.adl .chem-svg-layer {
+	position: absolute;
+	inset: 0;
+	width: 100%;
+	height: 100%;
+	pointer-events: none;
+	z-index: 12;
+	overflow: visible;
+}
+.adl .thread-line {
+	fill: none;
+	stroke: #FFFFFF;
+	stroke-width: 1.15;
+	stroke-linecap: round;
+	stroke-linejoin: round;
+	filter: drop-shadow(0 0 1.5px rgba(255, 255, 255, 0.6));
+}
+.adl .connector-line {
+	fill: none;
+	stroke: #FFFFFF;
+	stroke-width: 1.15;
+	stroke-linecap: round;
+	stroke-linejoin: round;
+	filter: drop-shadow(0 0 1.5px rgba(255, 255, 255, 0.5));
+}
+.adl .chem-callouts-layer {
+	position: absolute;
+	inset: 0;
+	pointer-events: none;
+	z-index: 15;
+}
+.adl .hud-callout {
+	position: absolute;
+	user-select: none;
+	padding: 4px 10px;
+	pointer-events: auto;
+}
+.adl .hud-callout-text {
+	font-family: inherit;
+	font-style: italic;
+	font-weight: 800;
+	font-size: clamp(0.95rem, 1.15vw, 1.25rem);
+	line-height: 1.15;
+	color: #FFFFFF;
+	letter-spacing: -0.015em;
+	white-space: nowrap;
+	text-shadow: 0 2px 10px rgba(0, 0, 0, 0.95);
+}
+.adl .hud-callout-text span {
+	display: block;
+}
+.adl .hud-callout-1 { top: 22%; left: 9%; text-align: right; }
+.adl .hud-callout-2 { top: 46%; left: 7%; text-align: right; }
+.adl .hud-callout-3 { top: 74%; left: 11%; text-align: right; }
+.adl .hud-callout-4 { top: 18%; right: 11%; text-align: left; }
+.adl .hud-callout-5 { top: 40%; right: 8%; text-align: left; }
+.adl .hud-callout-6 { top: 62%; right: 10%; text-align: left; }
+.adl .hud-callout-7 { top: 82%; right: 15%; text-align: left; }
+
+/* 3. MILESTONE JOURNEY 2026 OVERFLOW FIX */
+.adl #poly-svg {
+	overflow: visible !important;
+}
+.adl .jh-track-angle {
+	--jrny-visible-cols: 8;
+}
+
+/* 4. PRODUCT RANGE SHOWCASE TOP-DOCK TAB BAR */
+.adl .showcase-dock.showcase-dock-top {
+	position: relative;
+	z-index: 10;
+	margin: 0 auto 30px;
+	display: flex;
+	justify-content: center;
+	width: 100%;
+}
+.adl .showcase-dock.showcase-dock-top .showcase-tab-bar {
+	display: inline-flex;
+	background: #FFFFFF;
+	border: 1px solid rgba(0, 0, 0, 0.1);
+	border-radius: 6px;
+	box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+	overflow: hidden;
+}
+.adl .showcase-tab-btn {
+	padding: 14px 20px;
+	display: inline-flex;
+	align-items: center;
+	gap: 8px;
+	background: transparent;
+	border: none;
+	font-size: 13px;
+	font-weight: 700;
+	color: #1A1D20;
+	cursor: pointer;
+	transition: all 0.2s ease;
+	border-right: 1px solid #EDEDED;
+}
+.adl .showcase-tab-btn:last-child {
+	border-right: none;
+}
+.adl .showcase-tab-btn.active {
+	background: var(--adl-red, #D32F2F);
+	color: #FFFFFF;
+}
+
+/* 5. PRODUCT ARCHIVE CLEAN IMAGELESS CARDS */
+.adl .prod-grid-clean {
+	display: grid;
+	grid-template-columns: repeat(3, 1fr);
+	gap: 24px;
+}
+.adl .pcard-clean {
+	background: #FFFFFF;
+	border: 1px solid var(--adl-line, #E2E8F0);
+	border-radius: 4px;
+	padding: 26px 28px;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+	transition: all .28s ease;
+	position: relative;
+	text-decoration: none;
+}
+.adl .pcard-clean:hover {
+	box-shadow: 0 16px 36px rgba(26, 29, 32, 0.08);
+	transform: translateY(-4px);
+	border-color: #CBD5E1;
+}
+.adl .pcard-top {
+	display: flex;
+	justify-content: space-between;
+	align-items: flex-start;
+	gap: 12px;
+	margin-bottom: 12px;
+}
+.adl .pcard-code-badge {
+	font-size: 11px;
+	font-family: monospace;
+	font-weight: 600;
+	color: var(--adl-grey, #64748B);
+	background: var(--adl-soft, #F8FAFC);
+	border: 1px solid var(--adl-line, #E2E8F0);
+	padding: 3px 8px;
+	border-radius: 4px;
+}
+.adl .pcard-title-link {
+	color: var(--adl-ink, #14171A);
+	text-decoration: none;
+	font-size: 22px;
+	font-weight: 800;
+	letter-spacing: -0.01em;
+	transition: color 0.2s ease;
+}
+.adl .pcard-title-link:hover {
+	color: var(--adl-red, #D32F2F);
+}
+.adl .pcard-foot {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding-top: 18px;
+	border-top: 1px solid var(--adl-line, #E2E8F0);
+	margin-top: auto;
+}
+.adl .pcard-details-link {
+	font-size: 13px;
+	font-weight: 700;
+	color: var(--adl-ink, #14171A);
+	text-decoration: none;
+	transition: color 0.2s ease;
+}
+.adl .pcard-details-link:hover {
+	color: var(--adl-red, #D32F2F);
+}
+.adl .btn-tds-action {
+	background: var(--adl-red, #D32F2F);
+	color: #FFFFFF;
+	font-size: 12.5px;
+	font-weight: 700;
+	padding: 9px 18px;
+	border-radius: 4px;
+	border: none;
+	cursor: pointer;
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	letter-spacing: .02em;
+	transition: all 0.2s ease;
+}
+.adl .btn-tds-action:hover {
+	background: var(--adl-red-dark, #B71C1C);
+	transform: translateY(-1px);
+	box-shadow: 0 4px 14px rgba(211, 47, 47, 0.35);
+}
+.adl .btn-tds-action svg {
+	width: 14px;
+	height: 14px;
+}
+
+/* 6. DEDICATED OPTION A: TDS REQUEST MODAL */
+.tds-modal-backdrop {
+	position: fixed;
+	inset: 0;
+	background: rgba(17, 19, 21, 0.78);
+	backdrop-filter: blur(12px);
+	-webkit-backdrop-filter: blur(12px);
+	z-index: 10000;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding: 24px;
+	opacity: 0;
+	visibility: hidden;
+	transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+.tds-modal-backdrop.open {
+	opacity: 1;
+	visibility: visible;
+}
+.tds-modal-window {
+	background: #FFFFFF;
+	border-radius: 8px;
+	width: 100%;
+	max-width: 580px;
+	box-shadow: 0 24px 60px rgba(0, 0, 0, 0.35);
+	position: relative;
+	transform: translateY(20px) scale(0.98);
+	transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+	overflow: hidden;
+	color: var(--adl-ink, #14171A);
+}
+.tds-modal-backdrop.open .tds-modal-window {
+	transform: translateY(0) scale(1);
+}
+.tds-modal-header {
+	padding: 26px 30px 20px;
+	border-bottom: 1px solid var(--adl-line, #E2E8F0);
+	position: relative;
+	background: var(--adl-soft, #F8FAFC);
+}
+.tds-modal-eyebrow {
+	display: inline-block;
+	font-size: 11px;
+	font-weight: 800;
+	text-transform: uppercase;
+	letter-spacing: .16em;
+	color: var(--adl-red, #D32F2F);
+	margin-bottom: 4px;
+}
+.tds-modal-title {
+	font-size: 24px;
+	font-weight: 800;
+	color: var(--adl-ink, #14171A);
+	margin: 0;
+}
+.tds-modal-subtitle {
+	font-size: 13.5px;
+	color: var(--adl-grey, #64748B);
+	margin-top: 4px;
+}
+.tds-modal-close {
+	position: absolute;
+	top: 22px;
+	right: 22px;
+	background: #FFFFFF;
+	border: 1px solid var(--adl-line, #E2E8F0);
+	border-radius: 50%;
+	width: 32px;
+	height: 32px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	color: var(--adl-ink, #14171A);
+	cursor: pointer;
+	font-size: 20px;
+	line-height: 1;
+	transition: all 0.2s ease;
+}
+.tds-modal-close:hover {
+	background: #F1F5F9;
+	transform: scale(1.08);
+}
+.tds-modal-body {
+	padding: 26px 30px 30px;
+}
+.tds-product-banner {
+	background: #F8FAFC;
+	border: 1px solid var(--adl-line, #E2E8F0);
+	border-left: 4px solid var(--adl-red, #D32F2F);
+	border-radius: 4px;
+	padding: 12px 18px;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	margin-bottom: 18px;
+}
+.tds-product-banner-lbl {
+	display: block;
+	font-size: 10.5px;
+	font-weight: 800;
+	text-transform: uppercase;
+	letter-spacing: .12em;
+	color: var(--adl-red, #D32F2F);
+}
+.tds-product-banner-val {
+	display: block;
+	font-size: 16px;
+	font-weight: 800;
+	color: var(--adl-ink, #14171A);
+}
+.tds-product-banner-spec {
+	display: block;
+	font-size: 12px;
+	color: var(--adl-grey, #64748B);
+	margin-top: 2px;
+}
+.tds-product-badge {
+	background: #FFFFFF;
+	border: 1px solid var(--adl-line, #E2E8F0);
+	color: var(--adl-grey, #64748B);
+	font-size: 11px;
+	font-weight: 700;
+	padding: 4px 8px;
+	border-radius: 4px;
+}
+
+/* 7. FINDER CUSTOM FORMULATION BLOCK */
+.custom-formulation-block {
+	margin-top: 24px;
+	padding-top: 20px;
+	border-top: 1px solid var(--adl-line, #E2E8F0);
+	display: flex;
+	flex-direction: column;
+	align-items: flex-start;
+}
+.custom-formulation-title {
+	font-size: 15px;
+	font-weight: 800;
+	color: var(--adl-ink, #14171A);
+	text-transform: uppercase;
+	letter-spacing: -0.01em;
+	margin-bottom: 4px;
+}
+.custom-formulation-desc {
+	font-size: 13px;
+	color: var(--adl-grey, #64748B);
+	line-height: 1.5;
+	margin-bottom: 14px;
+	max-width: 440px;
+}
+.highlighted-field {
+	border-color: var(--adl-red, #D32F2F) !important;
+	box-shadow: 0 0 12px rgba(211, 47, 47, 0.4) !important;
+	transition: all 0.3s ease;
+}
+
+@media (max-width: 900px) {
+	.adl .prod-grid-clean {
+		grid-template-columns: 1fr;
+	}
+	.adl .chem-video-box {
+		width: 100%;
+		max-width: 100%;
+	}
+	.adl .chem-svg-layer {
+		display: none;
+	}
+	.search-circle-unit {
+		width: 180px;
+		height: 180px;
 	}
 }
 

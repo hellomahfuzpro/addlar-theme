@@ -127,9 +127,19 @@ class Addlar_Widget_Applications extends Addlar_Base_Widget {
 
 		$this->add_heading_controls(
 			__( 'Technical Architecture • Seven Families', 'addlar' ),
-			__( 'The chemistry inside every package.', 'addlar' ),
+			__( 'Components inside ADDLAR.', 'addlar' ),
 			__( 'Seven families of advanced additive chemistry engineered into a unified package, creating an unbreakable molecular shield across every moving powertrain component.', 'addlar' )
 		);
+
+		$this->add_control( 'hide_subtext', array(
+			'label'        => __( 'Directive A: Remove Subtext Paragraphs', 'addlar' ),
+			'type'         => Controls_Manager::SWITCHER,
+			'default'      => 'yes',
+			'label_on'     => __( 'Yes', 'addlar' ),
+			'label_off'    => __( 'No', 'addlar' ),
+			'return_value' => 'yes',
+			'description'  => __( 'Keeps section ultra-clean with headings only per client directive.', 'addlar' ),
+		) );
 
 		$this->end_controls_section();
 
@@ -204,11 +214,12 @@ class Addlar_Widget_Applications extends Addlar_Base_Widget {
 		$poster      = $this->media_url( isset( $s['poster'] ) ? $s['poster'] : array(), 'full' );
 		$chemistries = ! empty( $s['chemistries'] ) ? $s['chemistries'] : $this->default_chemistries();
 		$beats       = ! empty( $s['beats'] ) ? $s['beats'] : $this->default_beats();
-		$unique_id   = 'chem-' . $this->get_id();
-		$anchor_id   = ! empty( $s['anchor'] ) ? $s['anchor'] : 'applications';
+		$unique_id    = 'chem-' . $this->get_id();
+		$anchor_id    = ! empty( $s['anchor'] ) ? $s['anchor'] : 'applications';
+		$hide_subtext = ( ! empty( $s['hide_subtext'] ) && 'yes' === $s['hide_subtext'] );
 		?>
 		<div class="adl">
-			<section class="chem-section" id="<?php echo esc_attr( $anchor_id ); ?>" data-widget-id="<?php echo esc_attr( $unique_id ); ?>">
+			<section class="chem-section <?php echo $hide_subtext ? 'chem-nosubtext' : ''; ?>" id="<?php echo esc_attr( $anchor_id ); ?>" data-widget-id="<?php echo esc_attr( $unique_id ); ?>">
 				<div class="chem-wrap">
 					<!-- Header -->
 					<div class="chem-head">
@@ -218,7 +229,7 @@ class Addlar_Widget_Applications extends Addlar_Base_Widget {
 						<?php if ( ! empty( $s['title'] ) ) : ?>
 							<h2 class="chem-title"><?php echo wp_kses_post( $s['title'] ); ?></h2>
 						<?php endif; ?>
-						<?php if ( ! empty( $s['lede'] ) ) : ?>
+						<?php if ( ! $hide_subtext && ! empty( $s['lede'] ) ) : ?>
 							<p class="chem-lead"><?php echo wp_kses_post( $s['lede'] ); ?></p>
 						<?php endif; ?>
 					</div>
@@ -233,9 +244,9 @@ class Addlar_Widget_Applications extends Addlar_Base_Widget {
 							<video class="chem-video" autoplay muted loop playsinline<?php echo $poster ? ' poster="' . esc_url( $poster ) . '"' : ''; ?>>
 								<source src="<?php echo esc_url( $video ); ?>" type="video/mp4">
 							</video>
-							<div class="chem-video-vignette"></div>
+							<div class="chem-video-vignette" style="display:none;"></div>
 
-							<!-- Hotspot Pins: Calibrated coordinates on car components (Pure Red, No White) -->
+							<!-- Hotspot Anchor Coordinates on Car Components (Invisible Anchors — White Dots Removed) -->
 							<?php foreach ( $chemistries as $idx => $c ) : ?>
 								<?php
 								$i     = $idx + 1;
@@ -243,40 +254,31 @@ class Addlar_Widget_Applications extends Addlar_Base_Widget {
 								$dot_y = ! empty( $c['dot_y'] ) ? $c['dot_y'] : '50%';
 								$title = ! empty( $c['part'] ) ? $c['part'] : ( ! empty( $c['title'] ) ? $c['title'] : '' );
 								?>
-								<div class="chem-hotspot" id="<?php echo esc_attr( $unique_id ); ?>-dot-<?php echo esc_attr( $i ); ?>" style="left:<?php echo esc_attr( $dot_x ); ?>;top:<?php echo esc_attr( $dot_y ); ?>;" data-index="<?php echo esc_attr( $i ); ?>" title="<?php echo esc_attr( $title ); ?>">
-									<div class="chem-hotspot-core"></div>
-									<div class="chem-hotspot-ring"></div>
+								<div class="chem-hotspot invisible-anchor" id="<?php echo esc_attr( $unique_id ); ?>-dot-<?php echo esc_attr( $i ); ?>" style="left:<?php echo esc_attr( $dot_x ); ?>;top:<?php echo esc_attr( $dot_y ); ?>;" data-index="<?php echo esc_attr( $i ); ?>" title="<?php echo esc_attr( $title ); ?>">
+									<div class="chem-hotspot-core" style="display:none;"></div>
+									<div class="chem-hotspot-ring" style="display:none;"></div>
 								</div>
 							<?php endforeach; ?>
 						</div>
 
-						<!-- Overlapping Red Box Text Cards (Sharp 0 radius, 2px red border, red header/footer) -->
-						<div class="chem-cards-layer">
+						<!-- Dual-Thread Framed Component Headings Layer -->
+						<div class="chem-callouts-layer">
 							<?php foreach ( $chemistries as $idx => $c ) : ?>
 								<?php
 								$i     = $idx + 1;
-								$num   = ! empty( $c['number'] ) ? $c['number'] : sprintf( '%02d', $i );
 								$part  = ! empty( $c['part'] ) ? $c['part'] : '';
 								$cat   = ! empty( $c['category'] ) ? $c['category'] : '';
-								$title = ! empty( $c['title'] ) ? $c['title'] : '';
-								$text  = ! empty( $c['text'] ) ? $c['text'] : '';
-								$badge = ! empty( $c['badge'] ) ? $c['badge'] : '';
+								if ( empty( $part ) && ! empty( $c['title'] ) ) {
+									$part = $c['title'];
+								}
 								?>
-								<div class="chem-card chem-card-<?php echo esc_attr( $i ); ?>" id="<?php echo esc_attr( $unique_id ); ?>-card-<?php echo esc_attr( $i ); ?>" data-index="<?php echo esc_attr( $i ); ?>">
-									<div class="chem-card-header">
-										<span><?php echo esc_html( $num ); ?><?php echo $part ? ' &bull; ' . esc_html( $part ) : ''; ?></span>
-										<span><?php echo esc_html( $cat ); ?></span>
+								<div class="hud-callout hud-callout-<?php echo esc_attr( $i ); ?>" id="<?php echo esc_attr( $unique_id ); ?>-callout-<?php echo esc_attr( $i ); ?>" data-index="<?php echo esc_attr( $i ); ?>">
+									<div class="hud-callout-text">
+										<span><?php echo esc_html( $part ); ?></span>
+										<?php if ( $cat ) : ?>
+											<span><?php echo esc_html( $cat ); ?></span>
+										<?php endif; ?>
 									</div>
-									<div class="chem-card-body">
-										<h4 class="chem-card-title"><?php echo esc_html( $title ); ?></h4>
-										<p class="chem-card-desc"><?php echo esc_html( $text ); ?></p>
-									</div>
-									<?php if ( $badge ) : ?>
-										<div class="chem-card-footer">
-											<span><?php echo esc_html( $badge ); ?></span>
-											<span>&rarr;</span>
-										</div>
-									<?php endif; ?>
 								</div>
 							<?php endforeach; ?>
 						</div>
@@ -289,7 +291,9 @@ class Addlar_Widget_Applications extends Addlar_Base_Widget {
 								<div class="chem-beat">
 									<div class="chem-beat-num"><?php echo esc_html( $b['bn'] ); ?></div>
 									<div class="chem-beat-title"><?php echo esc_html( $b['title'] ); ?></div>
-									<p class="chem-beat-desc"><?php echo esc_html( $b['text'] ); ?></p>
+									<?php if ( ! $hide_subtext && ! empty( $b['text'] ) ) : ?>
+										<p class="chem-beat-desc"><?php echo esc_html( $b['text'] ); ?></p>
+									<?php endif; ?>
 								</div>
 							<?php endforeach; ?>
 						</div>
@@ -306,95 +310,115 @@ class Addlar_Widget_Applications extends Addlar_Base_Widget {
 			if (!stage || !svg) return;
 
 			var totalItems = <?php echo count( $chemistries ); ?>;
-			var cards = stage.querySelectorAll('.chem-card');
-			var hotspots = stage.querySelectorAll('.chem-hotspot');
-			var highlightedIdx = null;
 
-			function updateLines() {
+			function renderLines() {
+				if (!stage || !svg) return;
 				if (window.innerWidth <= 900) {
 					svg.innerHTML = '';
 					return;
 				}
 
 				var stageRect = stage.getBoundingClientRect();
-				var svgWidth = stageRect.width;
-				var svgHeight = stageRect.height;
-				svg.setAttribute('viewBox', '0 0 ' + svgWidth + ' ' + svgHeight);
+				var svgW = stageRect.width;
+				var svgH = stageRect.height;
 
+				svg.setAttribute('viewBox', '0 0 ' + svgW + ' ' + svgH);
 				var pathsHtml = '';
 
 				for (var i = 1; i <= totalItems; i++) {
-					var card = document.getElementById(widgetId + '-card-' + i);
+					var callout = document.getElementById(widgetId + '-callout-' + i);
 					var dot = document.getElementById(widgetId + '-dot-' + i);
-					if (!card || !dot) continue;
+					if (!callout || !dot) continue;
 
-					var cardRect = card.getBoundingClientRect();
-					var dotRect = dot.getBoundingClientRect();
+					var cRect = callout.getBoundingClientRect();
+					var dRect = dot.getBoundingClientRect();
 
-					var dotX = (dotRect.left + dotRect.width / 2) - stageRect.left;
-					var dotY = (dotRect.top + dotRect.height / 2) - stageRect.top;
+					var dotX = (dRect.left + dRect.width / 2) - stageRect.left;
+					var dotY = (dRect.top + dRect.height / 2) - stageRect.top;
 
-					var cardX, cardY;
-					if (i === 7) {
-						cardX = (cardRect.left + cardRect.width / 2) - stageRect.left;
-						cardY = cardRect.top - stageRect.top;
-					} else if (i <= 3) {
-						cardX = cardRect.right - stageRect.left;
-						cardY = (cardRect.top + cardRect.height / 2) - stageRect.top;
+					var isLeft = (i <= 3);
+
+					var tLeft = cRect.left - stageRect.left;
+					var tRight = cRect.right - stageRect.left;
+					var tTop = cRect.top - stageRect.top;
+					var tBottom = cRect.bottom - stageRect.top;
+					var tMidY = (tTop + tBottom) / 2;
+
+					var gap = 3.5;
+
+					if (isLeft) {
+						var outerVertexX = tRight + 26;
+						var innerVertexX = outerVertexX - gap * 1.4;
+
+						var outerCornerX = tRight + 4;
+						var innerCornerX = tRight + 4 - gap * 0.7;
+
+						var topArmStart = tRight - 45;
+						var bottomArmStart = tRight - 35;
+
+						var outerPath = 'M ' + topArmStart + ' ' + (tTop - 4) +
+							' L ' + outerCornerX + ' ' + (tTop - 4) +
+							' L ' + outerVertexX + ' ' + tMidY +
+							' L ' + outerCornerX + ' ' + (tBottom + 4) +
+							' L ' + bottomArmStart + ' ' + (tBottom + 4);
+
+						var innerPath = 'M ' + (topArmStart + 4) + ' ' + (tTop - 4 + gap) +
+							' L ' + innerCornerX + ' ' + (tTop - 4 + gap) +
+							' L ' + innerVertexX + ' ' + tMidY +
+							' L ' + innerCornerX + ' ' + (tBottom + 4 - gap) +
+							' L ' + (bottomArmStart + 4) + ' ' + (tBottom + 4 - gap);
+
+						var topCap = 'M ' + topArmStart + ' ' + (tTop - 4) + ' L ' + (topArmStart + 4) + ' ' + (tTop - 4 + gap);
+						var bottomCap = 'M ' + bottomArmStart + ' ' + (tBottom + 4) + ' L ' + (bottomArmStart + 4) + ' ' + (tBottom + 4 - gap);
+
+						var leaderX = outerVertexX + 32;
+						var connectorPath = 'M ' + outerVertexX + ' ' + tMidY +
+							' L ' + leaderX + ' ' + tMidY +
+							' L ' + dotX + ' ' + dotY;
+
+						pathsHtml += '<path class="thread-line" d="' + outerPath + ' ' + innerPath + ' ' + topCap + ' ' + bottomCap + '" />' +
+							'<path class="connector-line" d="' + connectorPath + '" />';
 					} else {
-						cardX = cardRect.left - stageRect.left;
-						cardY = (cardRect.top + cardRect.height / 2) - stageRect.top;
-					}
+						var outerVertexX = tLeft - 26;
+						var innerVertexX = outerVertexX + gap * 1.4;
 
-					var isHighlight = (i === highlightedIdx);
-					var lineClass = 'chem-connector-line' + (isHighlight ? ' active' : '');
-					pathsHtml += '<path class="' + lineClass + '" d="M ' + cardX + ' ' + cardY + ' L ' + dotX + ' ' + dotY + '" />';
+						var outerCornerX = tLeft - 4;
+						var innerCornerX = tLeft - 4 + gap * 0.7;
+
+						var topArmStart = tLeft + 45;
+						var bottomArmStart = tLeft + 35;
+
+						var outerPath = 'M ' + topArmStart + ' ' + (tTop - 4) +
+							' L ' + outerCornerX + ' ' + (tTop - 4) +
+							' L ' + outerVertexX + ' ' + tMidY +
+							' L ' + outerCornerX + ' ' + (tBottom + 4) +
+							' L ' + bottomArmStart + ' ' + (tBottom + 4);
+
+						var innerPath = 'M ' + (topArmStart - 4) + ' ' + (tTop - 4 + gap) +
+							' L ' + innerCornerX + ' ' + (tTop - 4 + gap) +
+							' L ' + innerVertexX + ' ' + tMidY +
+							' L ' + innerCornerX + ' ' + (tBottom + 4 - gap) +
+							' L ' + (bottomArmStart - 4) + ' ' + (tBottom + 4 - gap);
+
+						var topCap = 'M ' + topArmStart + ' ' + (tTop - 4) + ' L ' + (topArmStart - 4) + ' ' + (tTop - 4 + gap);
+						var bottomCap = 'M ' + bottomArmStart + ' ' + (tBottom + 4) + ' L ' + (bottomArmStart - 4) + ' ' + (tBottom + 4 - gap);
+
+						var leaderX = outerVertexX - 32;
+						var connectorPath = 'M ' + outerVertexX + ' ' + tMidY +
+							' L ' + leaderX + ' ' + tMidY +
+							' L ' + dotX + ' ' + dotY;
+
+						pathsHtml += '<path class="thread-line" d="' + outerPath + ' ' + innerPath + ' ' + topCap + ' ' + bottomCap + '" />' +
+							'<path class="connector-line" d="' + connectorPath + '" />';
+					}
 				}
 
 				svg.innerHTML = pathsHtml;
 			}
 
-			function highlight(idx) {
-				highlightedIdx = idx;
-				cards.forEach(function(c) {
-					if (idx && parseInt(c.dataset.index, 10) === idx) {
-						c.classList.add('highlight');
-					} else {
-						c.classList.remove('highlight');
-					}
-				});
-
-				hotspots.forEach(function(h) {
-					if (idx && parseInt(h.dataset.index, 10) === idx) {
-						h.classList.add('active');
-					} else {
-						h.classList.remove('active');
-					}
-				});
-
-				updateLines();
-			}
-
-			cards.forEach(function(c) {
-				c.addEventListener('mouseenter', function() {
-					highlight(parseInt(this.dataset.index, 10));
-				});
-				c.addEventListener('mouseleave', function() {
-					highlight(null);
-				});
-			});
-
-			hotspots.forEach(function(h) {
-				h.addEventListener('mouseenter', function() {
-					highlight(parseInt(this.dataset.index, 10));
-				});
-				h.addEventListener('mouseleave', function() {
-					highlight(null);
-				});
-			});
-
-			window.addEventListener('resize', updateLines);
-			setTimeout(updateLines, 200);
+			window.addEventListener('resize', renderLines);
+			setTimeout(renderLines, 200);
+			window.addEventListener('load', renderLines);
 		})();
 		</script>
 		<?php

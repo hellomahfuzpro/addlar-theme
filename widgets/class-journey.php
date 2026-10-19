@@ -33,14 +33,14 @@ class Addlar_Widget_Journey extends Addlar_Base_Widget {
 	/** The approved eight milestones, with their colour progression. */
 	private function default_rows() {
 		return array(
-			array( 'icon' => 'building', 'accent' => '#D32F2F', 'tint' => '#F8F9FA', 'ph' => 'Milestone 01', 'num' => '2006',    'sub' => 'The Beginning', 'title' => 'Founded in Sharjah, UAE',            'text' => 'Rchemie International begins as a chemical raw materials distributor.' ),
-			array( 'icon' => 'droplet',  'accent' => '#D32F2F', 'tint' => '#F8F9FA', 'ph' => 'Milestone 02', 'num' => '2008–12', 'sub' => 'Coatings Era',  'title' => 'Paints, coatings & construction',  'text' => 'Expansion into paints, coatings and construction chemicals.' ),
-			array( 'icon' => 'globe',    'accent' => '#D32F2F', 'tint' => '#F8F9FA', 'ph' => 'Milestone 03', 'num' => '2012–15', 'sub' => 'Going Global',  'title' => 'Türkiye & USA, plus plastics',     'text' => 'Territorial expansion and entry into the plastics additive market.' ),
-			array( 'icon' => 'flask',    'accent' => '#D32F2F', 'tint' => '#F8F9FA', 'ph' => 'Milestone 04', 'num' => '2015',    'sub' => 'New Plant',     'title' => 'UAE adhesives plant',              'text' => 'A dedicated adhesives & hot-melt manufacturing plant opens in the UAE.' ),
-			array( 'icon' => 'factory',  'accent' => '#D32F2F', 'tint' => '#F8F9FA', 'ph' => 'Milestone 05', 'num' => '2019',    'sub' => 'Scaling Up',    'title' => 'Türkiye manufacturing',            'text' => 'A new plant scales regional production capacity.' ),
-			array( 'icon' => 'gear',     'accent' => '#D32F2F', 'tint' => '#F8F9FA', 'ph' => 'Milestone 06', 'num' => '2019–22', 'sub' => 'Foundation',    'title' => 'Rubber & lubricant additives',     'text' => 'The portfolio widens into rubber additives and lubricant additives.' ),
-			array( 'icon' => 'spark',    'accent' => '#D32F2F', 'tint' => '#F8F9FA', 'ph' => 'Milestone 07', 'num' => '2025',    'sub' => 'ADDLAR',        'title' => 'ADDLAR is launched',               'text' => "Rchemie formulates and launches ADDLAR's groundbreaking technology." ),
-			array( 'icon' => 'globe',    'accent' => '#D32F2F', 'tint' => '#F8F9FA', 'ph' => 'Milestone 08', 'num' => '2026',    'sub' => 'Worldwide',     'title' => 'Serving formulators globally',     'text' => 'ADDLAR now serves lubricant formulators across the globe.' ),
+			array( 'icon' => 'building', 'accent' => '#D32F2F', 'tint' => '#F8F9FA', 'ph' => 'Milestone 01', 'num' => '2006',            'sub' => 'The Beginning', 'title' => 'Founded in Sharjah, UAE',                                'text' => 'Rchemie International begins as a chemical raw materials distributor.' ),
+			array( 'icon' => 'droplet',  'accent' => '#D32F2F', 'tint' => '#F8F9FA', 'ph' => 'Milestone 02', 'num' => '2008–12',         'sub' => 'Coatings Era',  'title' => 'Establishing Product lines',                             'text' => 'Paints, Coatings and Construction Chemicals expansion.' ),
+			array( 'icon' => 'globe',    'accent' => '#D32F2F', 'tint' => '#F8F9FA', 'ph' => 'Milestone 03', 'num' => '2012',            'sub' => 'Turkey Plant',  'title' => 'Turkey Plant',                                           'text' => 'Territorial expansion and entry into the regional additive manufacturing market.' ),
+			array( 'icon' => 'flask',    'accent' => '#D32F2F', 'tint' => '#F8F9FA', 'ph' => 'Milestone 04', 'num' => '2015',            'sub' => 'Toll Blending', 'title' => 'Toll Blending for TOTAL',                                'text' => 'Strategic toll blending manufacturing operations established for TOTAL.' ),
+			array( 'icon' => 'factory',  'accent' => '#D32F2F', 'tint' => '#F8F9FA', 'ph' => 'Milestone 05', 'num' => '2019',            'sub' => 'Portfolio',     'title' => 'Expanding our portfolio',                                'text' => 'Adding product lines: Rubber, Plastics Oils and Additives.' ),
+			array( 'icon' => 'gear',     'accent' => '#D32F2F', 'tint' => '#F8F9FA', 'ph' => 'Milestone 06', 'num' => '2019–22',         'sub' => 'Foundation',    'title' => 'Rubber & lubricant additives',                             'text' => 'The portfolio widens into rubber additives and lubricant additives.' ),
+			array( 'icon' => 'spark',    'accent' => '#D32F2F', 'tint' => '#F8F9FA', 'ph' => 'Milestone 07', 'num' => '2025',            'sub' => 'ADDLAR',        'title' => 'ADDLAR is launched',                                       'text' => "Rchemie formulates and launches ADDLAR's groundbreaking technology." ),
+			array( 'icon' => 'globe',    'accent' => '#D32F2F', 'tint' => '#F8F9FA', 'ph' => 'Milestone 08', 'num' => '2026 and Beyond',  'sub' => 'Worldwide',     'title' => 'Serving formulators globally',                             'text' => 'ADDLAR now serves lubricant formulators across the globe.' ),
 		);
 	}
 
@@ -572,7 +572,11 @@ class Addlar_Widget_Journey extends Addlar_Base_Widget {
 					function calibrateAngleBorder(){
 						var track = document.getElementById('timeline-track');
 						var poly = document.getElementById('poly-main');
+						var svg = document.getElementById('poly-svg');
 						if(!track || !poly) return;
+						if (svg) {
+							svg.style.width = Math.max(track.clientWidth, track.scrollWidth) + 'px';
+						}
 						var hexes = track.querySelectorAll('.jhex');
 						if(hexes.length < 2) return;
 						var trackRect = track.getBoundingClientRect();

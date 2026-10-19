@@ -58,7 +58,7 @@ class Addlar_Widget_StatBand extends Addlar_Base_Widget {
 		$this->add_control( 'title', array(
 			'label'   => __( 'Title', 'addlar' ),
 			'type'    => Controls_Manager::TEXT,
-			'default' => __( 'Scale you can formulate against.', 'addlar' ),
+			'default' => __( 'Global Scale. Proven Formulation Power.', 'addlar' ),
 		) );
 
 		$this->add_control( 'bg', array(

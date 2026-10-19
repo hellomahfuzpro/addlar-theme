@@ -43,28 +43,33 @@ $term = get_queried_object();
 
 		<div class="wrap">
 			<?php if ( have_posts() ) : ?>
-				<div class="prod-grid">
+				<div class="prod-grid prod-grid-clean">
 					<?php
 					while ( have_posts() ) :
 						the_post();
 						$code = get_post_meta( get_the_ID(), '_addlar_code', true );
 						$sub  = get_post_meta( get_the_ID(), '_addlar_subcategory', true );
 						?>
-						<a class="pcard reveal" href="<?php the_permalink(); ?>">
-							<?php if ( has_post_thumbnail() ) : ?>
-								<div class="imgwrap"><?php the_post_thumbnail( 'medium' ); ?></div>
-							<?php endif; ?>
+						<div class="pcard pcard-clean reveal">
 							<div class="body">
-								<?php if ( $sub ) : ?>
-									<span class="cat"><?php echo esc_html( $sub ); ?></span>
-								<?php endif; ?>
-								<h3><?php the_title(); ?></h3>
-								<?php if ( $code ) : ?>
-									<div class="sub"><?php echo esc_html( $code ); ?></div>
-								<?php endif; ?>
-								<div class="foot"><span class="arw">&rarr;</span></div>
+								<div class="pcard-top">
+									<?php if ( $sub ) : ?>
+										<span class="cat"><?php echo esc_html( $sub ); ?></span>
+									<?php endif; ?>
+									<?php if ( $code ) : ?>
+										<span class="pcard-code-badge"><?php echo esc_html( $code ); ?></span>
+									<?php endif; ?>
+								</div>
+								<h3><a href="<?php the_permalink(); ?>" class="pcard-title-link"><?php the_title(); ?></a></h3>
+								<div class="foot pcard-foot">
+									<a href="<?php the_permalink(); ?>" class="pcard-details-link"><?php esc_html_e( 'View Details →', 'addlar' ); ?></a>
+									<button type="button" class="btn-tds-action btn-tds-trigger" data-tds-product="<?php the_title_attribute(); ?>">
+										<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+										<span><?php esc_html_e( 'Request Data Sheet', 'addlar' ); ?></span>
+									</button>
+								</div>
 							</div>
-						</a>
+						</div>
 						<?php
 					endwhile;
 					?>

@@ -128,6 +128,17 @@ if ( empty( $mark ) ) {
 							</div>
 
 							<div class="cf-field">
+								<label for="cf-category"><?php esc_html_e( 'Question Category', 'addlar' ); ?></label>
+								<select id="cf-category" name="category" class="cf-input cf-select">
+									<option value="General Inquiry"><?php esc_html_e( 'General Inquiry', 'addlar' ); ?></option>
+									<option value="Customised Product Requirement"><?php esc_html_e( 'Customised Product Requirement', 'addlar' ); ?></option>
+									<option value="Technical Support"><?php esc_html_e( 'Technical Support', 'addlar' ); ?></option>
+									<option value="Commercial & Distribution"><?php esc_html_e( 'Commercial & Distribution', 'addlar' ); ?></option>
+									<option value="Request Data Sheet (TDS)"><?php esc_html_e( 'Request Data Sheet (TDS)', 'addlar' ); ?></option>
+								</select>
+							</div>
+
+							<div class="cf-field">
 								<label for="cf-message"><?php esc_html_e( 'Your Message', 'addlar' ); ?></label>
 								<textarea id="cf-message" name="message" rows="4" placeholder="<?php esc_attr_e( 'Specify your desired product grade (e.g., Heavy Duty Engine Oil, Driveline, Treat Rates, or TDS inquiry)...', 'addlar' ); ?>" class="cf-input cf-textarea"></textarea>
 							</div>
@@ -308,6 +319,191 @@ if ( empty( $mark ) ) {
 	</footer>
 </div>
 
+<!-- DEDICATED OPTION A: TDS REQUEST MODAL -->
+<div class="tds-modal-backdrop" id="addlarTdsModal" aria-hidden="true">
+	<div class="tds-modal-window" role="dialog" aria-modal="true" aria-labelledby="tdsModalTitle">
+		<div class="tds-modal-header">
+			<span class="tds-modal-eyebrow"><?php esc_html_e( 'Technical Documentation Service', 'addlar' ); ?></span>
+			<h3 class="tds-modal-title" id="tdsModalTitle"><?php esc_html_e( 'Request Product Data Sheet', 'addlar' ); ?></h3>
+			<p class="tds-modal-subtitle"><?php esc_html_e( 'Official Technical Data Sheet (TDS) and formulation dispatch service.', 'addlar' ); ?></p>
+			<button type="button" class="tds-modal-close" id="addlarTdsClose" aria-label="<?php esc_attr_e( 'Close', 'addlar' ); ?>">&times;</button>
+		</div>
+
+		<div class="tds-modal-body">
+			<form id="addlarTdsForm" class="tds-form">
+				<input type="hidden" name="action" value="addlar_tds_submit">
+				<input type="hidden" name="preset" value="tds">
+				<input type="hidden" name="category" value="Request Data Sheet (TDS)">
+				<input type="text" name="addlar_hp" value="" style="display:none;" tabindex="-1" autocomplete="off">
+
+				<!-- Auto-Populated Product Banner -->
+				<div class="tds-product-banner">
+					<div class="tds-product-banner-left">
+						<span class="tds-product-banner-lbl"><?php esc_html_e( 'Target Package', 'addlar' ); ?></span>
+						<span class="tds-product-banner-val" id="tdsProductDisplay">ADDLAR 7750</span>
+						<span class="tds-product-banner-spec" id="tdsSpecDisplay">API CK-4 / ACEA E11 &bull; Heavy Duty Diesel</span>
+					</div>
+					<input type="hidden" id="tdsProductInput" name="product" value="ADDLAR 7750">
+					<span class="tds-product-badge"><?php esc_html_e( 'TDS PDS', 'addlar' ); ?></span>
+				</div>
+
+				<div class="cf-row">
+					<div class="cf-field">
+						<label for="tds-name"><?php esc_html_e( 'Your Full Name', 'addlar' ); ?> *</label>
+						<input type="text" id="tds-name" name="name" class="cf-input" placeholder="e.g. John Doe" required>
+					</div>
+					<div class="cf-field">
+						<label for="tds-company"><?php esc_html_e( 'Company / Blender Name', 'addlar' ); ?></label>
+						<input type="text" id="tds-company" name="company" class="cf-input" placeholder="e.g. Acme Lubricants">
+					</div>
+				</div>
+
+				<div class="cf-row">
+					<div class="cf-field">
+						<label for="tds-email"><?php esc_html_e( 'Business Email', 'addlar' ); ?> *</label>
+						<input type="email" id="tds-email" name="email" class="cf-input" placeholder="name@company.com" required>
+					</div>
+					<div class="cf-field">
+						<label for="tds-phone"><?php esc_html_e( 'Phone / WhatsApp', 'addlar' ); ?></label>
+						<input type="tel" id="tds-phone" name="phone" class="cf-input" placeholder="+1 (555) 000-0000">
+					</div>
+				</div>
+
+				<div class="cf-field">
+					<label for="tds-notes"><?php esc_html_e( 'Target Viscosity Grades / Specific Requirements', 'addlar' ); ?></label>
+					<textarea id="tds-notes" name="message" rows="2" class="cf-input cf-textarea" placeholder="<?php esc_attr_e( 'e.g., Requesting TDS, SDS and treat rate guidelines for 15W-40 blending...', 'addlar' ); ?>"></textarea>
+				</div>
+
+				<div id="tdsModalStatus" style="display:none;padding:12px 16px;border-radius:4px;font-size:13.5px;font-weight:600;"></div>
+
+				<div class="cf-actions" style="margin-top:8px;">
+					<button type="submit" id="tdsSubmitBtn" class="btn btn-red" style="width:100%;justify-content:center;">
+						<span><?php esc_html_e( 'Instant TDS Dispatch Request →', 'addlar' ); ?></span>
+					</button>
+				</div>
+			</form>
+		</div>
+	</div>
+</div>
+
+<script>
+(function(){
+	// TDS Modal Logic
+	var backdrop = document.getElementById('addlarTdsModal');
+	var closeBtn = document.getElementById('addlarTdsClose');
+	var form = document.getElementById('addlarTdsForm');
+	var statusBox = document.getElementById('tdsModalStatus');
+	var productDisplay = document.getElementById('tdsProductDisplay');
+	var productInput = document.getElementById('tdsProductInput');
+	var specDisplay = document.getElementById('tdsSpecDisplay');
+
+	window.addlarOpenTdsModal = function(prodName, specInfo) {
+		if (!backdrop) return;
+		var name = prodName || 'ADDLAR Technical Package';
+		if (productDisplay) productDisplay.textContent = name;
+		if (productInput) productInput.value = name;
+		if (specDisplay) specDisplay.textContent = specInfo || 'Official Technical Data Sheet Request';
+		if (statusBox) { statusBox.style.display = 'none'; statusBox.textContent = ''; }
+		if (form) form.reset();
+		backdrop.classList.add('open');
+		backdrop.setAttribute('aria-hidden', 'false');
+	};
+
+	window.addlarCloseTdsModal = function() {
+		if (!backdrop) return;
+		backdrop.classList.remove('open');
+		backdrop.setAttribute('aria-hidden', 'true');
+	};
+
+	if (closeBtn) closeBtn.addEventListener('click', window.addlarCloseTdsModal);
+	if (backdrop) {
+		backdrop.addEventListener('click', function(e){
+			if (e.target === backdrop) window.addlarCloseTdsModal();
+		});
+	}
+	document.addEventListener('keydown', function(e){
+		if (e.key === 'Escape') window.addlarCloseTdsModal();
+	});
+
+	// Trigger delegation for buttons with .btn-tds-trigger or data-tds-product
+	document.addEventListener('click', function(e){
+		var trigger = e.target.closest('.btn-tds-trigger, [data-tds-product]');
+		if (trigger) {
+			e.preventDefault();
+			var prod = trigger.getAttribute('data-tds-product') || trigger.innerText.replace(/Request Data Sheet|TDS|→/gi, '').trim();
+			var spec = trigger.getAttribute('data-tds-spec') || '';
+			window.addlarOpenTdsModal(prod, spec);
+		}
+	});
+
+	// AJAX TDS Submission
+	if (form) {
+		form.addEventListener('submit', function(e){
+			e.preventDefault();
+			var submitBtn = document.getElementById('tdsSubmitBtn');
+			if (submitBtn) {
+				submitBtn.disabled = true;
+				submitBtn.textContent = 'Submitting Request...';
+			}
+
+			var formData = new FormData(form);
+			formData.append('action', 'addlar_tds_submit');
+
+			fetch('<?php echo esc_url( admin_url( 'admin-ajax.php' ) ); ?>', {
+				method: 'POST',
+				body: formData,
+				credentials: 'same-origin'
+			})
+			.then(function(res){ return res.json(); })
+			.then(function(data){
+				if (submitBtn) {
+					submitBtn.disabled = false;
+					submitBtn.textContent = 'Instant TDS Dispatch Request →';
+				}
+				if (statusBox) {
+					statusBox.style.display = 'block';
+					if (data.success) {
+						statusBox.style.background = 'rgba(16, 185, 129, 0.15)';
+						statusBox.style.color = '#065f46';
+						statusBox.style.border = '1px solid #10b981';
+						statusBox.textContent = data.data.message || 'Thank you! Your request has been recorded.';
+						form.reset();
+						setTimeout(function(){ window.addlarCloseTdsModal(); }, 3500);
+					} else {
+						statusBox.style.background = 'rgba(239, 68, 68, 0.15)';
+						statusBox.style.color = '#991b1b';
+						statusBox.style.border = '1px solid #ef4444';
+						statusBox.textContent = data.data.message || 'Error processing request. Please try again.';
+					}
+				}
+			})
+			.catch(function(){
+				if (submitBtn) {
+					submitBtn.disabled = false;
+					submitBtn.textContent = 'Instant TDS Dispatch Request →';
+				}
+				if (statusBox) {
+					statusBox.style.display = 'block';
+					statusBox.style.background = 'rgba(239, 68, 68, 0.15)';
+					statusBox.style.color = '#991b1b';
+					statusBox.style.border = '1px solid #ef4444';
+					statusBox.textContent = 'Network error. Please try again or email us directly.';
+				}
+			});
+		});
+	}
+
+	// Pre-selection helper for Customised Product Requirement from Finder
+	window.addlarPreselectCustomCategory = function(){
+		var catSelect = document.getElementById('cf-category');
+		if (catSelect) {
+			catSelect.value = 'Customised Product Requirement';
+			catSelect.classList.add('highlighted-field');
+			setTimeout(function(){ catSelect.classList.remove('highlighted-field'); }, 3000);
+		}
+	};
+})();
+</script>
 <?php wp_footer(); ?>
 </body>
 </html>

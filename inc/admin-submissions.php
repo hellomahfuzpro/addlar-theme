@@ -27,6 +27,7 @@ function addlar_submissions_create_table() {
 		id           BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
 		created_at   DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
 		preset       VARCHAR(32) NOT NULL DEFAULT 'contact',
+		category     VARCHAR(100) NOT NULL DEFAULT '',
 		name         VARCHAR(255) NOT NULL DEFAULT '',
 		company      VARCHAR(255) NOT NULL DEFAULT '',
 		email        VARCHAR(255) NOT NULL DEFAULT '',
@@ -39,6 +40,7 @@ function addlar_submissions_create_table() {
 		PRIMARY KEY  (id),
 		KEY idx_status (status),
 		KEY idx_preset (preset),
+		KEY idx_category (category),
 		KEY idx_created (created_at)
 	) {$charset};";
 
@@ -46,14 +48,14 @@ function addlar_submissions_create_table() {
 	dbDelta( $sql );
 
 	// Store installed DB version.
-	update_option( 'addlar_submissions_db_version', '1.0' );
+	update_option( 'addlar_submissions_db_version', '1.1' );
 }
 
 /**
  * Auto-install table on theme load if not already present.
  */
 function addlar_submissions_maybe_install() {
-	if ( get_option( 'addlar_submissions_db_version' ) !== '1.0' ) {
+	if ( get_option( 'addlar_submissions_db_version' ) !== '1.1' ) {
 		addlar_submissions_create_table();
 	}
 }
@@ -75,6 +77,7 @@ function addlar_insert_submission( $data ) {
 
 	$defaults = array(
 		'preset'     => 'contact',
+		'category'   => '',
 		'name'       => '',
 		'company'    => '',
 		'email'      => '',
@@ -92,6 +95,7 @@ function addlar_insert_submission( $data ) {
 		$table,
 		array(
 			'preset'     => sanitize_text_field( $row['preset'] ),
+			'category'   => sanitize_text_field( $row['category'] ),
 			'name'       => sanitize_text_field( $row['name'] ),
 			'company'    => sanitize_text_field( $row['company'] ),
 			'email'      => sanitize_email( $row['email'] ),
@@ -102,7 +106,7 @@ function addlar_insert_submission( $data ) {
 			'ip_address' => sanitize_text_field( $row['ip_address'] ),
 			'status'     => sanitize_text_field( $row['status'] ),
 		),
-		array( '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s' )
+		array( '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s' )
 	);
 
 	return $inserted ? $wpdb->insert_id : false;
@@ -185,9 +189,10 @@ function addlar_render_submissions_page() {
 	}
 
 	// Filters.
-	$status_filter = isset( $_GET['status_filter'] ) ? sanitize_key( $_GET['status_filter'] ) : '';
-	$preset_filter = isset( $_GET['preset_filter'] ) ? sanitize_key( $_GET['preset_filter'] ) : '';
-	$search        = isset( $_GET['s'] ) ? sanitize_text_field( wp_unslash( $_GET['s'] ) ) : '';
+	$status_filter   = isset( $_GET['status_filter'] ) ? sanitize_key( $_GET['status_filter'] ) : '';
+	$preset_filter   = isset( $_GET['preset_filter'] ) ? sanitize_key( $_GET['preset_filter'] ) : '';
+	$category_filter = isset( $_GET['category_filter'] ) ? sanitize_text_field( wp_unslash( $_GET['category_filter'] ) ) : '';
+	$search          = isset( $_GET['s'] ) ? sanitize_text_field( wp_unslash( $_GET['s'] ) ) : '';
 
 	$where = array( '1=1' );
 	$args  = array();
@@ -200,9 +205,15 @@ function addlar_render_submissions_page() {
 		$where[] = 'preset = %s';
 		$args[]  = $preset_filter;
 	}
+	if ( $category_filter ) {
+		$where[] = 'category = %s';
+		$args[]  = $category_filter;
+	}
 	if ( $search ) {
 		$like    = '%' . $wpdb->esc_like( $search ) . '%';
-		$where[] = '(name LIKE %s OR email LIKE %s OR company LIKE %s OR message LIKE %s)';
+		$where[] = '(name LIKE %s OR email LIKE %s OR company LIKE %s OR product LIKE %s OR category LIKE %s OR message LIKE %s)';
+		$args[]  = $like;
+		$args[]  = $like;
 		$args[]  = $like;
 		$args[]  = $like;
 		$args[]  = $like;
@@ -240,9 +251,18 @@ function addlar_render_submissions_page() {
 				<select name="preset_filter">
 					<option value=""><?php esc_html_e( 'All forms', 'addlar' ); ?></option>
 					<option value="contact" <?php selected( $preset_filter, 'contact' ); ?>><?php esc_html_e( 'Contact Us', 'addlar' ); ?></option>
+					<option value="tds" <?php selected( $preset_filter, 'tds' ); ?>><?php esc_html_e( 'TDS Requests', 'addlar' ); ?></option>
 					<option value="expert" <?php selected( $preset_filter, 'expert' ); ?>><?php esc_html_e( 'Ask the Expert', 'addlar' ); ?></option>
 				</select>
-				<input type="search" name="s" value="<?php echo esc_attr( $search ); ?>" placeholder="<?php esc_attr_e( 'Search name, email, company…', 'addlar' ); ?>" style="width:220px;">
+				<select name="category_filter">
+					<option value=""><?php esc_html_e( 'All categories', 'addlar' ); ?></option>
+					<option value="General Inquiry" <?php selected( $category_filter, 'General Inquiry' ); ?>>General Inquiry</option>
+					<option value="Customised Product Requirement" <?php selected( $category_filter, 'Customised Product Requirement' ); ?>>Customised Product Requirement</option>
+					<option value="Technical Support" <?php selected( $category_filter, 'Technical Support' ); ?>>Technical Support</option>
+					<option value="Commercial & Distribution" <?php selected( $category_filter, 'Commercial & Distribution' ); ?>>Commercial & Distribution</option>
+					<option value="Request Data Sheet (TDS)" <?php selected( $category_filter, 'Request Data Sheet (TDS)' ); ?>>Request Data Sheet (TDS)</option>
+				</select>
+				<input type="search" name="s" value="<?php echo esc_attr( $search ); ?>" placeholder="<?php esc_attr_e( 'Search name, email, product…', 'addlar' ); ?>" style="width:220px;">
 				<button class="button"><?php esc_html_e( 'Filter', 'addlar' ); ?></button>
 			</div>
 		</form>
@@ -257,17 +277,18 @@ function addlar_render_submissions_page() {
 					<th style="width:40px;">#</th>
 					<th><?php esc_html_e( 'Status', 'addlar' ); ?></th>
 					<th><?php esc_html_e( 'Date', 'addlar' ); ?></th>
-					<th><?php esc_html_e( 'Form', 'addlar' ); ?></th>
+					<th><?php esc_html_e( 'Form / Cat', 'addlar' ); ?></th>
 					<th><?php esc_html_e( 'Name', 'addlar' ); ?></th>
 					<th><?php esc_html_e( 'Email', 'addlar' ); ?></th>
 					<th><?php esc_html_e( 'Company', 'addlar' ); ?></th>
+					<th><?php esc_html_e( 'Product', 'addlar' ); ?></th>
 					<th><?php esc_html_e( 'Message', 'addlar' ); ?></th>
 					<th style="width:140px;"><?php esc_html_e( 'Actions', 'addlar' ); ?></th>
 				</tr>
 			</thead>
 			<tbody>
 				<?php if ( empty( $rows ) ) : ?>
-					<tr><td colspan="9"><?php esc_html_e( 'No submissions yet.', 'addlar' ); ?></td></tr>
+					<tr><td colspan="10"><?php esc_html_e( 'No submissions yet.', 'addlar' ); ?></td></tr>
 				<?php else : ?>
 					<?php foreach ( $rows as $row ) : ?>
 						<tr style="<?php echo 'unread' === $row->status ? 'font-weight:700;' : ''; ?>">
@@ -280,11 +301,17 @@ function addlar_render_submissions_page() {
 								<?php endif; ?>
 							</td>
 							<td><?php echo esc_html( wp_date( 'M j, Y g:i a', strtotime( $row->created_at ) ) ); ?></td>
-							<td><span style="background:#f0f0f0;padding:2px 8px;border-radius:3px;font-size:12px;"><?php echo esc_html( ucfirst( $row->preset ) ); ?></span></td>
+							<td>
+								<span style="background:#f0f0f0;padding:2px 8px;border-radius:3px;font-size:12px;display:inline-block;margin-bottom:2px;"><?php echo esc_html( ucfirst( $row->preset ) ); ?></span>
+								<?php if ( ! empty( $row->category ) ) : ?>
+									<br><small style="color:#D32F2F;font-size:11px;font-weight:600;"><?php echo esc_html( $row->category ); ?></small>
+								<?php endif; ?>
+							</td>
 							<td><?php echo esc_html( $row->name ); ?></td>
 							<td><a href="mailto:<?php echo esc_attr( $row->email ); ?>"><?php echo esc_html( $row->email ); ?></a></td>
 							<td><?php echo esc_html( $row->company ); ?></td>
-							<td title="<?php echo esc_attr( $row->message ); ?>"><?php echo esc_html( wp_trim_words( $row->message, 12, '…' ) ); ?></td>
+							<td><strong><?php echo esc_html( $row->product ); ?></strong></td>
+							<td title="<?php echo esc_attr( $row->message ); ?>"><?php echo esc_html( wp_trim_words( $row->message, 10, '…' ) ); ?></td>
 							<td>
 								<?php
 								$view_url   = wp_nonce_url( add_query_arg( array( 'action' => 'view', 'id' => $row->id ), $base_url ), 'addlar_sub_action' );
@@ -292,7 +319,7 @@ function addlar_render_submissions_page() {
 								$toggle     = 'unread' === $row->status ? 'mark_read' : 'mark_unread';
 								$toggle_url = wp_nonce_url( add_query_arg( array( 'action' => $toggle, 'id' => $row->id ), $base_url ), 'addlar_sub_action' );
 								?>
-								<a href="#" class="addlar-view-sub" data-id="<?php echo esc_attr( $row->id ); ?>" data-name="<?php echo esc_attr( $row->name ); ?>" data-email="<?php echo esc_attr( $row->email ); ?>" data-company="<?php echo esc_attr( $row->company ); ?>" data-phone="<?php echo esc_attr( $row->phone ); ?>" data-country="<?php echo esc_attr( $row->country ); ?>" data-product="<?php echo esc_attr( $row->product ); ?>" data-message="<?php echo esc_attr( $row->message ); ?>" data-date="<?php echo esc_attr( wp_date( 'F j, Y g:i a', strtotime( $row->created_at ) ) ); ?>" data-preset="<?php echo esc_attr( $row->preset ); ?>" data-ip="<?php echo esc_attr( $row->ip_address ); ?>" title="<?php esc_attr_e( 'View details', 'addlar' ); ?>"><?php esc_html_e( 'View', 'addlar' ); ?></a> |
+								<a href="#" class="addlar-view-sub" data-id="<?php echo esc_attr( $row->id ); ?>" data-name="<?php echo esc_attr( $row->name ); ?>" data-email="<?php echo esc_attr( $row->email ); ?>" data-company="<?php echo esc_attr( $row->company ); ?>" data-phone="<?php echo esc_attr( $row->phone ); ?>" data-country="<?php echo esc_attr( $row->country ); ?>" data-product="<?php echo esc_attr( $row->product ); ?>" data-category="<?php echo esc_attr( $row->category ); ?>" data-message="<?php echo esc_attr( $row->message ); ?>" data-date="<?php echo esc_attr( wp_date( 'F j, Y g:i a', strtotime( $row->created_at ) ) ); ?>" data-preset="<?php echo esc_attr( $row->preset ); ?>" data-ip="<?php echo esc_attr( $row->ip_address ); ?>" title="<?php esc_attr_e( 'View details', 'addlar' ); ?>"><?php esc_html_e( 'View', 'addlar' ); ?></a> |
 								<a href="<?php echo esc_url( $toggle_url ); ?>"><?php echo 'unread' === $row->status ? esc_html__( 'Read', 'addlar' ) : esc_html__( 'Unread', 'addlar' ); ?></a> |
 								<a href="<?php echo esc_url( $delete_url ); ?>" onclick="return confirm('<?php esc_attr_e( 'Delete this submission?', 'addlar' ); ?>');" style="color:#a00;"><?php esc_html_e( 'Delete', 'addlar' ); ?></a>
 							</td>
@@ -329,6 +356,7 @@ function addlar_render_submissions_page() {
 				<tr><th><?php esc_html_e( 'Company', 'addlar' ); ?></th><td id="addlar-sub-modal-company"></td></tr>
 				<tr><th><?php esc_html_e( 'Phone', 'addlar' ); ?></th><td id="addlar-sub-modal-phone"></td></tr>
 				<tr><th><?php esc_html_e( 'Country', 'addlar' ); ?></th><td id="addlar-sub-modal-country"></td></tr>
+				<tr><th><?php esc_html_e( 'Category', 'addlar' ); ?></th><td id="addlar-sub-modal-category"></td></tr>
 				<tr><th><?php esc_html_e( 'Product', 'addlar' ); ?></th><td id="addlar-sub-modal-product"></td></tr>
 				<tr><th><?php esc_html_e( 'Message', 'addlar' ); ?></th><td id="addlar-sub-modal-message" style="white-space:pre-wrap;"></td></tr>
 				<tr><th><?php esc_html_e( 'IP Address', 'addlar' ); ?></th><td id="addlar-sub-modal-ip" style="color:#999;font-size:12px;"></td></tr>
@@ -351,6 +379,7 @@ function addlar_render_submissions_page() {
 				document.getElementById('addlar-sub-modal-company').textContent = d.company || '—';
 				document.getElementById('addlar-sub-modal-phone').textContent = d.phone || '—';
 				document.getElementById('addlar-sub-modal-country').textContent = d.country || '—';
+				document.getElementById('addlar-sub-modal-category').textContent = d.category || '—';
 				document.getElementById('addlar-sub-modal-product').textContent = d.product || '—';
 				document.getElementById('addlar-sub-modal-message').textContent = d.message || '—';
 				document.getElementById('addlar-sub-modal-ip').textContent = d.ip || '—';

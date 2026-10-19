@@ -40,11 +40,19 @@ function addlar_contact_form_presets() {
 			array( 'name' => 'company', 'label' => __( 'Company Name', 'addlar' ), 'type' => 'text', 'required' => false ),
 			array( 'name' => 'question', 'label' => __( 'Your Question', 'addlar' ), 'type' => 'textarea', 'required' => true ),
 		),
+		'tds'     => array(
+			array( 'name' => 'name', 'label' => __( 'Name', 'addlar' ), 'type' => 'text', 'required' => true ),
+			array( 'name' => 'company', 'label' => __( 'Company Name', 'addlar' ), 'type' => 'text', 'required' => false ),
+			array( 'name' => 'email', 'label' => __( 'Business Email', 'addlar' ), 'type' => 'email', 'required' => true ),
+			array( 'name' => 'phone', 'label' => __( 'Phone Number', 'addlar' ), 'type' => 'text', 'required' => false ),
+			array( 'name' => 'product', 'label' => __( 'Product Requested', 'addlar' ), 'type' => 'text', 'required' => true ),
+			array( 'name' => 'message', 'label' => __( 'Specification / Message', 'addlar' ), 'type' => 'textarea', 'required' => false ),
+		),
 	);
 }
 
 /**
- * Handle a contact/expert form submission: verify the nonce, drop obvious
+ * Handle a contact/expert/tds form submission: verify the nonce, drop obvious
  * bot traffic via honeypot, sanitize every field, store in DB, email
  * configured recipients, then redirect back with a success/error flag.
  */
@@ -71,6 +79,11 @@ function addlar_handle_contact_form() {
 		: 'contact';
 	$fields  = $presets[ $preset ];
 
+	$category = isset( $_POST['category'] ) ? sanitize_text_field( wp_unslash( $_POST['category'] ) ) : '';
+	if ( empty( $category ) && 'tds' === $preset ) {
+		$category = 'Request Data Sheet (TDS)';
+	}
+
 	$lines    = array();
 	$data     = array();
 	$is_valid = true;
@@ -92,6 +105,10 @@ function addlar_handle_contact_form() {
 		}
 	}
 
+	if ( ! empty( $category ) ) {
+		$lines[] = 'Question Category: ' . $category;
+	}
+
 	if ( ! $is_valid ) {
 		wp_safe_redirect( add_query_arg( 'addlar_sent', 'error', $redirect ) );
 		exit;
@@ -101,6 +118,7 @@ function addlar_handle_contact_form() {
 	if ( function_exists( 'addlar_insert_submission' ) ) {
 		addlar_insert_submission( array(
 			'preset'     => $preset,
+			'category'   => $category,
 			'name'       => isset( $data['name'] ) ? $data['name'] : '',
 			'company'    => isset( $data['company'] ) ? $data['company'] : '',
 			'email'      => isset( $data['email'] ) ? $data['email'] : '',
@@ -127,9 +145,13 @@ function addlar_handle_contact_form() {
 		}
 
 		$prefix  = get_option( 'addlar_notify_subject_prefix', '[ADDLAR]' );
-		$subject = 'contact' === $preset
-			? $prefix . ' ' . __( 'New website enquiry — Contact Us', 'addlar' )
-			: $prefix . ' ' . __( 'New website enquiry — Ask the Expert', 'addlar' );
+		if ( 'tds' === $preset ) {
+			$subject = $prefix . ' ' . __( 'New TDS Request — ', 'addlar' ) . ( ! empty( $data['product'] ) ? $data['product'] : 'Product' );
+		} elseif ( 'expert' === $preset ) {
+			$subject = $prefix . ' ' . __( 'New website enquiry — Ask the Expert', 'addlar' );
+		} else {
+			$subject = $prefix . ' ' . __( 'New website enquiry — Contact Us', 'addlar' ) . ( ! empty( $category ) ? ' (' . $category . ')' : '' );
+		}
 		$body    = implode( "\n", $lines );
 
 		$headers     = array( 'Content-Type: text/plain; charset=UTF-8' );
@@ -153,4 +175,72 @@ function addlar_handle_contact_form() {
 }
 add_action( 'admin_post_addlar_contact_submit', 'addlar_handle_contact_form' );
 add_action( 'admin_post_nopriv_addlar_contact_submit', 'addlar_handle_contact_form' );
+
+/**
+ * Handle AJAX TDS / Contact modal submission.
+ */
+function addlar_handle_ajax_contact_form() {
+	if ( ! empty( $_POST['addlar_hp'] ) ) {
+		wp_send_json_success( array( 'message' => __( 'Thank you! Your request has been received.', 'addlar' ) ) );
+	}
+
+	$preset   = isset( $_POST['preset'] ) ? sanitize_key( wp_unslash( $_POST['preset'] ) ) : 'tds';
+	$name     = isset( $_POST['name'] ) ? sanitize_text_field( wp_unslash( $_POST['name'] ) ) : '';
+	$company  = isset( $_POST['company'] ) ? sanitize_text_field( wp_unslash( $_POST['company'] ) ) : '';
+	$email    = isset( $_POST['email'] ) ? sanitize_email( wp_unslash( $_POST['email'] ) ) : '';
+	$phone    = isset( $_POST['phone'] ) ? sanitize_text_field( wp_unslash( $_POST['phone'] ) ) : '';
+	$product  = isset( $_POST['product'] ) ? sanitize_text_field( wp_unslash( $_POST['product'] ) ) : '';
+	$category = isset( $_POST['category'] ) ? sanitize_text_field( wp_unslash( $_POST['category'] ) ) : ( 'tds' === $preset ? 'Request Data Sheet (TDS)' : 'General Inquiry' );
+	$message  = isset( $_POST['message'] ) ? sanitize_textarea_field( wp_unslash( $_POST['message'] ) ) : '';
+
+	if ( empty( $name ) || empty( $email ) || ! is_email( $email ) ) {
+		wp_send_json_error( array( 'message' => __( 'Please provide your name and a valid business email address.', 'addlar' ) ) );
+	}
+
+	if ( function_exists( 'addlar_insert_submission' ) ) {
+		addlar_insert_submission( array(
+			'preset'     => $preset,
+			'category'   => $category,
+			'name'       => $name,
+			'company'    => $company,
+			'email'      => $email,
+			'phone'      => $phone,
+			'country'    => '',
+			'product'    => $product,
+			'message'    => $message,
+			'ip_address' => isset( $_SERVER['REMOTE_ADDR'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ) ) : '',
+			'status'     => 'unread',
+		) );
+	}
+
+	// Dispatch notification email if enabled.
+	$notify_enabled = get_option( 'addlar_notify_enabled', '1' );
+	if ( '1' === $notify_enabled ) {
+		$notify_emails = get_option( 'addlar_notify_emails', '' );
+		if ( ! empty( $notify_emails ) ) {
+			$to = array_map( 'trim', explode( ',', $notify_emails ) );
+		} else {
+			$to = addlar_mod( 'addlar_email' );
+			if ( empty( $to ) ) {
+				$to = get_option( 'admin_email' );
+			}
+		}
+
+		$prefix  = get_option( 'addlar_notify_subject_prefix', '[ADDLAR]' );
+		$subject = $prefix . ' ' . __( 'TDS Request: ', 'addlar' ) . $product . ' — ' . $name . ( $company ? ' (' . $company . ')' : '' );
+		$body    = "Product Requested: {$product}\nCategory: {$category}\nName: {$name}\nCompany: {$company}\nEmail: {$email}\nPhone: {$phone}\nMessage: {$message}";
+
+		$headers = array( 'Content-Type: text/plain; charset=UTF-8', 'Reply-To: ' . $email );
+		wp_mail( $to, $subject, $body, $headers );
+	}
+
+	wp_send_json_success( array(
+		'message' => __( 'Thank you! Your Technical Data Sheet request for ' . $product . ' has been recorded. Our technical dispatch team will email the documentation to you shortly.', 'addlar' ),
+		'product' => $product,
+	) );
+}
+add_action( 'wp_ajax_addlar_tds_submit', 'addlar_handle_ajax_contact_form' );
+add_action( 'wp_ajax_nopriv_addlar_tds_submit', 'addlar_handle_ajax_contact_form' );
+add_action( 'wp_ajax_addlar_contact_ajax', 'addlar_handle_ajax_contact_form' );
+add_action( 'wp_ajax_nopriv_addlar_contact_ajax', 'addlar_handle_ajax_contact_form' );
 

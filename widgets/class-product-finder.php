@@ -136,6 +136,11 @@ class Addlar_Widget_ProductFinder extends Addlar_Base_Widget {
 						<div class="step"><?php echo esc_html( $s['step3'] ); ?></div>
 						<div data-role="msg"><div class="fmsg"><?php echo esc_html( $s['msg_idle'] ); ?></div></div>
 						<div class="fpills" data-role="pills"></div>
+						<div class="custom-formulation-block">
+							<div class="custom-formulation-title"><?php esc_html_e( 'Need a Custom Formulation?', 'addlar' ); ?></div>
+							<div class="custom-formulation-desc"><?php esc_html_e( 'We engineer bespoke packages to your exact target parameters.', 'addlar' ); ?></div>
+							<a href="#contact" class="btn btn-red" onclick="if(window.addlarPreselectCustomCategory){window.addlarPreselectCustomCategory();}"><?php esc_html_e( 'Request Customised Package →', 'addlar' ); ?></a>
+						</div>
 					</div>
 				</div>
 			</div>

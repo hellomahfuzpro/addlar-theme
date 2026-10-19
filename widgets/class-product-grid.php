@@ -460,6 +460,18 @@ class Addlar_Widget_ProductGrid extends Addlar_Base_Widget {
 				<div class="showcase-grid-pattern"></div>
 			</div>
 
+			<!-- Top Floating Centered Tab Bar (Shifted to top and in middle) -->
+			<div class="showcase-dock showcase-dock-top">
+				<nav class="showcase-tab-bar" aria-label="<?php esc_attr_e( 'Additive Categories', 'addlar' ); ?>">
+					<?php foreach ( $slides_data as $btn_idx => $tab_item ) : ?>
+						<button type="button" class="showcase-tab-btn <?php echo ( 0 === $btn_idx ) ? 'active' : ''; ?>" data-slide-index="<?php echo esc_attr( $btn_idx ); ?>">
+							<?php $this->render_tab_svg( $tab_item['icon'] ); ?>
+							<span><?php echo esc_html( $tab_item['cat'] ); ?></span>
+						</button>
+					<?php endforeach; ?>
+				</nav>
+			</div>
+
 			<!-- Main Showcase Grid Content -->
 			<div class="showcase-main-body">
 				<!-- Left Column: Primary Content -->
@@ -484,7 +496,7 @@ class Addlar_Widget_ProductGrid extends Addlar_Base_Widget {
 							<span><?php echo esc_html( $first['btnPrimary']['text'] ); ?></span>
 							<svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M14 5l7 7m0 0l-7 7m7-7H3" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/></svg>
 						</a>
-						<a id="<?php echo esc_attr( $unique_id ); ?>-btn-sec" class="showcase-btn-secondary" href="<?php echo esc_url( $first['btnSec']['url'] ); ?>">
+						<a id="<?php echo esc_attr( $unique_id ); ?>-btn-sec" class="showcase-btn-secondary btn-tds-trigger" href="#contact" data-tds-product="<?php echo esc_attr( $first['catName'] ); ?>">
 							<span><?php echo esc_html( $first['btnSec']['text'] ); ?></span>
 							<svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"/></svg>
 						</a>
@@ -541,18 +553,6 @@ class Addlar_Widget_ProductGrid extends Addlar_Base_Widget {
 						?>
 					</div>
 				</div>
-			</div>
-
-			<!-- Bottom Floating Dock Tab Bar -->
-			<div class="showcase-dock">
-				<nav class="showcase-tab-bar" aria-label="<?php esc_attr_e( 'Additive Categories', 'addlar' ); ?>">
-					<?php foreach ( $slides_data as $btn_idx => $tab_item ) : ?>
-						<button type="button" class="showcase-tab-btn <?php echo ( 0 === $btn_idx ) ? 'active' : ''; ?>" data-slide-index="<?php echo esc_attr( $btn_idx ); ?>">
-							<?php $this->render_tab_svg( $tab_item['icon'] ); ?>
-							<span><?php echo esc_html( $tab_item['cat'] ); ?></span>
-						</button>
-					<?php endforeach; ?>
-				</nav>
 			</div>
 		</section>
 		</div>
@@ -630,6 +630,7 @@ class Addlar_Widget_ProductGrid extends Addlar_Base_Widget {
 				}
 				if (btnSec && item.btnSec) {
 					btnSec.href = item.btnSec.url;
+					btnSec.setAttribute('data-tds-product', item.catName || item.cat || item.title);
 					var sSpan = btnSec.querySelector('span');
 					if (sSpan) sSpan.textContent = item.btnSec.text;
 				}

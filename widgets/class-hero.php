@@ -117,6 +117,50 @@ class Addlar_Widget_Hero extends Addlar_Base_Widget {
 		) );
 
 		$this->end_controls_section();
+
+		$this->start_controls_section( 'lens_section', array(
+			'label' => __( 'Search Circle Lens', 'addlar' ),
+		) );
+
+		$this->add_control( 'enable_lens', array(
+			'label'        => __( 'Enable Search Circle Lens', 'addlar' ),
+			'type'         => Controls_Manager::SWITCHER,
+			'default'      => 'yes',
+			'label_on'     => __( 'Yes', 'addlar' ),
+			'label_off'    => __( 'No', 'addlar' ),
+			'return_value' => 'yes',
+		) );
+
+		$this->add_control( 'lens_handle_scale', array(
+			'label'       => __( 'Handle Scale', 'addlar' ),
+			'type'        => Controls_Manager::SLIDER,
+			'size_units'  => array( 'px' ),
+			'range'       => array(
+				'px' => array(
+					'min'  => 0.7,
+					'max'  => 1.5,
+					'step' => 0.05,
+				),
+			),
+			'default'     => array(
+				'unit' => 'px',
+				'size' => 1.0,
+			),
+			'condition'   => array( 'enable_lens' => 'yes' ),
+		) );
+
+		$this->add_control( 'lens_symbol_color', array(
+			'label'     => __( 'Symbol Style / Glow', 'addlar' ),
+			'type'      => Controls_Manager::SELECT,
+			'default'   => 'white',
+			'options'   => array(
+				'white' => __( 'Semi-Transparent White (Default)', 'addlar' ),
+				'red'   => __( 'Semi-Opacity Original Red', 'addlar' ),
+			),
+			'condition' => array( 'enable_lens' => 'yes' ),
+		) );
+
+		$this->end_controls_section();
 	}
 
 	protected function render() {
@@ -135,6 +179,31 @@ class Addlar_Widget_Hero extends Addlar_Base_Widget {
 			<?php elseif ( $post ) : ?>
 				<img src="<?php echo esc_url( $post ); ?>" alt=""
 					<?php echo ! empty( $s['focal'] ) ? 'style="width:100%;height:100%;object-fit:cover;object-position:' . esc_attr( $s['focal'] ) . '"' : ''; ?>>
+			<?php endif; ?>
+
+			<?php
+			if ( ! empty( $s['enable_lens'] ) && 'yes' === $s['enable_lens'] ) :
+				$handle_scale = ! empty( $s['lens_handle_scale']['size'] ) ? floatval( $s['lens_handle_scale']['size'] ) : 1.0;
+				$is_red       = ( ! empty( $s['lens_symbol_color'] ) && 'red' === $s['lens_symbol_color'] );
+				$lens_mode    = $is_red ? 'mode-red-glow' : '';
+				$plus_style   = $is_red ? 'plus-style-original' : 'plus-style-white';
+				$graphic_url  = get_template_directory_uri() . '/assets/images/addlar-graphic.png';
+				?>
+				<div class="hud-stage" id="hudStage">
+					<div class="search-circle-unit <?php echo esc_attr( $lens_mode ); ?>" id="searchCircle" style="--lens-handle-scale: <?php echo esc_attr( $handle_scale ); ?>;">
+						<div class="lens-outer-ring"></div>
+						<div class="lens-inner-ring"></div>
+						<div class="lens-crosshair"></div>
+						<div class="center-aperture"></div>
+						<div class="lens-handle-wrap" style="transform: translateY(-50%) rotate(45deg) scale(var(--lens-handle-scale, 1));">
+							<div class="lens-handle-collar"></div>
+							<div class="lens-handle-shaft"></div>
+						</div>
+						<div class="center-plus-wrap">
+							<img src="<?php echo esc_url( $graphic_url ); ?>" alt="Addlar Symbol" class="center-plus-img <?php echo esc_attr( $plus_style ); ?>">
+						</div>
+					</div>
+				</div>
 			<?php endif; ?>
 		</div>
 

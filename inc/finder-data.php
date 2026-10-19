@@ -57,7 +57,7 @@ function addlar_default_finder_categories() {
 			'lines' => "Detergents: 2063, 2230, 2240, 2340, 2130\nDispersants: 2417, 2422, 2443, 2569\nAnti-wear & Friction Modifier: 2604, 2610, 2611, 2641, 2651, 5883, 2995, Z 2612\nAnti Oxidants: 2907, 2935\nPour Point Depressants: 224, 226\nViscosity Index Improvers: 2500, 8081, 8084\nSpeciality Component: KC720, KC721, KC810, KC820",
 		),
 		array(
-			'name'  => 'Complementary',
+			'name'  => 'Antifreeze / Brake Fluids',
 			'lines' => "Brake Fluid: Custom blend\nCustomised Solutions: Made to spec",
 		),
 	);

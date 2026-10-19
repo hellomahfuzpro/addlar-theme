@@ -59,7 +59,6 @@ class Addlar_Widget_TrustStrip extends Addlar_Base_Widget {
 				array( 'strong' => 'ACEA', 'text' => __( 'Full Spectrum Performance', 'addlar' ) ),
 				array( 'strong' => 'ILSAC', 'text' => 'GF-5 / GF-6' ),
 				array( 'strong' => 'JASO', 'text' => 'MA / MA2' ),
-				array( 'strong' => 'UAE', 'text' => __( 'Manufactured', 'addlar' ) ),
 			),
 		) );
 
